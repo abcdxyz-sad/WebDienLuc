@@ -607,3 +607,118 @@ footer a.zzz-link-btn {
         display: inline-block;
         margin-right: 8px;
     }
+
+/* =========================================================
+   ZZZ MOBILE OPTIMIZATION (ĐỘC QUYỀN CHO SẾP)
+========================================================= */
+
+@media (max-width: 768px) {
+    /* 1. TYPOGRAPHY: Thu nhỏ tiêu đề cho đỡ choán chỗ */
+    h1 {
+        font-size: 1.6rem;
+        border-left-width: 5px;
+    }
+
+    .corp-section-title {
+        font-size: 1.4rem !important;
+    }
+
+    /* 2. NAVBAR: Thu gọn khoảng cách để ngón tay dễ bấm */
+    .navbar {
+        padding: 0.2rem 0.5rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .navbar-brand {
+        font-size: 1rem !important;
+        padding: 0.2rem 0.5rem !important;
+    }
+
+    /* Menu Mobile: Bỏ nghiêng (skew) để chữ không bị tràn mép màn hình */
+    .navbar-collapse .nav-link {
+        transform: none !important;
+        margin: 5px 0;
+        text-align: center;
+        border-radius: 4px;
+    }
+
+        .navbar-collapse .nav-link i {
+            transform: none !important;
+        }
+
+    /* 3. BUTTONS: Giảm độ dày bóng đổ và viền trên màn hình nhỏ */
+    .btn, .zzz-btn-tech, .zzz-btn-danger, .zzz-btn-cancel, .zzz-auth-link, .zzz-user-tag {
+        font-size: 0.8rem !important;
+        padding: 8px 12px !important;
+        box-shadow: 2px 2px 0px #000 !important; /* Giảm bóng đổ cho đỡ thô */
+        border-width: 2px !important;
+    }
+
+    /* Fix lỗi nút bấm bị dính sát nhau trên mobile */
+    .d-flex.gap-2, .d-flex.gap-3 {
+        gap: 0.5rem !important;
+        flex-wrap: wrap; /* Tự xuống dòng nếu quá chật */
+    }
+
+    /* 4. TABLES: Ép bảng thành dạng thẻ (Card) để dễ vuốt */
+    .table-responsive {
+        border: none !important;
+    }
+
+    /* 5. CARDS & LAYOUT: Giảm padding để tăng diện tích hiển thị */
+    .container {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    .card-body {
+        padding: 1rem !important;
+    }
+
+    /* 6. MODAL (QR Code): Đảm bảo Modal không to hơn màn hình */
+    #qrModal {
+        width: 95% !important;
+        padding: 1.5rem !important;
+    }
+
+    #qrcode img, #qrcode canvas {
+        width: 180px !important;
+        height: 180px !important;
+    }
+
+    /* 7. FOOTER: Chuyển sang dạng cột đơn cho dễ nhìn */
+    footer.zzz-footer {
+        text-align: center;
+    }
+
+    .zzz-footer .d-flex {
+        flex-direction: column !important;
+        gap: 15px;
+    }
+
+    .zzz-footer-actions {
+        justify-content: center !important;
+    }
+
+    /* 8. FIX MENU TRANG MANAGE: Bỏ nghiêng để dễ thao tác bằng ngón cái */
+    .zzz-manage-wrapper .zzz-urban-link {
+        transform: none !important;
+        text-align: center !important;
+        margin-bottom: 8px !important;
+    }
+
+        .zzz-manage-wrapper .zzz-urban-link i {
+            transform: none !important;
+        }
+
+        /* Hover trên mobile thường bị dính màu, nên để đơn giản */
+        .zzz-manage-wrapper .zzz-urban-link:hover {
+            transform: none !important;
+        }
+}
+
+/* Fix lỗi tràn ngang do khối nghiêng gây ra */
+html, body {
+    overflow-x: hidden;
+    position: relative;
+}

@@ -17,6 +17,7 @@ using WebSuDungDIen.Models;
 
 namespace WebSuDungDIen.Areas.Identity.Pages.Account
 {
+    [AllowAnonymous]
     public class ForgotPasswordModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;

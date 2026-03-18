@@ -23,6 +23,7 @@ using WebSuDungDIen.Models;
 
 namespace WebSuDungDIen.Areas.Identity.Pages.Account
 {
+    [AllowAnonymous]
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
