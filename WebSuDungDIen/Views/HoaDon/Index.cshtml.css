@@ -1,0 +1,71 @@
+﻿/* =========================================================
+   DATA TOOLBAR COMPONENT
+========================================================= */
+
+/* Khung bọc ngoài */
+.zzz-data-toolbar {
+    background-color: var(--zzz-surface, #ffffff);
+    border: 3px dashed var(--zzz-black, #111111);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* Tem trạng thái đồng bộ (Đã sửa lại màu ngầu hơn) */
+.zzz-sync-badge {
+    background-color: var(--zzz-black, #111111);
+    color: var(--zzz-primary, #D2FF00); /* Đổi sang Vàng Chanh ZZZ */
+    font-family: monospace;
+    font-weight: 900;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 2px solid var(--zzz-black, #111111);
+    transform: skewX(-12deg); /* Ép góc nghiêng chuẩn hệ ZZZ */
+    box-shadow: 3px 3px 0px var(--zzz-primary, #D2FF00); /* Bóng nổi 3D */
+    letter-spacing: 1px;
+}
+
+    /* Dựng thẳng icon lên để không bị méo theo khung */
+    .zzz-sync-badge i {
+        transform: skewX(12deg);
+        font-size: 1.25rem;
+    }
+
+/* Vạch kẻ phân cách */
+.zzz-toolbar-divider {
+    width: 3px;
+    background-color: var(--zzz-black, #111111);
+    align-self: stretch;
+    margin: 0 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .zzz-toolbar-divider {
+        display: none; /* Giấu đi khi xem trên điện thoại */
+    }
+}
+
+/* Ô chọn file Upload */
+.zzz-file-input {
+    max-width: 280px;
+    border: 2px solid var(--zzz-black, #111111);
+    border-radius: 0;
+    font-family: monospace;
+    font-weight: 800;
+    color: var(--zzz-black, #111111);
+    background-color: #fff;
+    box-shadow: inset 3px 3px 0px rgba(0,0,0,0.05); /* Bóng chìm bên trong */
+    transition: all 0.2s;
+}
+
+    .zzz-file-input:focus {
+        border-color: var(--zzz-black, #111111);
+        box-shadow: 4px 4px 0px var(--zzz-primary, #D2FF00);
+        outline: none;
+    }

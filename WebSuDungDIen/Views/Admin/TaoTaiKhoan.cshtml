@@ -1,0 +1,121 @@
+﻿@model TaoTaiKhoanVM
+
+@{
+    ViewData["Title"] = "Cấp Tài Khoản Mới";
+}
+
+<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel border-dark border-3">
+    <h1 class="m-0 zzz-page-title fw-bold text-uppercase">
+        [ HỆ THỐNG ] CẤP TÀI KHOẢN MỚI
+    </h1>
+    <div class="d-flex align-items-center gap-3">
+        <span class="zzz-sys-status text-primary fw-bold">
+            TRẠNG THÁI: <span class="zzz-blink-dot text-warning">●</span> ĐANG KHỞI TẠO
+        </span>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card position-relative border-dark border-3 rounded-0 bg-white shadow-lg">
+
+            <div class="zzz-hazard-strip m-0" style="position: absolute; top: 0; left: 0;"></div>
+
+            <div class="card-body p-4 p-md-5 mt-3">
+                <form asp-action="TaoTaiKhoan" method="post">
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div asp-validation-summary="All" class="alert alert-danger mb-4 zzz-text-mono fw-bold rounded-0 shadow-sm border-dark border-2"></div>
+                    }
+
+                    <div class="zzz-fieldset border-dark border-2">
+                        <div class="zzz-fieldset-title border-dark border-2 text-warning">SYS.01 // THÔNG TIN ĐĂNG NHẬP</div>
+
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-12">
+                                <label class="form-label zzz-cmd-label">USERNAME (TÊN ĐĂNG NHẬP)</label>
+                                <input asp-for="UserName" class="form-control zzz-terminal-input fw-bold text-danger border-dark border-2 fs-5" autocomplete="off" placeholder="Nhập tên tài khoản..." />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label zzz-cmd-label">EMAIL ĐỊNH DANH</label>
+                                <input asp-for="Email" type="email" class="form-control zzz-terminal-input fw-bold border-dark border-2 zzz-text-mono" placeholder="user@domain.com" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label zzz-cmd-label">MẬT KHẨU (PASSWORD)</label>
+                                <input asp-for="Password" type="password" class="form-control zzz-terminal-input fw-bold border-dark border-2" placeholder="••••••••" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="zzz-fieldset border-dark border-2">
+                        <div class="zzz-fieldset-title border-dark border-2 text-warning">SYS.02 // PHÂN QUYỀN HỆ THỐNG</div>
+
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-12">
+                                <label class="form-label zzz-cmd-label text-danger">LOẠI TÀI KHOẢN TRUY CẬP</label>
+                                <select asp-for="LoaiTaiKhoan" id="loaiSelect" class="form-select zzz-terminal-input fw-bold border-dark border-3 text-uppercase bg-dark text-warning fs-5" style="box-shadow: 4px 4px 0px var(--zzz-black);">
+                                    <option value="">-- CHỈ ĐỊNH QUYỀN TRUY CẬP --</option>
+                                    <option value="NhanVien">ĐẶC VỤ (NHÂN VIÊN)</option>
+                                    <option value="KhachHang">ĐỐI TƯỢNG (KHÁCH HÀNG)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="nhanVienFields" class="zzz-fieldset zzz-fieldset-highlight border-dark border-2" style="display:none;">
+                        <div class="zzz-fieldset-title zzz-fieldset-title-highlight border-dark border-2">INF.03 // HỒ SƠ ĐẶC VỤ</div>
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-12">
+                                <label class="form-label zzz-cmd-label">TÊN NHÂN SỰ</label>
+                                <input asp-for="TenNV" class="form-control zzz-terminal-input fw-bold text-uppercase border-dark border-2 fs-5" placeholder="Nhập tên nhân viên..." />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="khachHangFields" class="zzz-fieldset border-danger border-2 bg-light" style="display:none;">
+                        <div class="zzz-fieldset-title bg-danger text-white border-danger border-2">INF.03 // HỒ SƠ ĐỐI TƯỢNG</div>
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-12">
+                                <label class="form-label zzz-cmd-label text-danger">TÊN KHÁCH HÀNG / ĐẠI DIỆN</label>
+                                <input asp-for="TenKh" class="form-control zzz-terminal-input fw-bold text-uppercase border-danger border-2 fs-5 text-danger" placeholder="Nhập tên khách hàng..." />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column flex-md-row gap-3 mt-5">
+                        <button type="submit" class="btn btn-primary fw-bold fs-5 py-3 border-dark border-3 rounded-0 flex-grow-1 shadow-sm" style="transition: all 0.1s;">
+                            <i class="fas fa-user-plus me-2"></i> KHỞI TẠO TÀI KHOẢN
+                        </button>
+
+                        <a asp-controller="Admin" asp-action="QuanLyTaiKhoan" class="btn zzz-btn-cancel fw-bold fs-5 px-md-5 py-3 border-dark border-3 rounded-0 d-flex align-items-center justify-content-center" style="transition: all 0.1s;">
+                            <i class="fas fa-undo me-2"></i> RÚT LUI
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Bắt sự kiện thay đổi phân quyền để show/hide các Form tương ứng
+        document.getElementById("loaiSelect").addEventListener("change", function () {
+            var loai = this.value;
+
+            // Dùng fadeIn/fadeOut của CSS hoặc đơn giản là đổi display để hiện khối zzz-fieldset
+            document.getElementById("nhanVienFields").style.display = (loai === "NhanVien") ? "block" : "none";
+            document.getElementById("khachHangFields").style.display = (loai === "KhachHang") ? "block" : "none";
+        });
+
+        // Chạy một lần khi load trang phòng trường hợp F5 vẫn lưu trạng thái Dropdown
+        document.getElementById("loaiSelect").dispatchEvent(new Event('change'));
+    </script>
+}

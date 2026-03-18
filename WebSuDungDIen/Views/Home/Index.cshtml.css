@@ -1,0 +1,287 @@
+﻿/* wwwroot/css/home-enterprise.css */
+
+/* --- HERO SECTION --- */
+.erp-hero-section {
+    background-color: var(--zzz-black);
+    color: white;
+    padding: 6rem 0 8rem 0; /* Padding trên dưới rộng tạo không gian */
+    background-image: radial-gradient(circle at 100% 0%, rgba(210, 255, 0, 0.1) 0%, transparent 40%), linear-gradient(to bottom, #111 0%, #1a1a1a 100%);
+    position: relative;
+}
+
+.erp-hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.erp-badge {
+    display: inline-block;
+    background-color: rgba(255,255,255,0.1);
+    color: var(--zzz-primary);
+    padding: 5px 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    border-left: 3px solid var(--zzz-primary);
+}
+
+.erp-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    border-left: none;
+    padding-left: 0;
+    /* [ BỔ SUNG 2 DÒNG NÀY ] - Ép chữ màu trắng và thêm chút bóng mờ để nổi bật hẳn lên */
+    color: #ffffff !important;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.erp-subtitle {
+    font-size: 1.1rem;
+    color: #aaa;
+    max-width: 90%;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+}
+
+/* Khối Alert trong Hero */
+.erp-alert {
+    background-color: var(--zzz-primary);
+    color: var(--zzz-black);
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-weight: 600;
+    display: inline-block;
+    box-shadow: 0 4px 15px rgba(210, 255, 0, 0.2);
+}
+
+/* Nút bấm doanh nghiệp (Gọn gàng, tinh tế) */
+.btn-erp-primary {
+    background-color: var(--zzz-primary);
+    color: var(--zzz-black);
+    font-weight: 700;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+    .btn-erp-primary:hover {
+        background-color: #fff;
+        color: var(--zzz-black);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+.btn-erp-outline {
+    background-color: transparent;
+    color: #fff;
+    font-weight: 700;
+    padding: 12px 30px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 4px;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+    .btn-erp-outline:hover {
+        background-color: rgba(255,255,255,0.1);
+        color: #fff;
+        border-color: #fff;
+    }
+
+/* Visual Box bên phải Hero */
+.erp-hero-visual {
+    position: relative;
+    height: 100%;
+    min-height: 300px;
+}
+
+.visual-card {
+    position: absolute;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: left;
+    width: 200px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+    color: #fff; /* Ép chữ thường thành màu trắng */
+}
+
+    /* [ BỔ SUNG ĐOẠN NÀY ] Ép thẻ H6 bên trong thẻ visual thành màu trắng */
+    .visual-card h6 {
+        color: #ffffff !important;
+        letter-spacing: 0.5px;
+    }
+
+    /* Kéo sáng cái chữ "Mã hóa đa tầng" (text-muted gốc hơi tối) */
+    .visual-card .text-muted {
+        color: #cccccc !important;
+    }
+
+    .visual-card:first-child {
+        top: 10%;
+        right: 10%;
+        z-index: 2;
+    }
+
+.visual-card-2 {
+    bottom: 10%;
+    left: 20%;
+    z-index: 1;
+    opacity: 0.8;
+}
+
+/* --- THỐNG KÊ (Kéo nổi lên trên Hero) --- */
+.erp-stats-container {
+    margin-top: -50px; /* Kéo trồi lên đè vào Hero Banner */
+    position: relative;
+    z-index: 10;
+}
+
+.erp-stats-wrapper {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    border: 1px solid #eaeaea;
+}
+
+.erp-stat-box {
+    padding: 2rem 1rem;
+    text-align: center;
+    border-right: 1px solid #eaeaea;
+}
+
+    .erp-stat-box h4 {
+        font-size: 2rem;
+        color: var(--zzz-black);
+        margin-bottom: 5px;
+        border: none;
+        padding: 0;
+    }
+
+    .erp-stat-box p {
+        color: #777;
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+/* --- PHẦN MAIN CONTENT --- */
+.erp-main-content {
+    padding: 4rem 0;
+}
+
+.erp-section-title {
+    font-size: 1.4rem;
+    color: #333;
+    border-left: 4px solid var(--zzz-primary);
+    padding-left: 15px;
+    margin-bottom: 1rem;
+}
+
+/* Card Module Nghiệp vụ (Thiết kế ngang, giống List Item cao cấp) */
+.erp-module-card {
+    display: flex;
+    align-items: flex-start;
+    padding: 1.5rem;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    height: 100%;
+}
+
+    .erp-module-card:hover {
+        border-color: #bbb;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+        transform: translateY(-3px);
+    }
+
+.highlight-card {
+    border-left: 3px solid var(--zzz-primary);
+}
+
+.module-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    background-color: rgba(210, 255, 0, 0.2);
+    color: #88a300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 1.2rem;
+    flex-shrink: 0;
+}
+
+.module-info h5 {
+    color: var(--zzz-black);
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    border: none;
+    padding: 0;
+    text-transform: none;
+}
+
+.module-info p {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Cột phải: Panel Thông tin */
+.erp-side-panel {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 1.5rem;
+}
+
+.panel-heading {
+    font-weight: 700;
+    color: var(--zzz-black);
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.server-status-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .server-status-list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px dashed #ddd;
+        font-size: 0.9rem;
+        color: #444;
+        font-weight: 500;
+    }
+
+        .server-status-list li:last-child {
+            border-bottom: none;
+        }
+
+.support-panel {
+    background-color: #fff;
+    border-left: 4px solid var(--zzz-black);
+}
+
+.contact-box {
+    background: #f1f1f1;
+    padding: 15px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: #333;
+}

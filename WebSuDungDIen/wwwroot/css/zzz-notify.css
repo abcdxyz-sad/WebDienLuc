@@ -1,0 +1,100 @@
+﻿/* --- CẤU HÌNH PHONG CÁCH ZZZ x MANGA x PIXEL --- */
+:root {
+    --zzz-primary: #ccff00; /* Màu xanh nõn chuối đặc trưng ZZZ */
+    --zzz-secondary: #000000; /* Đen tuyền */
+    --zzz-accent: #ff0055; /* Hồng neon điểm nhấn */
+    --zzz-glitch: #00f0ff; /* Xanh Cyan lỗi kỹ thuật */
+}
+
+#thongBao.zzz-notification {
+    /* Vị trí và Layout */
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+    /* Phong cách Zenless Zone Zero: Hình khối cắt vát */
+    background-color: var(--zzz-secondary);
+    border: 2px solid var(--zzz-primary);
+    transform: skewX(-10deg); /* Nghiêng kiểu tốc độ Manga */
+    /* Phong cách Cartoon/Pixel: Bóng đổ cứng, không mờ */
+    box-shadow: 6px 6px 0px var(--zzz-accent);
+    /* Hiệu ứng nền chấm bi (Halftone) kiểu Manga */
+    background-image: radial-gradient(var(--zzz-primary) 15%, transparent 16%), radial-gradient(var(--zzz-primary) 15%, transparent 16%);
+    background-size: 10px 10px;
+    background-position: 0 0, 5px 5px;
+    /* Animation xuất hiện */
+    animation: slideInGlitch 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    opacity: 1; /* Mặc định hiện */
+}
+
+/* Phần nội dung bên trong */
+.zzz-content {
+    /* Đảo ngược độ nghiêng để chữ thẳng lại */
+    transform: skewX(10deg);
+    padding: 15px 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(0, 0, 0, 0.9); /* Nền đen mờ che bớt chấm bi cho dễ đọc */
+    font-family: 'Courier New', Courier, monospace; /* Font kiểu máy tính cũ (Pixel vibe) */
+    color: var(--zzz-primary);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Icon Pixel */
+.zzz-icon {
+    font-size: 24px;
+    filter: drop-shadow(2px 2px 0px var(--zzz-glitch));
+}
+
+/* Trang trí thêm đường kẻ kỹ thuật */
+.zzz-decor-line {
+    position: absolute;
+    bottom: -5px;
+    left: -5px;
+    width: 20px;
+    height: 20px;
+    background: var(--zzz-glitch);
+    clip-path: polygon(0 0, 100% 0, 0 100%); /* Hình tam giác */
+}
+
+/* --- ANIMATION --- */
+@keyframes slideInGlitch {
+    0% {
+        transform: translateX(100%) skewX(-10deg);
+        opacity: 0;
+    }
+
+    60% {
+        transform: translateX(-10%) skewX(-20deg); /* Giật quá đà */
+    }
+
+    80% {
+        transform: translateX(5%) skewX(-5deg);
+    }
+
+    100% {
+        transform: translateX(0) skewX(-10deg);
+        opacity: 1;
+    }
+}
+
+/* Responsive: Trên mobile thì bớt nghiêng cho đỡ tốn chỗ */
+@media (max-width: 576px) {
+    #thongBao.zzz-notification {
+        top: auto;
+        bottom: 20px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        transform: skewX(0);
+        box-shadow: 4px 4px 0px var(--zzz-accent);
+    }
+
+    .zzz-content {
+        transform: skewX(0);
+    }
+}

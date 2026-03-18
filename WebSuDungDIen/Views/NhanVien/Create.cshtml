@@ -1,0 +1,125 @@
+﻿@model WebSuDungDIen.Models.NhanVien
+
+@{
+    ViewData["Title"] = "Thêm nhân viên";
+}
+
+<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel">
+    <h1 class="m-0 zzz-page-title">
+        [ TỆP HỒ SƠ ] THÊM VÀO NHÂN SỰ 
+    </h1>
+    <div class="d-flex align-items-center gap-3">
+        <span class="zzz-sys-status">
+            HỆ THỐNG: <span class="zzz-blink-dot zzz-text-yellow">●</span> ĐANG CHỜ NHẬP LIỆU
+        </span>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card position-relative zzz-card-thick">
+            <div class="zzz-hazard-line"></div>
+
+            <div class="card-body p-4 p-md-5">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+
+                    <div class="zzz-fieldset">
+                        <div class="zzz-fieldset-title">SYS.01 // ĐỊNH DANH TÀI KHOẢN</div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label zzz-cmd-label">
+                                    <span>CHỌN UID (USER)</span>
+                                    <span class="zzz-text-req zzz-text-danger-req">* REQ</span>
+                                </label>
+                                <select asp-for="IdentityUserId" id="userSelect" class="form-select zzz-terminal-input" asp-items="ViewBag.IdentityUserId">
+                                    <option value="">-- TÀI KHOẢN --</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label zzz-cmd-label">TÊN NHÂN VIÊN</label>
+                                <input asp-for="TenNV" id="tenNVInput" class="form-control zzz-terminal-input zzz-locked-input" readonly placeholder="Hệ thống tự động đồng bộ..." />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="zzz-fieldset">
+                        <div class="zzz-fieldset-title">SYS.02 // HỒ SƠ CHI TIẾT</div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label asp-for="DiaChi" class="form-label zzz-cmd-label">ĐỊA CHỈ</label>
+                                <input asp-for="DiaChi" class="form-control zzz-terminal-input" placeholder="Nhập tọa độ khu vực..." />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DienThoai" class="form-label zzz-cmd-label">SĐT</label>
+                                <input asp-for="DienThoai" class="form-control zzz-terminal-input" placeholder="Ví dụ: 0987..." />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label zzz-cmd-label">
+                                    <span>PHÂN QUYỀN (CHỨC VỤ)</span>
+                                </label>
+                                <select asp-for="ChucVu" class="form-select zzz-terminal-input" asp-items="ViewBag.ChucVuList">
+                                    <option value="">-- CHỈ ĐỊNH QUYỀN --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="zzz-fieldset zzz-fieldset-highlight">
+                        <div class="zzz-fieldset-title zzz-fieldset-title-highlight">SYS.03 // PHÊ DUYỆT</div>
+
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <label class="zzz-switch">
+                                    <input asp-for="TrangThai" type="checkbox" />
+                                    <span class="zzz-slider zzz-slider-clickable"></span>
+                                </label>
+                                <div>
+                                    <div class="zzz-switch-title">KÍCH HOẠT HỒ SƠ</div>
+                                    <div class="zzz-switch-desc">Bật công tắc để cấp phép hoạt động ngay lập tức.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary zzz-btn-large flex-grow-1">
+                            <i>⚡</i> LƯU VÀO CƠ SỞ DỮ LIỆU
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary zzz-btn-large">
+                            <i>◄</i> HỦY BỎ
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.getElementById("userSelect").addEventListener("change", function () {
+            var userId = this.value;
+
+            if (!userId) {
+                document.getElementById("tenNVInput").value = "";
+                return;
+            }
+
+            fetch('/NhanVien/GetHoTen?userId=' + userId)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("tenNVInput").value = data;
+                });
+        });
+    </script>
+}

@@ -1,0 +1,98 @@
+﻿@model WebSuDungDIen.Models.KhachHang
+
+@{
+    ViewData["Title"] = "Trích Xuất Hồ Sơ Khách Hàng";
+}
+
+<div class="container-fluid p-0 zzz-container-dossier">
+
+    <div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel border-dark border-3">
+        <h1 class="m-0 zzz-page-title fw-bold text-uppercase">
+            <i class="fas fa-fingerprint text-danger me-2"></i> TRÍCH XUẤT HỒ SƠ
+        </h1>
+        <div class="d-flex align-items-center gap-3">
+            <span class="zzz-sys-status text-primary fw-bold">
+                MÃ KHÁCH: <span class="zzz-text-mono text-muted">@Model.MaKh</span>
+            </span>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4 align-items-stretch">
+
+        <div class="col-lg-4 col-md-5">
+            <div class="card border-dark border-3 rounded-0 zzz-id-card shadow-lg h-100 position-relative overflow-hidden">
+
+                <div class="zzz-hazard-strip"></div>
+
+                <div class="card-body p-4 d-flex flex-column align-items-center text-center mt-3">
+
+                    <i class="fas fa-user-circle mb-3 zzz-avatar-icon"></i>
+
+                    <h2 class="fw-bolder zzz-text-mono text-dark mb-0 border-bottom border-dark border-3 pb-2 w-100" style="font-size: 2.1rem;">
+                        #@Model.MaKh
+                    </h2>
+                    <div class="small fw-bold zzz-text-mono mb-4 mt-2" style="color: rgba(0,0,0,0.6);">MÃ ĐỊNH DANH HỆ THỐNG</div>
+
+                    <span class="badge zzz-badge-verified fs-5 px-4 py-3 w-100 zzz-text-mono rounded-0 border-3">
+                        <i class="fas fa-check-circle me-1"></i> ĐÃ XÁC THỰC
+                    </span>
+
+                    <div class="mt-auto w-100 pt-3 border-top border-dark border-3 text-start zzz-text-mono small mt-4 fw-bold text-dark">
+                        <div style="color: rgba(0,0,0,0.6);">SYS.LOG // DẤU VẾT:</div>
+                        <div><i class="fas fa-angle-right me-1"></i> ACCESS GRANTED</div>
+                        <div class="text-break"><i class="fas fa-angle-right me-1"></i> REF: @Guid.NewGuid().ToString().Substring(0, 13).ToUpper()</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8 col-md-7">
+            <div class="card border-dark border-3 rounded-0 bg-white shadow-lg h-100 d-flex flex-column">
+
+                <div class="card-header bg-white border-bottom border-dark border-3 p-3 d-flex justify-content-between align-items-center">
+                    <h4 class="m-0 zzz-text-mono fw-bold text-dark"><i class="fas fa-folder-open me-2 text-warning"></i>DỮ LIỆU ĐỐI TƯỢNG</h4>
+                    <i class="fas fa-barcode fs-2 text-dark opacity-25"></i>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <label class="zzz-text-mono text-muted fw-bold small">TÊN KHÁCH HÀNG / ĐẠI DIỆN</label>
+                            <div class="fs-3 fw-bold text-danger border-bottom border-dark border-2 pb-1 text-uppercase">@Model.TenKh</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="zzz-text-mono text-muted fw-bold small">TÍN HIỆU LIÊN LẠC (SĐT)</label>
+                            <div class="fs-4 fw-bold zzz-badge-id">@Model.DienThoai</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="zzz-text-mono text-muted fw-bold small">TÀI KHOẢN LIÊN KẾT (EMAIL)</label>
+                            <div class="fs-6 fw-bold zzz-text-mono text-muted text-break mt-1">
+                                @(Model.User?.Email ?? "[ CHƯA CẤP EMAIL ]")
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="zzz-text-mono text-muted fw-bold small">ĐỊA CHỈ CỨ ĐIỂM</label>
+                            <div class="fs-5 fw-bold bg-light p-3 border border-dark border-2 mt-1">
+                                <i class="fas fa-map-marker-alt text-danger me-2"></i>@Model.DiaChiDayDu
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-column flex-md-row gap-3 mt-2 zzz-btn-group-action">
+        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary fw-bold fs-5 py-3 px-4 border-dark border-3 rounded-0 flex-grow-1 d-flex justify-content-center align-items-center">
+            <i class="fas fa-pen me-2"></i> CẬP NHẬT DỮ LIỆU
+        </a>
+        <a asp-action="Index" class="btn zzz-btn-cancel fw-bold fs-5 py-3 px-4 border-dark border-3 rounded-0 flex-grow-1 text-center d-flex justify-content-center align-items-center">
+            <i class="fas fa-undo me-2"></i> QUAY LẠI DANH SÁCH
+        </a>
+    </div>
+
+</div>

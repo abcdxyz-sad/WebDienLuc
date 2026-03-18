@@ -1,0 +1,110 @@
+﻿@model WebSuDungDIen.Models.NhanVien
+
+@{
+    ViewData["Title"] = "Cập Nhật Hồ Sơ";
+}
+
+<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel">
+    <h1 class="m-0 zzz-page-title">
+        [ TỆP HỒ SƠ ] CẬP NHẬT DỮ LIỆU
+    </h1>
+    <div class="d-flex align-items-center gap-3">
+        <span class="zzz-sys-status">
+            HỆ THỐNG: <span class="zzz-blink-dot zzz-text-yellow">●</span> ĐANG CHỈNH SỬA
+        </span>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card position-relative zzz-card-thick">
+            <div class="zzz-hazard-line"></div>
+
+            <div class="card-body p-4 p-md-5">
+                <form asp-action="Edit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="zzz-fieldset">
+                        <div class="zzz-fieldset-title">SYS.01 // INF0 TÀI KHOẢN</div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="MaNV" class="form-label zzz-cmd-label">MÃ NHÂN VIÊN</label>
+                                <input asp-for="MaNV" class="form-control zzz-terminal-input zzz-locked-input" readonly />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="TenNV" class="form-label zzz-cmd-label">
+                                    <span>TÊN NHÂN VIÊN</span>
+                                    <span class="zzz-text-req zzz-text-danger-req">* REQ</span>
+                                </label>
+                                <input asp-for="TenNV" class="form-control zzz-terminal-input" />
+                                <span asp-validation-for="TenNV" class="text-danger zzz-text-danger-req d-block mt-1"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="zzz-fieldset">
+                        <div class="zzz-fieldset-title">SYS.02 // HỒ SƠ CHI TIẾT</div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label asp-for="DiaChi" class="form-label zzz-cmd-label">TỌA ĐỘ / ĐỊA CHỈ</label>
+                                <input asp-for="DiaChi" class="form-control zzz-terminal-input" />
+                                <span asp-validation-for="DiaChi" class="text-danger zzz-text-danger-req d-block mt-1"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DienThoai" class="form-label zzz-cmd-label">KÊNH LIÊN LẠC (SĐT)</label>
+                                <input asp-for="DienThoai" class="form-control zzz-terminal-input" />
+                                <span asp-validation-for="DienThoai" class="text-danger zzz-text-danger-req d-block mt-1"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ChucVu" class="form-label zzz-cmd-label">PHÂN QUYỀN (CHỨC VỤ)</label>
+                                <select asp-for="ChucVu" class="form-select zzz-terminal-input" asp-items="ViewBag.ChucVuList">
+                                    <option value="">-- CHỈ ĐỊNH QUYỀN --</option>
+                                </select>
+                                <span asp-validation-for="ChucVu" class="text-danger zzz-text-danger-req d-block mt-1"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="zzz-fieldset zzz-fieldset-highlight">
+                        <div class="zzz-fieldset-title zzz-fieldset-title-highlight">SYS.03 // PHÊ DUYỆT</div>
+
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <label class="zzz-switch">
+                                    <input asp-for="TrangThai" type="checkbox" />
+                                    <span class="zzz-slider zzz-slider-clickable"></span>
+                                </label>
+                                <div>
+                                    <div class="zzz-switch-title">KÍCH HOẠT HỒ SƠ</div>
+                                    <div class="zzz-switch-desc">Bật công tắc để cấp phép hoạt động ngay lập tức.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary zzz-btn-large flex-grow-1">
+                            <i>⚡</i> LƯU CẬP NHẬT
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary zzz-btn-large">
+                            <i>◄</i> HỦY BỎ
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

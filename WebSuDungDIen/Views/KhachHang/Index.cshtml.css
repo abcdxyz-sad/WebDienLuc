@@ -1,0 +1,76 @@
+﻿/* --- TRANG DANH SÁCH NHÂN SỰ --- */
+
+/* Bảng điều khiển */
+.zzz-command-panel {
+    background-color: var(--zzz-surface);
+}
+
+.zzz-page-title {
+    font-size: 1.8rem;
+}
+
+/* Cấu trúc Bảng */
+.zzz-data-table {
+    min-width: 900px;
+}
+
+.zzz-col-10 {
+    width: 10%;
+}
+
+.zzz-col-12 {
+    width: 12%;
+}
+
+.zzz-col-20 {
+    width: 20%;
+}
+
+/* Định dạng Text & Dữ liệu */
+.zzz-badge-id {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+}
+
+.zzz-text-name {
+    font-weight: 800;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+}
+
+.zzz-text-mono {
+    font-family: 'Courier New', monospace;
+}
+
+/* Nút thao tác nhỏ */
+.zzz-btn-action {
+    padding: 4px 12px;
+    font-size: 0.8rem;
+}
+
+/* --- TRẠNG THÁI HIỂN THỊ (INDEX) --- */
+.zzz-status-badge {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    padding: 6px 10px;
+    display: inline-block;
+    min-width: 90px; /* Ép độ rộng để cột luôn thẳng hàng */
+}
+
+/* Tăng độ đậm của bóng đổ cho trạng thái Offline */
+.zzz-status-offline {
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.5) !important;
+}
+
+/* Chấm tròn và dấu X bên trong Badge */
+.zzz-status-dot {
+    color: var(--zzz-black);
+    margin-right: 4px;
+}
+
+.zzz-status-x {
+    font-style: normal;
+    margin-right: 4px;
+    font-weight: 900;
+}
+

@@ -1,0 +1,131 @@
+﻿/* --- TRÍCH XUẤT TỪ INLINE STYLES (HỒ SƠ ĐẶC VỤ) --- */
+
+/* Xử lý hiển thị tên đặc vụ tránh tràn khung */
+.zzz-agent-name {
+    font-size: 1.8rem;
+    word-break: break-word;
+}
+
+/* Đổ bóng cho trạng thái Offline (tối màu, cảm giác tắt nguồn) */
+.zzz-badge-offline {
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.5);
+}
+
+/* --- ZZZ DOSSIER EXTENSIONS (Mở rộng cho Hồ sơ dọc) --- */
+
+/* Bố cục vùng chứa */
+.zzz-container-dossier {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.zzz-command-panel-light {
+    background-color: var(--zzz-surface, #ffffff);
+    box-shadow: 6px 6px 0px var(--zzz-black);
+}
+
+/* Nút Badge Trạng thái trong Header */
+.zzz-badge-status-light {
+    background-color: transparent;
+    box-shadow: inset 0 0 10px rgba(25, 135, 84, 0.3);
+}
+
+/* Card chính chứa Dossier */
+.zzz-dossier-card {
+    box-shadow: 8px 8px 0px var(--zzz-black);
+}
+
+/* Nâng cấp Header của Card (Dải băng hầm hố) */
+.zzz-dossier-header {
+    background: repeating-linear-gradient( 45deg, var(--zzz-black), var(--zzz-black) 10px, #333 10px, #333 20px );
+    color: var(--zzz-primary);
+    padding: 1rem 1.5rem;
+    border-bottom: 4px solid var(--zzz-black);
+}
+
+.zzz-dossier-header-title {
+    font-family: 'Orbitron', 'Courier New', monospace;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin: 0;
+    text-shadow: 2px 2px 0px #000;
+}
+
+/* --- PHẦN STYLE MỚI TRÍCH XUẤT TỪ HTML --- */
+
+/* Dải màu viền trên cùng của thẻ hồ sơ */
+.zzz-hazard-strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 12px;
+    width: 100%;
+    /* Mẹo: Có thể đổi background thành repeating-linear-gradient màu vàng đen ở đây nếu muốn */
+}
+
+/* Icon Avatar siêu to khổng lồ */
+.zzz-avatar-icon {
+    font-size: 6rem;
+    color: var(--zzz-primary);
+    text-shadow: 0 0 15px rgba(210, 255, 0, 0.3);
+}
+
+/* Huy hiệu xác thực đổ bóng */
+.zzz-badge-verified {
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.5);
+}
+
+/* Ô chứa địa chỉ rộng rãi */
+.zzz-address-box {
+    background-color: var(--zzz-surface, #f8f9fa);
+    width: 100%;
+    margin-top: 10px;
+    padding: 15px;
+    border: 2px solid var(--zzz-black);
+}
+
+/* Cụm nút bấm bạo lực (áp dụng cho các thẻ <a> hoặc <button> bên trong) */
+.zzz-btn-group-action .btn {
+    box-shadow: 4px 4px 0px var(--zzz-black);
+    transition: all 0.1s ease-in-out;
+}
+
+    .zzz-btn-group-action .btn:active {
+        box-shadow: 0px 0px 0px var(--zzz-black);
+        transform: translate(4px, 4px);
+    }
+
+/* --- ZZZ ID CARD (Cột trái bạo lực) --- */
+.zzz-id-card {
+    /* Dùng màu vàng neon hoặc màu primary của hệ thống, fallback là vàng cảnh báo */
+    background-color: var(--zzz-primary, #ffdd00);
+    color: var(--zzz-black, #111);
+}
+
+    /* Biến cái Avatar thành cục nam châm hút mắt */
+    .zzz-id-card .zzz-avatar-icon {
+        color: var(--zzz-black);
+        text-shadow: 6px 6px 0px rgba(0,0,0,0.15); /* Đổ bóng cứng */
+        font-size: 6.5rem;
+    }
+
+    /* Đảo ngược màu của Huy hiệu Xác thực */
+    .zzz-id-card .zzz-badge-verified {
+        background-color: var(--zzz-black) !important;
+        color: var(--zzz-primary, #ffdd00) !important;
+        border-color: var(--zzz-black) !important;
+        box-shadow: 4px 4px 0px rgba(0,0,0,0.4) !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+/* Cập nhật dải băng keo cảnh báo cho gắt hơn */
+.zzz-hazard-strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 16px;
+    width: 100%;
+    background: repeating-linear-gradient( 45deg, var(--zzz-black), var(--zzz-black) 15px, #ffc107 15px, #ffc107 30px );
+    border-bottom: 3px solid var(--zzz-black);
+}

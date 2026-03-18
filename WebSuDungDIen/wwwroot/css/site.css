@@ -1,0 +1,609 @@
+﻿/* =========================================================
+   ZENLESS ZONE ZERO STYLE (CORE LAYOUT - wwwroot/css/site.css)
+========================================================= */
+
+:root {
+    /* MÀU NỀN */
+    --zzz-bg: #f4f4f6; /* Xám xi măng nhạt */
+    --zzz-surface: #ffffff; /* Trắng tinh */
+    /* MÀU SẮC */
+    --zzz-primary: #D2FF00; /* Vàng chanh đặc trưng */
+    --zzz-black: #111111; /* Đen than chì (đỡ gắt hơn đen tuyền) */
+    --zzz-text-gray: #b0b0b0;
+    --zzz-white: #ffffff;
+    --zzz-gray: #2a2a2a;
+    --zzz-accent: #FF3366; /* Hồng đậm */
+    --zzz-blue: #00E5FF; /* Xanh Cyan */
+    /* CẤU TRÚC & HIỆU ỨNG */
+    --zzz-border-color: rgba(255, 255, 255, 0.15);
+    --zzz-tech-border: 1px solid rgba(255,255,255,0.1);
+    --zzz-border: 2px solid #000000;
+    --zzz-shadow: 4px 4px 0px #000000;
+}
+
+/* =========================================================
+   1. GLOBAL LAYOUT & TYPOGRAPHY
+========================================================= */
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: var(--zzz-bg);
+    /* Vân lưới công nghệ */
+    background-image: radial-gradient(#d1d1d1 1px, transparent 1px);
+    background-size: 20px 20px;
+    color: var(--zzz-black);
+    line-height: 1.6;
+    /* STICKY FOOTER SETUP */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+    /* Phần nội dung chính tự giãn nở để đẩy Footer xuống */
+    body > .container,
+    main[role="main"] {
+        flex: 1;
+        width: 100%;
+        padding-bottom: 3rem;
+    }
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--zzz-black);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: 2.2rem;
+    padding-left: 15px;
+    border-left: 8px solid var(--zzz-primary);
+}
+
+a {
+    color: #0066cc;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    /* FIX LỖI GIẬT: Thêm padding ngay từ đầu */
+    padding: 2px 4px;
+    transition: all 0.2s;
+}
+
+    a:hover {
+        color: #fff;
+        background-color: var(--zzz-black); /* Style highlight đen */
+        text-decoration: none;
+    }
+
+/* --- SCROLLBAR NGUYÊN KHỐI (ÉP BUỘC) --- */
+::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+    background-color: transparent !important;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--zzz-primary) !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.15) 10px, rgba(0,0,0,0.15) 20px) !important;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: var(--zzz-accent) !important;
+    }
+
+/* =========================================================
+   2. NAVBAR COMPACT (GỌN NHƯNG BÁO THỦ)
+========================================================= */
+
+.navbar {
+    background-color: var(--zzz-black) !important;
+    /* Giữ nguyên họa tiết chấm bi nhỏ của sếp */
+    background-image: radial-gradient(var(--zzz-gray) 1px, transparent 1px);
+    background-size: 8px 8px;
+    /* Đổi viền đáy thành đen dày dặn */
+    border-bottom: 4px solid var(--zzz-black) !important;
+    padding: 0.4rem 1rem !important;
+    margin-bottom: 2rem !important; /* Tăng margin để chừa chỗ cho dải băng keo */
+    position: relative; /* Dùng để neo dải băng keo */
+    z-index: 100;
+}
+
+    /* THUẬT TOÁN TỰ DÁN BĂNG KEO CẢNH BÁO MÀ KHÔNG CẦN SỬA HTML */
+    .navbar::after {
+        content: '';
+        position: absolute;
+        bottom: -14px; /* Thò ra ngoài đít Navbar */
+        left: 0;
+        width: 100%;
+        height: 10px;
+        background: repeating-linear-gradient(45deg, var(--zzz-primary), var(--zzz-primary) 15px, var(--zzz-black) 15px, var(--zzz-black) 30px);
+        border-bottom: 2px solid var(--zzz-black);
+        z-index: -1;
+    }
+
+/* Logo Nhỏ Gọn */
+.navbar-brand {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
+    font-size: 1.25rem !important;
+    letter-spacing: -0.5px;
+    background-color: var(--zzz-white);
+    color: var(--zzz-black) !important;
+    padding: 0.3rem 0.8rem !important;
+    margin-right: 1rem;
+    border: 2px solid var(--zzz-black);
+    box-shadow: 3px 3px 0 var(--zzz-primary);
+    transition: all 0.2s cubic-bezier(0, 0, 0.2, 1);
+}
+
+    .navbar-brand:hover {
+        transform: translate(-2px, -2px); /* Nhảy mượt hơn */
+        background-color: var(--zzz-primary);
+        box-shadow: 5px 5px 0 var(--zzz-white);
+    }
+
+/* Menu "Hỗn Loạn" Hip-Hop */
+.nav-link {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800; /* Nâng độ đậm lên cho rõ chữ */
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: var(--zzz-white) !important;
+    margin: 0 4px;
+    padding: 0.4rem 0.8rem !important;
+    border: 2px solid transparent;
+    position: relative;
+    z-index: 1;
+    /* Bẻ nghiêng toàn bộ nút ngay từ đầu */
+    transform: skewX(-12deg);
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+}
+
+    /* Counter-skew: Bẻ thẳng lại cái Icon để nó không bị méo mó */
+    .nav-link i {
+        transform: skewX(12deg);
+        display: inline-block;
+    }
+
+    /* HOVER BẠO LỰC: Lột nền Trắng, Bóng Đổ Hồng */
+    .nav-link:not(.active):hover {
+        background-color: #ffffff !important;
+        color: var(--zzz-black) !important;
+        border: 2px solid var(--zzz-black);
+        box-shadow: 3px 3px 0 var(--zzz-accent, #FF3366); /* Bóng hồng chói lóa */
+        /* Vừa nghiêng vừa nhảy lên góc trái */
+        transform: skewX(-12deg) translate(-2px, -2px);
+    }
+
+    /* ACTIVE STATE: Vàng Chanh Đập Vào Mắt */
+    .nav-link.active {
+        background-color: var(--zzz-primary) !important;
+        color: var(--zzz-black) !important;
+        border: 2px solid var(--zzz-black);
+        box-shadow: 3px 3px 0 var(--zzz-white); /* Bóng trắng cứng ngắc */
+        font-weight: 900;
+        transform: skewX(-12deg) translate(-2px, -2px); /* Nhảy lên giữ nguyên vị trí */
+    }
+
+        /* Xóa bỏ hai dấu chấm pixel cũ vì nó không hợp với khối nghiêng */
+        .nav-link.active::before,
+        .nav-link.active::after {
+            display: none !important;
+        }
+
+/* Toggler Mobile */
+.navbar-toggler {
+    background-color: var(--zzz-primary);
+    border: 2px solid var(--zzz-black);
+    border-radius: 0;
+    box-shadow: 3px 3px 0 var(--zzz-accent, #FF3366);
+}
+
+    .navbar-toggler:active {
+        transform: translate(2px, 2px);
+        box-shadow: none;
+    }
+
+.navbar-toggler-icon {
+    filter: brightness(0);
+}
+
+.admin-dark-unselected:not(.active) {
+    color: #1a1d20 !important;
+    font-weight: 700 !important;
+}
+/* =========================================================
+   3. GÓC TÀI KHOẢN (USER & AUTH STATE)
+========================================================= */
+
+/* Thẻ tên người dùng (ID Tag) - Nền Vàng Chanh */
+.zzz-user-tag {
+    display: flex;
+    align-items: center;
+    background-color: var(--zzz-primary, #D2FF00);
+    color: var(--zzz-black, #111111);
+    font-family: monospace;
+    font-weight: 900;
+    font-size: 0.95rem;
+    padding: 6px 16px;
+    border: 3px solid var(--zzz-black); /* Đổi viền thành Trắng cho nổi trên nền đen */
+    box-shadow: 3px 3px 0px #FFFFFF; /* Bóng Trắng cho chói lóa */
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+    .zzz-user-tag:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 5px 5px 0px var(--zzz-cyan, #00E5FF); /* Bóng Cyan */
+        color: var(--zzz-primary);
+        border-color: var(--zzz-primary);
+    }
+
+    .zzz-user-tag:active {
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0px var(--zzz-cyan, #00E5FF);
+    }
+
+/* Nút Đăng xuất (Thoát) - Nền Đỏ Cảnh báo */
+.zzz-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #FF3366; /* Đổi mặc định thành Đỏ luôn cho gắt */
+    color: #FFFFFF;
+    font-family: monospace;
+    font-weight: 900;
+    font-size: 0.95rem;
+    padding: 6px 16px;
+    border: 3px solid #FFFFFF; /* Viền trắng */
+    box-shadow: 3px 3px 0px #FFFFFF; /* Bóng Trắng */
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+    .zzz-logout-btn:hover {
+        background-color: #FFFFFF; /* Hover thì chuyển nền Trắng, chữ Đỏ */
+        color: #FF3366;
+        border-color: #FF3366;
+        transform: translate(-2px, -2px);
+        box-shadow: 5px 5px 0px #FF3366; /* Bóng Đỏ đâm ra */
+    }
+
+    .zzz-logout-btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 0px 0px 0px transparent;
+    }
+
+/* --- TRẠNG THÁI KHÁCH (CHƯA ĐĂNG NHẬP) --- */
+
+/* Nút ĐĂNG KÝ - Nền Vàng Chanh */
+.zzz-auth-link {
+    display: inline-block;
+    background-color: var(--zzz-primary, #D2FF00);
+    color: var(--zzz-black, #111111);
+    font-family: monospace;
+    font-weight: 900;
+    font-size: 0.9rem;
+    text-decoration: none;
+    padding: 6px 16px;
+    border: 3px solid var(--zzz-black); /* Viền trắng chọi với nền đen */
+    box-shadow: 3px 3px 0px #FFFFFF;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    text-transform: uppercase;
+}
+
+    .zzz-auth-link:hover {
+        transform: translate(-2px, -2px);
+        color: var(--zzz-primary);
+        border-color: var(--zzz-primary);
+        box-shadow: 5px 5px 0px var(--zzz-cyan, #00E5FF); /* Bóng Cyan dạ quang */
+    }
+
+    .zzz-auth-link:active {
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0px var(--zzz-cyan, #00E5FF);
+    }
+
+/* Nút ĐĂNG NHẬP - Nền Trong suốt viền Vàng Chanh */
+.zzz-auth-btn {
+    display: inline-block;
+    background-color: transparent; /* Để trong suốt lấy màu Đen của Navbar */
+    color: var(--zzz-primary, #D2FF00) !important;
+    font-family: monospace;
+    font-weight: 900;
+    font-size: 0.9rem;
+    padding: 6px 16px;
+    border: 2px solid var(--zzz-primary, #D2FF00); /* Viền Vàng chanh */
+    text-decoration: none;
+    box-shadow: 3px 3px 0px var(--zzz-primary, #D2FF00);
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    text-transform: uppercase;
+}
+
+    .zzz-auth-btn:hover {
+        background-color: var(--zzz-primary, #D2FF00); /* Hover thì lấp đầy màu Vàng */
+        color: var(--zzz-black, #111111) !important;
+        transform: translate(-2px, -2px);
+        box-shadow: 5px 5px 0px #FFFFFF; /* Bóng Trắng bắn ra */
+    }
+
+    .zzz-auth-btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 0px 0px 0px transparent;
+    }
+
+/* =========================================================
+   4. UI COMPONENTS (CARDS, FORMS, TABLES)
+========================================================= */
+
+/* --- CARD --- */
+.card {
+    background-color: var(--zzz-surface);
+    border: var(--zzz-border);
+    border-radius: 4px;
+    box-shadow: var(--zzz-shadow);
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s ease;
+}
+
+    .card:hover {
+        transform: translate(-3px, -3px);
+        box-shadow: 7px 7px 0px #000; /* Tăng bóng khi hover */
+        z-index: 5;
+    }
+
+.card-header {
+    background-color: var(--zzz-primary);
+    border-bottom: var(--zzz-border);
+    font-weight: 800;
+    color: var(--zzz-black);
+    text-transform: uppercase;
+}
+
+.card-footer {
+    background-color: #f8f9fa;
+    border-top: var(--zzz-border);
+    font-weight: 600;
+}
+
+/* --- FORMS --- */
+.form-label {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.form-control, .form-select {
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    padding: 0.7rem;
+    font-weight: 600;
+    color: var(--zzz-black);
+    box-shadow: none;
+    transition: all 0.2s;
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--zzz-black);
+        box-shadow: 4px 4px 0px var(--zzz-primary);
+        background-color: #fff;
+    }
+
+/* --- TABLES --- */
+.table {
+    border: var(--zzz-border);
+    background-color: #fff;
+    color: var(--zzz-black);
+}
+
+    .table thead th {
+        background-color: var(--zzz-black);
+        color: #fff;
+        font-family: 'Orbitron', sans-serif;
+        text-transform: uppercase;
+        border: none;
+        padding: 1rem;
+    }
+
+    .table tbody td {
+        border-bottom: 1px solid #e0e0e0;
+        vertical-align: middle;
+        font-weight: 500;
+        padding: 1rem;
+    }
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 229, 255, 0.1); /* Màu Cyan nhạt khi hover */
+}
+
+/* =========================================================
+   5. FOOTER (ZZZ x MANGA x PIXEL)
+========================================================= */
+
+footer.zzz-footer {
+    flex-shrink: 0;
+    margin-top: auto;
+    background-color: var(--zzz-black);
+    color: var(--zzz-white) !important;
+    padding-bottom: 2rem; /* Chừa chỗ cho nội dung */
+    position: relative;
+    overflow: hidden;
+    /* Viền trên dùng màu xám tech thay vì màu đen (vì nền body có thể trùng màu) */
+    border-top: var(--zzz-tech-border);
+    font-family: 'Courier New', Courier, monospace; /* Font Pixel */
+    letter-spacing: 0.5px;
+}
+
+/* Thanh sọc cảnh báo (Hazard Strip) */
+.zzz-hazard-strip {
+    height: 6px;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    /* Tạo sọc chéo Vàng - Đen */
+    background: repeating-linear-gradient( 45deg, var(--zzz-primary), var(--zzz-primary) 15px, var(--zzz-black) 15px, var(--zzz-black) 30px );
+    border-bottom: 1px solid var(--zzz-white);
+    opacity: 0.8;
+}
+
+/* Cột trái: Brand */
+.zzz-footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.zzz-pixel-icon {
+    font-size: 1.4rem;
+    color: var(--zzz-primary);
+    /* Tạo bóng đổ cứng bằng text-shadow */
+    text-shadow: 2px 2px 0px var(--zzz-blue);
+}
+
+.zzz-tag {
+    background-color: var(--zzz-primary);
+    color: var(--zzz-black);
+    padding: 2px 6px;
+    font-weight: 900;
+    font-style: italic;
+    transform: skewX(-15deg); /* Nghiêng đặc trưng ZZZ */
+    border: 1px solid var(--zzz-white);
+}
+
+/* Cột phải: Actions */
+.zzz-footer-actions {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+/* Trạng thái hệ thống */
+.zzz-status-box {
+    color: var(--zzz-blue);
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 1px solid var(--zzz-gray);
+    padding: 2px 8px;
+    background-color: rgba(0,0,0,0.3);
+}
+
+.zzz-blink-dot {
+    color: var(--zzz-primary);
+    animation: zzz-blink 1s infinite steps(2); /* steps(2) tạo cảm giác giật cục kiểu pixel */
+}
+
+/* Link Button Style */
+footer a.zzz-link-btn {
+    color: var(--zzz-white) !important;
+    text-decoration: none;
+    padding: 5px 10px;
+    border: 1px solid var(--zzz-gray);
+    background-color: transparent;
+    transition: all 0.2s;
+    position: relative;
+    font-weight: bold;
+}
+
+    footer a.zzz-link-btn:hover {
+        background-color: var(--zzz-accent); /* Hover ra màu Hồng */
+        border-color: var(--zzz-white);
+        color: var(--zzz-white) !important;
+        text-decoration: none;
+        /* Hiệu ứng nổi lên + Bóng cứng màu Xanh Cyan */
+        transform: translate(-3px, -3px);
+        box-shadow: 3px 3px 0px var(--zzz-blue);
+    }
+
+/* Nền lưới trang trí (Manga Dot/Grid) */
+.zzz-grid-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Tạo chấm bi mờ mờ từ màu Gray */
+    background-image: radial-gradient(var(--zzz-gray) 1px, transparent 1px);
+    background-size: 10px 10px;
+    opacity: 0.3;
+    pointer-events: none; /* Không che mất link */
+    z-index: 1;
+}
+
+/* Animation */
+@keyframes zzz-blink {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Responsive cho Mobile */
+@media (max-width: 576px) {
+    .zzz-footer-brand, .zzz-footer-actions {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+}
+
+/* =========================================================
+   FIX MENU TRÁI TRANG MANAGE (ZZZ STYLE)
+   ========================================================= */
+
+/* Ép tất cả link menu về trạng thái bướng bỉnh */
+.zzz-manage-wrapper .zzz-urban-link {
+    background-color: transparent !important;
+    color: var(--zzz-black) !important; /* Chữ đen trên nền trắng của Card */
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    border: 3px solid var(--zzz-black) !important;
+    border-radius: 0 !important;
+    transform: skewX(-12deg);
+    transition: all 0.1s ease !important;
+    margin-bottom: 5px !important;
+    text-align: left !important;
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.1) !important;
+}
+
+    /* Khi rà chuột (Hover): Bật bóng hồng */
+    .zzz-manage-wrapper .zzz-urban-link:hover {
+        background-color: var(--zzz-black) !important;
+        color: var(--zzz-primary) !important; /* Chữ vàng chanh */
+        box-shadow: 5px 5px 0px var(--zzz-accent, #FF3366) !important;
+        transform: skewX(-12deg) translate(-2px, -2px) !important;
+    }
+
+    /* KHI ĐANG CHỌN (ACTIVE): Vàng chanh rực rỡ đè bẹp màu trắng */
+    .zzz-manage-wrapper .zzz-urban-link.active {
+        background-color: var(--zzz-primary) !important;
+        color: var(--zzz-black) !important;
+        border: 3px solid var(--zzz-black) !important;
+        box-shadow: 5px 5px 0px var(--zzz-black) !important;
+        transform: skewX(-12deg) translate(-2px, -2px) !important;
+    }
+
+    /* Bẻ thẳng lại icon cho đỡ chóng mặt */
+    .zzz-manage-wrapper .zzz-urban-link i {
+        transform: skewX(12deg);
+        display: inline-block;
+        margin-right: 8px;
+    }

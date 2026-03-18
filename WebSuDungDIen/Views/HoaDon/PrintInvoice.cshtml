@@ -1,0 +1,159 @@
+﻿@model dynamic
+@{
+    // Tắt Layout gốc để trang này trắng bóc, chỉ hiện đúng tờ hóa đơn
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>HÓA ĐƠN TIỀN ĐIỆN - @Model.HoaDon.MaHd</title>
+    <link href="~/css/invoice-print.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div class="print-control">
+        <button class="btn-zzz-print" onclick="window.print()">[ SYS.PRINT ] XUẤT BẢN CỨNG</button>
+    </div>
+
+    <div class="invoice-paper">
+        <div class="watermark">Freddy Fazbear</div>
+
+        <div class="content-layer">
+            <div class="header-top">
+                <div class="logo-box">
+                    <img src="~/images/FreddyFazbear.ico" alt="Company Logo" />
+                </div>
+                <div class="company-info">
+                    <h3>CÔNG TY ĐIỆN LỰC</h3>
+                    <p><span class="label">Địa chỉ (Address):</span> Phường Long Xuyên, An Giang, Việt Nam</p>
+                    <p><span class="label">Điện thoại (Phone Number):</span> 1900 100</p>
+                </div>
+            </div>
+
+            <div class="invoice-title-zone">
+                <div class="serial-info">
+                    Số (No): <b>@Model.HoaDon.MaHd</b>
+                </div>
+                <div class="main-title">HÓA ĐƠN TIÊU THỤ ĐIỆN NĂNG</div>
+                <div class="main-title" style="font-size: 16px;">(UTILITY BILL)</div>
+                <div class="sub-title">Bản thể hiện của hóa đơn điện tử<br />(Electronic invoice display)</div>
+                <div>Ngày (Date) @(Model.HoaDon.NgayLap?.ToString("dd")) tháng (month) @(Model.HoaDon.NgayLap?.ToString("MM")) năm (year) @(Model.HoaDon.NgayLap?.ToString("yyyy"))</div>
+            </div>
+
+            <div class="customer-info">
+                <div><span class="label">Họ tên người mua hàng (Buyer name):</span> @Model.KhachHang?.TenKh - @Model.KhachHang?.MaKh</div>
+                <div><span class="label">Địa chỉ (Address):</span> @Model.KhachHang?.DiaChiDayDu</div>
+                <div><span class="label">Điện thoại (Phone):</span> @Model.KhachHang?.DienThoai</div>
+
+                <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                    <div><span class="label">Hình thức thanh toán (Payment method):</span> TM/CK</div>
+                    <div><span class="label">Đồng tiền thanh toán (Payment currency):</span> VNĐ</div>
+                </div>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr style="background-color: #eef2f5;">
+                        <th style="width: 5%;">STT<br /><i>(No.)</i></th>
+                        <th style="width: 45%;">Tên hàng hóa, dịch vụ<br /><i>(Description)</i></th>
+                        <th style="width: 10%;">ĐVT<br /><i>(Unit)</i></th>
+                        <th style="width: 10%;">Số lượng<br /><i>(Quantity)</i></th>
+                        <th style="width: 15%;">Đơn giá<br /><i>(Unit price)</i></th>
+                        <th style="width: 15%;">Thành tiền<br /><i>(Amount)</i></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                    int soDienTieuThu = Model.HoaDon.SoDienTieuThu ?? 0;
+                    int conLai = soDienTieuThu;
+
+                    // Các mốc điện tiêu chuẩn 6 bậc
+                    int[] mocs = { 50, 50, 100, 100, 100 };
+
+                    // Rút trực tiếp từ Controller sang. Ép kiểu về mảng decimal.
+                    decimal[] donGias = ViewBag.GiaBacThang as decimal[];
+
+                    // Kích hoạt chế độ tàn nhẫn: Báo lỗi đỏ màn hình nếu Controller dám lười biếng không gửi giá sang
+                    if (donGias == null || donGias.Length < 6)
+                    {
+                    throw new Exception("LỖI NGHIÊM TRỌNG: Mạng lưới không tìm thấy mảng 6 bậc Đơn Giá Điện. Ngươi đã quên truyền ViewBag.GiaBacThang từ Controller sang rồi!");
+                    }
+
+                    int stt = 1;
+                    decimal tongTienTinhToan = 0;
+                    }
+                    <tr>
+                        <td colspan="6" class="text-left" style="background-color: #f4f7f6; color: #0a4275;">
+                            <b>Điện năng tiêu thụ</b> - Kỳ hóa đơn: Tháng @(Model.HoaDon.NgayLap?.ToString("MM/yyyy"))
+                            <span style="float: right; font-size: 12px; color: #555;">(Chỉ số cũ: @Model.ChiSoDien?.ChiSoCu - Chỉ số mới: @Model.ChiSoDien?.ChiSoMoi)</span>
+                        </td>
+                    </tr>
+
+                    @for (int i = 0; i < 6; i++)
+                    {
+                    if (conLai <= 0) break; // Hết điện rồi thì ngắt vòng lặp ngay, không hiện các bậc dư thừa
+
+                    // Tính số kWh cho bậc hiện tại
+                    int soDienBac = (i < 5) ? Math.Min(conLai, mocs[i]) : conLai;
+                    decimal tienBac = soDienBac * donGias[i];
+                    tongTienTinhToan += tienBac;
+
+                    // Tạo chuỗi hiển thị khoảng bậc (Ví dụ: Từ 0 - 50, Từ 51 - 100...)
+                    int tuKhoang = (i == 0) ? 0 : mocs.Take(i).Sum() + 1;
+                    string denKhoang = (i == 5) ? "trở lên" : (mocs.Take(i + 1).Sum()).ToString();
+
+                    <tr>
+                        <td>@stt</td>
+                        <td class="text-left">
+                            Điện bậc @(i + 1) <i style="font-size: 11px; color: #777;">(Từ @tuKhoang - @denKhoang kWh)</i>
+                        </td>
+                        <td>kWh</td>
+                        <td>@soDienBac</td>
+                        <td class="text-right">@donGias[i].ToString("#,##0")</td>
+                        <td class="text-right">@tienBac.ToString("#,##0")</td>
+                    </tr>
+
+                    conLai -= soDienBac;
+                    stt++;
+                    }
+
+                    <tr class="summary-row">
+                        <td colspan="5" class="text-right">Cộng tiền hàng (Total amount):</td>
+                        <td class="text-right">@tongTienTinhToan.ToString("#,##0")</td>
+                    </tr>
+                    <tr class="summary-row">
+                        <td colspan="2" class="text-left">Thuế suất GTGT (VAT rate): @Model.HoaDon.PhanTramVAT%</td>
+                        <td colspan="3" class="text-right">Tiền thuế GTGT (VAT amount):</td>
+                        <td class="text-right">@Model.HoaDon.ThueVAT?.ToString("#,##0")</td>
+                    </tr>
+                    <tr class="summary-row" style="font-size: 16px;">
+                        <td colspan="5" class="text-right">Tổng cộng tiền thanh toán (Total payment):</td>
+                        <td class="text-right" style="color: #0a4275;">@Model.HoaDon.TongThanhToan?.ToString("#,##0")</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="amount-words">
+                Số tiền bằng chữ (Amount in words): [ Hệ thống chưa hỗ trợ đọc số thành chữ ]
+            </div>
+
+            <div class="signature-zone">
+                <div class="signature-box" style="color: #2e7d32; font-weight: bold; margin-top: 20px;">
+                    @(Model.HoaDon.TrangThai == "DaThanhToan" ? "✅ ĐÃ THANH TOÁN" : "")
+                </div>
+                <div class="signature-box">
+                    <span style="color: #0a4275; font-weight: bold;">Người bán hàng (Seller)</span>
+                    <div class="seller-stamp">
+                        Được ký bởi: CÔNG TY ĐIỆN LỰC PROXY<br />
+                        Ngày ký: @(Model.HoaDon.NgayLap?.ToString("dd/MM/yyyy HH:mm:ss"))
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

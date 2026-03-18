@@ -1,0 +1,93 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["ActivePage"] = ManageNavPages.Index;
+    // Máy soi nhân phẩm: Có mác Admin/NhanVien thì lùa vào chuồng ZZZ, còn lại mời sang sảnh VIP
+    bool isStaff = User.Identity?.IsAuthenticated == true && (User.IsInRole("Admin") || User.IsInRole("NhanVien"));
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+
+@if (isStaff)
+{
+    @* =========================================================================
+       GIAO DIỆN ĐẶC VỤ (ZZZ STYLE) - LẠNH LÙNG, CAY NGHIỆT, BỌC THÉP CHỐNG ĐẠN
+       ========================================================================= *@
+    <h3 class="zzz-text-mono fw-bold mb-4 text-uppercase" style="color: var(--zzz-primary); text-shadow: 2px 2px 0 #000;">
+        <i class="bi bi-person-bounding-box"></i> HỒ SƠ ĐỊNH DANH [CORE_PROFILE]
+    </h3>
+
+    <div class="alert alert-danger zzz-urban-card rounded-0 border-3 border-dark mb-4" style="box-shadow: 4px 4px 0 var(--zzz-accent, #FF3366);">
+        <i class="bi bi-shield-lock-fill fs-3 me-2" style="transform: skewX(-10deg); display: inline-block;"></i>
+        <strong style="font-family: 'Orbitron', sans-serif;">[ KHÓA BẢO MẬT CẤP CAO ]</strong>
+        Dữ liệu nhân sự đã bị đóng băng. Muốn sửa đổi? Lết xác lên phòng Hành Chính hoặc nã điện thoại cho System Admin!
+    </div>
+
+    <div class="row g-4 zzz-manage-content">
+        <div class="col-md-8">
+            <label class="zzz-label">HỌ VÀ TÊN [ID_NAME]</label>
+            <input asp-for="Input.FullName" class="form-control zzz-input-readonly" readonly />
+        </div>
+        <div class="col-md-4">
+            <label class="zzz-label">MÃ SỐ [CORE_ID]</label>
+            <input asp-for="Input.UserCode" class="form-control zzz-input-readonly" readonly />
+        </div>
+        <div class="col-md-6">
+            <label class="zzz-label">TẦN SỐ LIÊN LẠC [PHONE]</label>
+            <input asp-for="Input.PhoneNumber" class="form-control zzz-input-readonly" readonly />
+        </div>
+        <div class="col-md-6">
+            <label class="zzz-label">PHÂN HẠNG QUYỀN [ROLE]</label>
+            <input asp-for="Input.AccountType" class="form-control zzz-input-readonly" readonly />
+        </div>
+        <div class="col-12">
+            <label class="zzz-label">TỌA ĐỘ HIỆN TẠI [LOCATION]</label>
+            <textarea asp-for="Input.Address" class="form-control zzz-input-readonly" rows="2" readonly></textarea>
+        </div>
+    </div>
+}
+else
+{
+    @* =========================================================================
+       GIAO DIỆN KHÁCH HÀNG (CORPORATE STYLE) - MỀM MẠI, NỊNH NỌT, THƠM MÙI TIỀN
+       ========================================================================= *@
+    <h3 class="fw-bold mb-4 text-primary">Hồ sơ cá nhân</h3>
+
+    <div class="alert alert-warning d-flex align-items-center shadow-sm border-0 border-start border-warning border-4 mb-4 bg-white" role="alert">
+        <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-warning"></i>
+        <div>
+            <strong>Lưu ý:</strong> Thông tin hồ sơ của quý khách đã được đồng bộ để bảo mật. Để thay đổi (Tên, Số điện thoại, Địa chỉ...), vui lòng gọi <strong>Tổng đài CSKH</strong> để được phục vụ.
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0" style="border-radius: 15px; background: #fcfcfd;">
+        <div class="card-body p-4 p-md-5">
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <label class="form-label fw-bold text-muted small text-uppercase mb-2">Họ và Tên</label>
+                    <input asp-for="Input.FullName" class="form-control bg-white border rounded-3 shadow-sm py-2 fw-semibold text-dark" readonly />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-muted small text-uppercase mb-2">Mã định danh</label>
+                    <input asp-for="Input.UserCode" class="form-control bg-white border rounded-3 shadow-sm py-2 fw-semibold text-primary" readonly />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold text-muted small text-uppercase mb-2">Số điện thoại liên lạc</label>
+                    <input asp-for="Input.PhoneNumber" class="form-control bg-white border rounded-3 shadow-sm py-2 fw-semibold text-dark" readonly />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold text-muted small text-uppercase mb-2">Nhóm tài khoản</label>
+                    <input asp-for="Input.AccountType" class="form-control bg-light border rounded-3 py-2 fw-semibold text-secondary" readonly />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label fw-bold text-muted small text-uppercase mb-2">Địa chỉ hiện tại</label>
+                    <textarea asp-for="Input.Address" class="form-control bg-white border rounded-3 shadow-sm py-2 fw-semibold text-dark" rows="2" readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+}

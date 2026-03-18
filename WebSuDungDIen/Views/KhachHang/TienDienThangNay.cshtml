@@ -1,0 +1,234 @@
+﻿@model WebSuDungDIen.Models.HoaDon
+
+@{
+    ViewData["Title"] = "Tiền Điện Tháng Này";
+
+    var chiSoCu = ViewBag.ChiSoCu != null ? (int)ViewBag.ChiSoCu : 0;
+    var chiSoMoi = ViewBag.ChiSoMoi != null ? (int)ViewBag.ChiSoMoi : 0;
+    var soDienTieuThu = Model.SoDienTieuThu;
+    var bangGia = ViewBag.BangGia as List<WebSuDungDIen.Models.DonGiaDien>;
+}
+
+<div class="corp-wrapper">
+    <div class="container py-4 py-md-5">
+
+        @if (TempData["ThongBaoSuccess"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert" style="border-radius: 8px;">
+                <i class="bi bi-check-circle-fill me-2"></i> <strong>@TempData["ThongBaoSuccess"]</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3" style="border-bottom: 2px solid #eaedf1;">
+            <div>
+                <h1 class="corp-section-title mb-1">HÓA ĐƠN TIỀN ĐIỆN</h1>
+                <div class="text-muted">Mã hóa đơn: <span class="fw-bold text-primary">#@Model.MaHd</span></div>
+            </div>
+            <div class="mt-3 mt-md-0">
+                @if (Model.TrangThai == "DaThanhToan")
+                {
+                    <span class="badge bg-success fs-6 px-4 py-2" style="border-radius: 8px !important; box-shadow: 0 4px 10px rgba(25, 135, 84, 0.2) !important;">
+                        <i class="bi bi-check-circle-fill me-1"></i> ĐÃ THANH TOÁN
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-danger fs-6 px-4 py-2" style="border-radius: 8px !important; box-shadow: 0 4px 10px rgba(220, 53, 69, 0.2) !important;">
+                        <i class="bi bi-exclamation-circle-fill me-1"></i> CHƯA THANH TOÁN
+                    </span>
+                }
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="card corp-card border-0 mb-4">
+                    <div class="card-header bg-white border-bottom py-3 px-4" style="border-color: #eaedf1 !important;">
+                        <h6 class="m-0 text-dark fw-bold"><i class="bi bi-info-square text-primary me-2"></i> THÔNG TIN CHUNG</h6>
+                    </div>
+                    <div class="card-body px-4 py-4">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-5 text-muted fw-normal mb-2">Mã hóa đơn</dt>
+                            <dd class="col-sm-7 fw-bold text-dark mb-2">@Model.MaHd</dd>
+
+                            <dt class="col-sm-5 text-muted fw-normal mb-2">Khách hàng</dt>
+                            <dd class="col-sm-7 fw-bold mb-2">@ViewBag.ThongTinKhach</dd>
+
+                            <dt class="col-sm-5 text-muted fw-normal mb-2">Ngày lập HĐ</dt>
+                            <dd class="col-sm-7 mb-2">
+                                @if (ViewBag.NgayLap != null)
+                                {
+                                    @(((DateTime)ViewBag.NgayLap).ToString("dd/MM/yyyy HH:mm"))
+                                }
+                            </dd>
+
+                            <dt class="col-sm-5 text-muted fw-normal d-flex align-items-center mb-0">Ngày thanh toán</dt>
+                            <dd class="col-sm-7 mb-0 d-flex align-items-center">
+                                @if (Model.TrangThai == "DaThanhToan")
+                                {
+                                    <span class="text-success fw-bold d-inline-flex align-items-center gap-2">
+                                        <i class="bi bi-calendar-check fs-5"></i>
+                                        <span>@(Model.NgayThanhToan?.ToString("dd/MM/yyyy HH:mm") ?? "Đã cập nhật")</span>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger fw-bold"><i class="bi bi-clock-history me-1"></i> Đang chờ...</span>
+                                }
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="card corp-card border-0" style="background: linear-gradient(to right bottom, #ffffff, #f0f7ff);">
+                    <div class="card-body text-center p-4">
+                        <h6 class="text-primary fw-bold mb-4"><i class="bi bi-speedometer2 me-2"></i> CHỈ SỐ TIÊU THỤ</h6>
+                        <div class="d-flex justify-content-around align-items-center mb-4">
+                            <div>
+                                <small class="text-muted d-block mb-1">Chỉ số cũ</small>
+                                <span class="fs-3 fw-bold text-dark">@chiSoCu</span>
+                            </div>
+                            <div><i class="bi bi-arrow-right fs-4 text-muted opacity-50"></i></div>
+                            <div>
+                                <small class="text-muted d-block mb-1">Chỉ số mới</small>
+                                <span class="fs-3 fw-bold text-primary">@chiSoMoi</span>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-white rounded-3 shadow-sm" style="border: 1px solid #eaedf1;">
+                            <h6 class="text-muted mb-1">Tổng tiêu thụ</h6>
+                            <h3 class="mb-0 text-danger fw-bolder">@soDienTieuThu <small class="fs-6 text-muted fw-normal">kWh</small></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="card corp-card border-0 h-100">
+                    <div class="card-header bg-white border-bottom py-3 px-4" style="border-color: #eaedf1 !important;">
+                        <h6 class="m-0 text-dark fw-bold"><i class="bi bi-receipt text-primary me-2"></i> CHI TIẾT TÍNH TIỀN ĐIỆN</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="corp-invoice-table align-middle w-100">
+                                <thead>
+                                    <tr>
+                                        <th class="text-start ps-4">Phân Mức</th>
+                                        <th class="text-center">Số lượng (kWh)</th>
+                                        <th class="text-end">Đơn giá (VNĐ)</th>
+                                        <th class="text-end pe-4">Thành tiền (VNĐ)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int conLai = soDienTieuThu;
+                                        int[] muc = { 50, 50, 100, 100, 100 };
+
+                                        if (bangGia != null && bangGia.Count >= 6)
+                                        {
+                                            for (int i = 0; i < muc.Length; i++)
+                                            {
+                                                if (conLai <= 0) break;
+                                                int soDienBacNay = Math.Min(conLai, muc[i]);
+                                                decimal tienBacNay = soDienBacNay * bangGia[i].Gia;
+                                                conLai -= soDienBacNay;
+
+                                                <tr>
+                                                    <td class="ps-4 fw-bold text-muted">Bậc @(i + 1)</td>
+                                                    <td class="text-center text-primary fw-bold">@soDienBacNay</td>
+                                                    <td class="text-end">@bangGia[i].Gia.ToString("N0")</td>
+                                                    <td class="text-end fw-bold text-dark pe-4">@tienBacNay.ToString("N0")</td>
+                                                </tr>
+                                            }
+
+                                            if (conLai > 0)
+                                            {
+                                                decimal tienBac6 = conLai * bangGia[5].Gia;
+                                                <tr class="corp-row-danger">
+                                                    <td class="ps-4 fw-bold text-danger">Bậc 6 (Vượt mức)</td>
+                                                    <td class="text-center text-danger fw-bold">@conLai</td>
+                                                    <td class="text-end text-danger">@bangGia[5].Gia.ToString("N0")</td>
+                                                    <td class="text-end text-danger fw-bold pe-4">@tienBac6.ToString("N0")</td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="4" class="text-center text-danger py-4">Hệ thống chưa nạp dữ liệu bảng giá!</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-top-0 p-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted fw-bold">Cộng tiền điện:</span>
+                            <span class="fw-bold text-dark">@Model.TienDien.ToString("N0") đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 pb-3" style="border-bottom: 2px dashed #eaedf1;">
+                            <span class="text-muted fw-bold">Thuế VAT (@Model.PhanTramVAT%):</span>
+                            <span class="fw-bold text-dark">@Model.ThueVAT.ToString("N0") đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold fs-5 text-dark">TỔNG THANH TOÁN:</span>
+                            <span class="fw-bolder fs-3 text-primary">@Model.TongThanhToan.ToString("N0") <small class="fs-6 text-muted fw-normal">VNĐ</small></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 pt-4 d-flex flex-wrap justify-content-between align-items-center gap-3" style="border-top: 1px solid #eaedf1;">
+            <div class="d-flex gap-2">
+                <a asp-controller="Home" asp-action="Index" class="btn corp-btn-outline">
+                    <i class="bi bi-arrow-left me-1"></i> Trở Về
+                </a>
+                <a asp-controller="HoaDon" asp-action="PrintInvoice" asp-route-maHd="@Model.MaHd" target="_blank" class="btn corp-btn-outline">
+                    <i class="bi bi-printer me-1"></i> Xem Bản In
+                </a>
+            </div>
+
+            @if (Model.TrangThai != "DaThanhToan" && Model.TrangThai != "Đã Thanh Toán")
+            {
+                <div class="d-flex flex-wrap gap-2">
+                    <form asp-action="SimulatePayment" method="post" class="m-0">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn btn-danger text-white fw-bold px-4 py-2 shadow-sm rounded-pill" onclick="return confirm('Xác nhận thanh toán thủ công số tiền @Model.TongThanhToan.ToString("N0") đ?');">
+                            <i class="bi bi-credit-card-fill me-1"></i> Thanh Toán Tự Động
+                        </button>
+                    </form>
+
+                    <button type="button" class="btn corp-btn-primary"
+                            onclick="openQRPayment('@Model.Id', '@Model.MaHd', '@ViewBag.MaKh', '@Model.TrangThai', '@ViewBag.Thang', '@ViewBag.Nam', '@Model.SoDienTieuThu', '@Model.TongThanhToan')">
+                        <i class="bi bi-qr-code-scan me-1"></i> Quét Mã QR
+                    </button>
+                </div>
+            }
+        </div>
+
+        <div id="qrModal" class="corp-card p-5" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9999; width: 90%; max-width: 450px; background: #ffffff;">
+            <div class="text-center mb-4">
+                <h4 class="fw-bold text-primary mb-2">QUÉT MÃ THANH TOÁN</h4>
+                <p class="text-muted small">Sử dụng ứng dụng ngân hàng hoặc ví điện tử để quét mã.</p>
+            </div>
+
+            <div id="qrcode" class="d-flex justify-content-center p-3 bg-white rounded-3 mb-4" style="border: 2px dashed #eaedf1;"></div>
+
+            <p class="text-center fw-bold text-dark fs-5 mb-4" id="qr-invoice-id"></p>
+            <button onclick="closeQRModal()" class="btn corp-btn-outline w-100">Xác Nhận Đóng</button>
+        </div>
+
+        <div id="qrOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9998; backdrop-filter: blur(3px);" onclick="closeQRModal()"></div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script src="~/js/qrPayment.js" asp-append-version="true"></script>
+
+}

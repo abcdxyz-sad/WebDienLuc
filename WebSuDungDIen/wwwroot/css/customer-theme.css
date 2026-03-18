@@ -1,0 +1,900 @@
+﻿/* =========================================================
+   GIAO DIỆN KHÁCH HÀNG (CORPORATE THEME)
+   File này chỉ định dạng cho thẻ body.corp-theme 
+   và lồng cách ly .corp-wrapper
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   1. GLOBAL & BACKGROUND (Toàn cục & Nền)
+   --------------------------------------------------------- */
+body.corp-theme {
+    background-image: none !important; /* Lột sạch vân lưới công nghệ */
+    background-color: #f4f7f6 !important; /* Màu nền xám nhạt công sở */
+}
+
+.corp-wrapper {
+    background-color: transparent !important;
+    background-image: none !important;
+    font-family: 'Inter', 'Segoe UI', sans-serif !important;
+}
+
+    .corp-wrapper * {
+        text-shadow: none !important; /* Xóa mọi bóng chữ bạo lực */
+    }
+
+    /* ---------------------------------------------------------
+   2. TYPOGRAPHY (Định dạng chữ)
+   --------------------------------------------------------- */
+    /* Xóa bỏ mọi border cứng của Heading bị ám từ ZZZ */
+    .corp-wrapper h1,
+    .corp-wrapper h2,
+    .corp-wrapper h3,
+    .corp-wrapper h4,
+    .corp-wrapper h5,
+    .corp-wrapper h6 {
+        border-left: none !important;
+        padding-left: 0 !important;
+        text-transform: none !important;
+        letter-spacing: normal !important;
+        font-family: 'Inter', 'Segoe UI', sans-serif !important;
+        color: #2b3440 !important; /* Màu xám than sang trọng */
+    }
+
+    /* Ép size chuẩn Corporate */
+    .corp-wrapper h1 {
+        font-size: 2.5rem !important;
+        font-weight: 800 !important;
+        margin-bottom: 1.5rem !important;
+    }
+
+h1 {
+    border-left: none !important;
+}
+
+    .corp-wrapper h2 {
+        font-size: 2rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 1.25rem !important;
+    }
+
+    .corp-wrapper h3 {
+        font-size: 1.75rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .corp-wrapper h4 {
+        font-size: 1.5rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .corp-wrapper h5 {
+        font-size: 1.25rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    .corp-wrapper h6 {
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    /* Tẩy rửa màu chữ bị ám !important từ CSS cũ */
+    .corp-wrapper .text-primary {
+        color: #0d6efd !important;
+    }
+
+    .corp-wrapper .text-danger {
+        color: #dc3545 !important;
+    }
+
+    .corp-wrapper .text-warning {
+        color: #ffc107 !important;
+    }
+
+    .corp-wrapper .text-success {
+        color: #198754 !important;
+    }
+
+    .corp-wrapper .text-dark {
+        color: #212529 !important;
+    }
+
+    /* ---------------------------------------------------------
+   3. COMPONENTS: NAVBAR (Thanh điều hướng)
+   --------------------------------------------------------- */
+.corp-wrapper .navbar {
+    background-color: rgba(255, 255, 255, 0.95) !important; /* Hơi kính mờ nhẹ cho sang */
+    backdrop-filter: blur(10px);
+    background-image: none !important;
+    border-bottom: none !important; /* TIỄN CÁI BORDER CỨNG ĐỜ KIA RA CHUỒNG GÀ */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05) !important; /* Bóng đổ siêu mịn màng */
+    padding: 1rem 2rem !important;
+    margin-bottom: 0 !important;
+    position: relative; /* Giữ chặt thằng ::after không cho nó bay đi lung tung */
+}
+
+    /* Hiệu ứng dải năng lượng chạy dưới chân Navbar (Bản Tinh Tế) */
+    .corp-wrapper .navbar::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 1.5px; /* Ép mỏng lại nhìn cho sắc nét và thanh lịch */
+        /* Gradient mượt mà: Trong suốt -> Xanh dương nhạt -> Xanh sáng dịu -> Xanh dương nhạt -> Trong suốt */
+        background: linear-gradient(90deg, transparent, rgba(13, 110, 253, 0.2), rgba(0, 150, 255, 0.7), rgba(13, 110, 253, 0.2), transparent);
+        background-size: 200% auto;
+        animation: flowGradient 4s linear infinite; /* Chạy chậm lại một chút cho điềm đạm */
+        /* Bóng đổ siêu nhẹ, chỉ hơi vệt sáng chứ không chói lóa */
+        box-shadow: 0 1px 4px rgba(0, 150, 255, 0.2);
+    }
+
+/* Động cơ cho dải năng lượng (Giữ nguyên) */
+@keyframes flowGradient {
+    0% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: -100% 50%;
+    }
+}
+
+    .corp-wrapper .navbar-brand {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        color: #0d6efd !important;
+        font-size: 1.5rem !important;
+        padding: 0 !important;
+        letter-spacing: normal !important;
+    }
+
+        .corp-wrapper .navbar-brand:hover {
+            transform: none !important;
+            background: transparent !important;
+        }
+
+    .corp-wrapper .nav-link {
+        color: #495057 !important;
+        text-transform: none !important;
+        font-weight: 500 !important;
+        border: none !important;
+        padding: 0.5rem 1rem !important;
+        font-size: 1rem !important;
+    }
+
+        /* --- HIỆU ỨNG KHI RÀ CHUỘT (HOVER) --- */
+        .corp-wrapper .nav-link:hover {
+            background: transparent !important;
+            color: #0d6efd !important;
+            transform: translateY(-2px) !important; /* Bay nhẹ lên trên 2px */
+            box-shadow: none !important;
+        }
+
+            /* Trượt đường gạch dưới ra khi hover */
+            .corp-wrapper .nav-link:hover::after {
+                width: 70%;
+            }
+
+        /* --- HIỆU ỨNG KHI ĐANG Ở TRANG ĐÓ (ACTIVE) --- */
+        .corp-wrapper .nav-link.active {
+            background-color: #f0f7ff !important; /* Nền xanh lam siêu nhạt */
+            color: #0d6efd !important;
+            font-weight: 700 !important; /* In đậm chữ lên */
+            border-radius: 8px !important;
+            border: none !important;
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.1) !important; /* Đổ bóng mây nhẹ */
+            transform: translateY(-1px) !important;
+        }
+
+            /* Tắt gạch dưới ở thẻ active vì đã có nền xanh rồi */
+            .corp-wrapper .nav-link.active::after {
+                display: none !important;
+            }
+
+    /* User tag & Logout trên Navbar */
+    .corp-wrapper .zzz-user-tag,
+    .corp-wrapper .zzz-auth-link,
+    .corp-wrapper .zzz-auth-btn {
+        background: transparent !important;
+        border: 1px solid #0d6efd !important;
+        color: #0d6efd !important;
+        border-radius: 20px !important;
+        box-shadow: none !important;
+        text-transform: none !important;
+        font-weight: 600 !important;
+        font-family: 'Inter', 'Segoe UI', sans-serif !important;
+    }
+
+    .corp-wrapper .zzz-logout-btn {
+        background: #f8f9fa !important;
+        color: #dc3545 !important;
+        border: none !important;
+        border-radius: 20px !important;
+        box-shadow: none !important;
+        text-transform: none !important;
+        font-family: 'Inter', 'Segoe UI', sans-serif !important;
+    }
+
+    /* ---------------------------------------------------------
+   4. COMPONENTS: CARDS & ALERTS (Thẻ và Thông báo)
+   --------------------------------------------------------- */
+    /* Card */
+    .corp-wrapper .card,
+    .corp-wrapper .corp-card {
+        border: 1px solid #eaedf1 !important;
+        box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1) !important;
+        border-radius: 12px !important;
+        background-color: #ffffff !important;
+    }
+
+    .corp-wrapper .card-header {
+        border-radius: 12px 12px 0 0 !important;
+        border-bottom: 1px solid #eaedf1 !important;
+        background-color: #fcfcfc !important;
+        font-family: 'Inter', 'Segoe UI', sans-serif !important;
+        text-transform: none !important;
+        color: #212529 !important;
+    }
+
+    /* Alert */
+    .corp-wrapper .alert {
+        border: 1px solid #badbcc !important;
+        border-radius: 8px !important;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05) !important;
+        font-family: 'Inter', 'Segoe UI', sans-serif !important;
+        font-weight: 500 !important;
+        color: #0f5132 !important;
+    }
+
+    /* ---------------------------------------------------------
+   5. COMPONENTS: BUTTONS & BADGES (Nút bấm & Huy hiệu)
+   --------------------------------------------------------- */
+    .corp-wrapper .corp-btn-primary {
+        background-color: #ffffff !important;
+        color: #0d6efd !important;
+        font-weight: 700 !important;
+        padding: 12px 28px !important;
+        border-radius: 50px !important;
+        border: none !important;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
+        transition: all 0.3s ease !important;
+    }
+
+        .corp-wrapper .corp-btn-primary:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.2) !important;
+            background-color: #f8f9fa !important;
+            color: #0b5ed7 !important;
+        }
+
+    .corp-wrapper .corp-btn-outline {
+        background-color: transparent !important;
+        color: #0d6efd !important;
+        font-weight: 600 !important;
+        border: 2px solid #0d6efd !important;
+        border-radius: 8px !important;
+        padding: 10px 20px !important;
+        box-shadow: none !important;
+        transition: all 0.3s ease !important;
+    }
+
+        .corp-wrapper .corp-btn-outline:hover {
+            background-color: #0d6efd !important;
+            color: #ffffff !important;
+            box-shadow: 0 5px 15px rgba(13,110,253,0.3) !important;
+            transform: translateY(-2px) !important;
+        }
+
+    /* Nút thanh toán thủ công bị ám ZZZ */
+    .corp-wrapper .btn-danger {
+        background-color: #dc3545 !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 50px !important;
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3) !important;
+        font-family: 'Inter', 'Segoe UI', sans-serif !important;
+        text-transform: none !important;
+        font-weight: 600 !important;
+        transform: none !important;
+    }
+
+        .corp-wrapper .btn-danger:hover {
+            background-color: #bb2d3b !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4) !important;
+        }
+
+    /* Badges */
+    .corp-wrapper .badge {
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        font-family: 'Inter', 'Segoe UI', sans-serif !important;
+        padding: 0.5em 0.8em !important;
+        text-transform: none !important;
+    }
+
+        .corp-wrapper .badge.bg-success {
+            background-color: #198754 !important;
+            color: #ffffff !important;
+        }
+
+        .corp-wrapper .badge.bg-warning {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+
+        .corp-wrapper .badge.bg-danger {
+            background-color: #dc3545 !important;
+            color: #ffffff !important;
+        }
+
+        .corp-wrapper .badge.bg-primary {
+            background-color: #0d6efd !important;
+            color: #ffffff !important;
+        }
+
+        .corp-wrapper .badge.bg-secondary {
+            background-color: #6c757d !important;
+            color: #ffffff !important;
+        }
+
+    /* ---------------------------------------------------------
+   6. COMPONENTS: TABLES (Bảng biểu)
+   --------------------------------------------------------- */
+    /* Chống chìm bảng */
+    .corp-wrapper .table-responsive {
+        border: 1px solid #eaedf1 !important;
+        border-radius: 8px !important;
+        background-color: #fff !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02) !important;
+    }
+
+    /* Tẩy sạch Table ZZZ cũ */
+    .corp-wrapper .table {
+        border: none !important;
+        background-color: transparent !important;
+        font-family: 'Inter', 'Segoe UI', sans-serif !important;
+    }
+
+        .corp-wrapper .table thead th {
+            background-color: #f8f9fa !important;
+            color: #495057 !important;
+            font-weight: 600 !important;
+            text-transform: none !important;
+            border-bottom: 2px solid #eaedf1 !important;
+            border-top: none !important;
+            letter-spacing: normal !important;
+        }
+
+        .corp-wrapper .table tbody td,
+        .corp-wrapper .table tfoot td {
+            border-color: #eaedf1 !important;
+        }
+
+    .corp-wrapper .table-dark {
+        background-color: #f8f9fa !important;
+        color: #495057 !important;
+    }
+
+    /* Bảng SAAS Invoice Mới */
+    .corp-wrapper .corp-invoice-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        background-color: #ffffff !important;
+        border: none !important;
+        margin-bottom: 0 !important;
+    }
+
+        .corp-wrapper .corp-invoice-table thead th {
+            background-color: #f8f9fa !important;
+            color: #6c757d !important;
+            font-size: 0.8rem !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            padding: 16px 12px !important;
+            border: none !important;
+            border-bottom: 2px solid #eaedf1 !important;
+        }
+
+        .corp-wrapper .corp-invoice-table tbody td {
+            padding: 18px 12px !important;
+            border: none !important;
+            border-bottom: 1px solid #eaedf1 !important;
+            color: #495057 !important;
+            font-size: 0.95rem !important;
+            vertical-align: middle !important;
+        }
+
+        .corp-wrapper .corp-invoice-table tbody tr:last-child td {
+            border-bottom: none !important;
+        }
+
+        /* Hiệu ứng Hover Bảng */
+        .corp-wrapper .table-hover tbody tr:hover,
+        .corp-wrapper .corp-invoice-table tbody tr:hover,
+        .corp-wrapper .table-hover tbody tr:hover td,
+        .corp-wrapper .corp-invoice-table tbody tr:hover td {
+            background-color: #f8f9fa !important;
+            color: inherit !important;
+        }
+
+        .corp-wrapper .corp-invoice-table tr.corp-row-danger td {
+            background-color: #fff5f5 !important;
+        }
+
+        .corp-wrapper .corp-invoice-table tr.corp-row-danger:hover td {
+            background-color: #ffebeb !important;
+        }
+
+
+/* ---------------------------------------------------------
+   7. PAGE: TRANG CHỦ (Home)
+   --------------------------------------------------------- */
+.corp-hero {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
+    padding: 6rem 0 8rem 0 !important;
+    color: #ffffff !important;
+}
+
+.corp-badge {
+    display: inline-block;
+    background-color: rgba(255,255,255,0.2) !important;
+    color: #ffffff !important;
+    padding: 6px 16px !important;
+    border-radius: 50px !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+}
+
+.corp-title {
+    font-size: 3rem !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+    color: #ffffff !important;
+    margin: 1.5rem 0 !important;
+}
+
+.corp-highlight {
+    color: #ffd43b !important;
+}
+
+.corp-subtitle {
+    font-size: 1.1rem !important;
+    color: rgba(255,255,255,0.9) !important;
+    max-width: 600px;
+    line-height: 1.6 !important;
+}
+
+.corp-stats-container {
+    margin-top: -60px !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+.corp-stats-wrapper {
+    background-color: #ffffff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08) !important;
+    overflow: hidden !important;
+}
+
+.corp-stat-box {
+    padding: 2.5rem 1.5rem !important;
+    text-align: center !important;
+    border-right: 1px solid #f0f2f5 !important;
+}
+
+    .corp-stat-box:last-child {
+        border-right: none !important;
+    }
+
+    .corp-stat-box h4 {
+        color: #2b3440 !important;
+        font-weight: 700 !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .corp-stat-box p {
+        color: #6c757d !important;
+        margin: 0 !important;
+        font-size: 0.95rem !important;
+    }
+
+.corp-main-content {
+    padding: 4rem 0 6rem 0 !important;
+}
+
+.corp-section-title {
+    color: #0d6efd !important;
+    font-weight: 800 !important;
+    font-size: 1.25rem !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.corp-news-card {
+    background-color: #ffffff !important;
+    border: 1px solid #eaedf1 !important;
+    border-radius: 12px !important;
+    padding: 1.5rem !important;
+    margin-bottom: 1rem !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+    .corp-news-card:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
+    }
+
+.corp-news-title {
+    color: #2b3440 !important;
+    font-weight: 700 !important;
+    font-size: 1.15rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.corp-action-panel {
+    background-color: #ffffff !important;
+    border: 1px solid #eaedf1 !important;
+    border-radius: 12px !important;
+    padding: 2rem 1.5rem !important;
+    text-align: center !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.03) !important;
+}
+
+.corp-icon-large {
+    font-size: 3rem !important;
+    color: #0d6efd !important;
+    margin-bottom: 1rem !important;
+}
+
+.corp-contact-panel {
+    background-color: #f0f7ff !important;
+    border-radius: 12px !important;
+    padding: 1.5rem !important;
+}
+
+    .corp-contact-panel h6 {
+        color: #0d6efd !important;
+        font-weight: 700 !important;
+    }
+
+.corp-contact-info {
+    color: #495057 !important;
+    line-height: 1.8 !important;
+    font-size: 0.95rem !important;
+}
+
+/* ---------------------------------------------------------
+   8. COMPONENTS: SCROLLBAR & FOOTER
+   --------------------------------------------------------- */
+/* Scrollbar */
+body.corp-theme::-webkit-scrollbar,
+.corp-wrapper ::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+    background-color: transparent !important;
+}
+
+body.corp-theme::-webkit-scrollbar-track,
+.corp-wrapper ::-webkit-scrollbar-track {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+body.corp-theme::-webkit-scrollbar-thumb,
+.corp-wrapper ::-webkit-scrollbar-thumb {
+    background-color: #c1c9d0 !important;
+    background-image: none !important;
+    border-radius: 10px !important;
+    border: 2px solid #ffffff !important;
+}
+
+    body.corp-theme::-webkit-scrollbar-thumb:hover,
+    .corp-wrapper ::-webkit-scrollbar-thumb:hover {
+        background-color: #a8b2bc !important;
+    }
+
+/* Footer */
+.corp-footer {
+    background-color: #ffffff !important;
+    border-top: 1px solid #eaedf1 !important;
+    font-family: 'Inter', 'Segoe UI', sans-serif !important;
+    margin-top: auto;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.02) !important;
+}
+
+    .corp-footer .text-primary {
+        color: #0d6efd !important;
+        letter-spacing: 0.5px;
+    }
+
+.corp-footer-link {
+    transition: color 0.2s ease !important;
+}
+
+    .corp-footer-link:hover {
+        color: #0d6efd !important;
+    }
+
+/* --- TRỊ RIÊNG CHO NAV CỦA KHÁCH HÀNG (Dạng Tab ngang) --- */
+.corp-wrapper .manage-tabs .nav {
+    flex-direction: row !important; /* Ép nằm ngang */
+    gap: 20px;
+}
+
+.corp-wrapper .manage-tabs .zzz-urban-link {
+    transform: none !important; /* Khách hàng không cần nghiêng */
+    border: none !important;
+    border-bottom: 3px solid transparent !important;
+    box-shadow: none !important;
+    color: #6c757d !important;
+    background: transparent !important;
+    padding: 10px 0 !important;
+}
+
+    .corp-wrapper .manage-tabs .zzz-urban-link.active {
+        color: #0d6efd !important;
+        border-bottom-color: #0d6efd !important;
+        font-weight: 700 !important;
+    }
+
+/* --- TRỊ RIÊNG CHO NAV CỦA ADMIN (Dạng Cột dọc bạo lực) --- */
+.zzz-manage-container .zzz-urban-link {
+    /* Giữ nguyên style Hip-hop sếp đã làm ở bước trước */
+    display: block;
+    margin-bottom: 10px;
+}
+
+/* TIÊM STEROID CSS TRỰC TIẾP VÀO ĐÂY */
+.power-gradient-bg {
+    background: radial-gradient(circle at 50% 0%, #0d6efd 0%, #001f54 80%);
+    position: relative;
+}
+
+.glass-panel {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.text-gradient {
+    background: linear-gradient(to right, #00f2fe 0%, #4facfe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hover-lift-glow {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+    .hover-lift-glow:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 15px 30px rgba(13, 110, 253, 0.2) !important;
+    }
+
+.card-icon-huge {
+    transition: all 0.5s ease;
+}
+
+.hover-lift-glow:hover .card-icon-huge {
+    transform: scale(1.2) rotate(-10deg);
+    opacity: 0.2 !important;
+}
+
+@keyframes float-anim {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.floating-element {
+    animation: float-anim 4s infinite ease-in-out;
+}
+
+@keyframes pulse-energy {
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 15px rgba(220, 53, 69, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+.btn-pulse-danger {
+    animation: pulse-energy 2s infinite;
+}
+
+/* ==========================================================================
+   ENERGY CYBER THEME - CUSTOM CSS (DEEP OCEAN / NỀN TỐI - CHỮ SÁNG)
+   ========================================================================== */
+
+.corp-customer-home {
+    background: linear-gradient(180deg, #BEEEFA 0%, #C7FFFF 30%, #f4f4f6 100%); /* Nền tổng thể ngoài hero */
+    min-height: 100vh;
+    padding-bottom: 60px;
+}
+
+    /* --- Layout & Backgrounds (Tone Xanh Biển Sâu) --- */
+    .corp-customer-home .hero-section {
+        /* Gradient xanh dương rất đậm, sang trọng và dịu */
+        background: linear-gradient(135deg, #041428 0%, #0d326b 100%);
+        padding: 100px 0 140px 0;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .corp-customer-home .hero-overlay {
+        background: radial-gradient(circle at top right, rgba(0, 195, 255, 0.15) 0%, transparent 65%);
+    }
+
+    .corp-customer-home .hero-bg-icon {
+        transform: scale(4);
+        pointer-events: none;
+        opacity: 0.08;
+        color: #00c3ff; /* Tia sét màu xanh neon mờ ảo phía sau */
+    }
+
+    /* --- Glassmorphism Card (Kính mờ bóng đêm) --- */
+    .corp-customer-home .glass-card {
+        background: rgba(255, 255, 255, 0.06); /* Kính rất mỏng, chỉ để tạo viền và blur */
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.15); /* Viền trắng mảnh làm nổi bật khung */
+        border-radius: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    /* --- Typography (CHỮ SÁNG RỰC RỠ TRÊN NỀN TỐI) --- */
+    .corp-customer-home .badge-custom {
+        background: rgba(0, 195, 255, 0.15);
+        color: #00d4ff; /* Chữ huy hiệu xanh neon chói lóa */
+        letter-spacing: 1px;
+        border: 1px solid rgba(0, 195, 255, 0.3);
+    }
+
+    .corp-customer-home .hero-title {
+        letter-spacing: -1px;
+        color: #ffffff; /* Trả lại màu trắng tinh khiết cho tiêu đề */
+        text-shadow: 0 2px 15px rgba(255, 255, 255, 0.2); /* Thêm bóng phát sáng nhẹ */
+        background: none;
+        -webkit-text-fill-color: #ffffff;
+    }
+
+    .corp-customer-home .hero-subtitle {
+        max-width: 650px;
+        font-weight: 400;
+        color: #f1f5f9; /* Trắng xám cực kỳ dễ đọc */
+        opacity: 0.95;
+    }
+
+    /* --- Utilities & Positioning --- */
+    .corp-customer-home .overlap-container {
+        margin-top: -60px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .corp-customer-home .icon-box-md {
+        width: 65px;
+        height: 65px;
+    }
+
+    .corp-customer-home .icon-box-lg {
+        width: 70px;
+        height: 70px;
+    }
+
+    .corp-customer-home .text-sm-custom {
+        font-size: 0.95rem;
+    }
+
+    /* --- App Banner Section --- */
+    .corp-customer-home .app-banner {
+        background: linear-gradient(135deg, #09203f 0%, #537895 100%);
+    }
+
+    .corp-customer-home .app-banner-circle {
+        width: 250px;
+        height: 250px;
+        top: -50px;
+        right: -100px;
+        filter: blur(3px);
+    }
+
+    .corp-customer-home .qr-container {
+        width: 100px;
+        height: 100px;
+        backdrop-filter: blur(10px);
+        transform: rotate(10deg);
+    }
+
+    .corp-customer-home .app-desc {
+        font-size: 0.95rem;
+        opacity: 0.8;
+    }
+
+    .corp-customer-home .store-subtitle {
+        font-size: 0.65rem;
+        color: #ccc;
+    }
+
+/* --- Animations & Effects (ĐÃ XÓA TRÙNG LẶP) --- */
+@keyframes ec-floating {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.corp-customer-home .floating-element {
+    animation: ec-floating 3s ease-in-out infinite;
+}
+
+.corp-customer-home .delay-1s {
+    animation-delay: 1s;
+}
+
+.corp-customer-home .hover-lift-glow {
+    transition: all 0.3s ease;
+}
+
+    .corp-customer-home .hover-lift-glow:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08) !important;
+    }
+
+@keyframes ec-pulse-danger {
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+.corp-customer-home .btn-pulse-danger {
+    animation: ec-pulse-danger 2s infinite;
+}
+
+.corp-customer-home .text-gradient {
+    /* Đã cập nhật sang gradient sáng rực để nổi trên nền tối */
+    background: linear-gradient(45deg, #00f2fe, #4facfe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

@@ -1,0 +1,229 @@
+﻿@model IEnumerable<ChiSoDienIndexVM>
+
+@{
+    ViewData["Title"] = "Chỉ số điện";
+}
+
+@if (TempData["ThongBao"] != null)
+{
+    <div id="thongBao" class="zzz-notification">
+        <div class="zzz-content">
+            <span class="zzz-icon">👾</span> <span class="zzz-text">@TempData["ThongBao"]</span>
+        </div>
+        <div class="zzz-decor-line"></div>
+    </div>
+}
+
+<div class="border-dashed p-3 mb-4 zzz-command-panel border-dark border-3">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 border-bottom border-dark pb-3 mb-3">
+        <h1 class="m-0 zzz-page-title fw-bold text-uppercase">
+            [ TỆP DỮ LIỆU ] CHỈ SỐ ĐIỆN
+        </h1>
+
+        <div class="d-flex align-items-center gap-3">
+            @if (!string.IsNullOrEmpty(ViewBag.MaPhuongApi))
+            {
+                <a asp-controller="ChiSoDien" asp-action="Create" asp-route-maPhuongApi="@ViewBag.MaPhuongApi" class="btn btn-primary fw-bold border-dark border-2 rounded-0 shadow-sm">
+                    <i class="bi bi-plus-square-fill me-1"> NHẬP CHỈ SỐ
+                </a>
+            }
+        </div>
+    </div>
+
+    <form method="get" id="filterForm" class="row g-2 align-items-end">
+        <div class="col-md-3">
+            <label class="fw-bold zzz-text-mono small mb-1">Tỉnh / Thành phố</label>
+            <select name="maTinh" id="selectTinh" class="form-select border-dark border-2 rounded-0" asp-items="ViewBag.DanhSachTinh">
+                <option value="">-- Tất cả --</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="fw-bold zzz-text-mono small mb-1">Phường / Xã</label>
+            <select name="maPhuongApi" id="ward" class="form-select border-dark border-2 rounded-0" asp-items="ViewBag.DanhSachPhuong">
+                <option value="">-- Chọn Phường/Xã --</option>
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label class="fw-bold zzz-text-mono small mb-1">Tra cứu nhanh</label>
+            <div class="input-group border border-dark border-2 rounded-0">
+                <input type="text" id="liveSearchInput" name="searchKeyword" value="@ViewBag.SearchKeyword" class="form-control border-0 rounded-0" placeholder="Tên KH, Điện thoại..." />
+                <button type="submit" class="btn btn-primary fw-bold px-4 border-start border-dark border-2 rounded-0">
+                    <i class="bi bi-radar me-1"></i> TÌM KIẾM
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="vung-du-lieu-thay-doi">
+    <div class="card position-relative border-dark border-3 rounded-0 bg-white" style="box-shadow: 6px 6px 0px var(--zzz-black);">
+        <div class="card-body p-0" style="overflow: visible;">
+            <table class="table table-hover mb-0 zzz-data-table align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="zzz-col-20">ĐẶC VỤ / KHÁCH HÀNG</th>
+                        <th>ĐỊA CHỈ</th>
+                        <th class="zzz-col-10 text-center">KỲ CHỐT</th>
+                        <th class="zzz-col-10 text-end">CHỈ SỐ CŨ</th>
+                        <th class="zzz-col-10 text-end text-warning">CHỈ SỐ MỚI</th>
+                        <th class="zzz-col-12 text-center">TIÊU THỤ</th>
+                        <th class="text-center zzz-col-10">LỆNH</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr class="border-bottom border-dark-subtle">
+                                <td>
+                                    <div class="zzz-text-name mb-1">@item.TenKh</div>
+                                    <span class="badge bg-secondary zzz-badge-id">
+                                        #@item.KhachHangId.Substring(0, Math.Min(8, item.KhachHangId.Length))
+                                    </span>
+                                </td>
+                                <td class="zzz-text-mono small fw-bold">
+                                    @item.DiaChi
+                                </td>
+                                <td class="text-center zzz-text-mono fw-bold">
+                                    @item.ThangGanNhat/@item.NamGanNhat
+                                </td>
+
+                                <td class="text-end">
+                                    <span class="badge bg-secondary zzz-badge-id fs-6">@item.ChiSoCu</span>
+                                </td>
+
+                                <td class="text-end">
+                                    <span class="badge bg-warning text-dark zzz-badge-id fs-6 shadow-sm border border-dark">@item.ChiSoMoi</span>
+                                </td>
+
+                                <td class="text-center">
+                                    <span class="badge bg-danger zzz-status-badge zzz-status-offline border border-dark border-2">
+                                        <i class="zzz-status-x">⚠</i> @item.DienTieuThu kWh
+                                    </span>
+                                </td>
+
+                                <td class="text-center">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-dark border-2 rounded-0 dropdown-toggle zzz-btn-action fw-bold" type="button" id="dropdown_@item.KhachHangId" data-bs-toggle="dropdown" aria-expanded="false">
+                                            CHỌN
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow" aria-labelledby="dropdown_@item.KhachHangId">
+                                            <li>
+                                                <a class="dropdown-item fw-bold zzz-text-mono" asp-action="Details" asp-route-id="@item.KhachHangId">XEM CHI TIẾT</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item fw-bold zzz-text-mono" asp-controller="ChiSoDien" asp-action="Edit" asp-route-khachHangId="@item.KhachHangId">CẬP NHẬT</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5 border-0">
+                                <div class="text-center py-5" id="noMatchMessage" style="display: none;">
+
+                                    <i class="bi bi-search text-muted mb-3" style="font-size: 3rem;"></i>
+
+                                    <h4 class="fw-bold text-danger zzz-text-mono">KHÔNG TÌM THẤY TỪ KHÓA PHÙ HỢP.</h4>
+
+                                    <p class="text-muted fw-bold">Vui lòng thử lại với Tên, SĐT hoặc Mã KH khác.</p>
+
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/auto-alert.js"></script>
+    <script>
+        // 1. CODE ẨN PHƯỜNG CỦA SẾP (GIỮ NGUYÊN)
+        const phuongCoData = @Html.Raw(Json.Serialize(ViewBag.DanhSachPhuongCoData ?? new List<string>()));
+        const phuongCoDataString = phuongCoData.map(String);
+        const wardSelect = document.getElementById('ward');
+
+        if (wardSelect) {
+            const observer = new MutationObserver(function(mutations) {
+                observer.disconnect();
+                $("#ward option").each(function() {
+                    let val = String($(this).val());
+                    if (val !== "" && !phuongCoDataString.includes(val)) {
+                        $(this).remove();
+                    }
+                });
+                observer.observe(wardSelect, { childList: true });
+            });
+            observer.observe(wardSelect, { childList: true });
+        }
+
+        // 2. BỘ MÁY AJAX LIVE SEARCH (NÂNG CẤP DÀNH CHO NHIỀU INPUT)
+        let timeout = null;
+        const filterForm = document.getElementById('filterForm');
+
+        // Bắt sự kiện 'input' (khi gõ chữ) và 'change' (khi chọn Dropdown)
+        filterForm.addEventListener('input', handleLiveSearch);
+        filterForm.addEventListener('change', handleLiveSearch);
+
+        function handleLiveSearch(e) {
+            // Hủy bộ đếm cũ
+            clearTimeout(timeout);
+
+            // Đếm ngược 300ms rồi mới bắn request
+            timeout = setTimeout(function () {
+
+                // Gom toàn bộ dữ liệu (Tỉnh, Phường, Từ khóa) đang có trong Form lại
+                let formData = new FormData(filterForm);
+                let searchParams = new URLSearchParams(formData).toString();
+
+                // Tạo đường link truy vấn ngầm
+                let url = filterForm.action + '?' + searchParams;
+
+                // Phái sát thủ AJAX đi lấy dữ liệu
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        // Mổ bụng kết quả, lấy đúng cái Bảng nhét đè lên cái cũ
+                        let parser = new DOMParser();
+                        let doc = parser.parseFromString(html, 'text/html');
+
+                        let newContent = doc.getElementById('vung-du-lieu-thay-doi').innerHTML;
+                        document.getElementById('vung-du-lieu-thay-doi').innerHTML = newContent;
+
+                        // 1. Đếm xem có bao nhiêu thẻ khách hàng (bạn nhớ dùng đúng class của thẻ nhé)
+                        let itemCount = document.querySelectorAll('#vung-du-lieu-thay-doi .customer-item').length;
+
+                        // 2. Gọi cái thông báo ra
+                        let noMatchMessage = document.getElementById('noMatchMessage');
+
+                        if (noMatchMessage) {
+                            if (itemCount === 0) {
+                                // Không có thẻ nào -> Mở thông báo lên
+                                noMatchMessage.style.display = 'block';
+
+                                // (Tùy chọn) Ẩn luôn cái block "0 RECORDS FOUND" mặc định của C# nếu có để không bị trùng
+                                let defaultEmpty = document.querySelector('#vung-du-lieu-thay-doi .fa-database');
+                                if(defaultEmpty) defaultEmpty.parentElement.style.display = 'none';
+                            } else {
+                                // Có ít nhất 1 thẻ -> Giấu thông báo đi
+                                noMatchMessage.style.display = 'none';
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Gãy nạng rồi sếp ơi:', error));
+
+            }, 300);
+        }
+    </script>
+}

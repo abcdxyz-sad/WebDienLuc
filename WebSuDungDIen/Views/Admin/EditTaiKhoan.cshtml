@@ -1,0 +1,72 @@
+﻿@model EditTaiKhoanVM
+
+@{
+    ViewData["Title"] = "Cập Nhật Tài Khoản";
+}
+
+<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel border-dark border-3">
+    <h1 class="m-0 zzz-page-title fw-bold text-uppercase">
+        [ HỆ THỐNG ] CẬP NHẬT TÀI KHOẢN
+    </h1>
+    <div class="d-flex align-items-center gap-3">
+        <span class="zzz-sys-status text-primary fw-bold">
+            TRẠNG THÁI: <span class="zzz-blink-dot text-warning">●</span> ĐANG CHỈNH SỬA
+        </span>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card position-relative border-dark border-3 rounded-0 bg-white shadow-lg">
+
+            <div class="zzz-hazard-strip m-0" style="position: absolute; top: 0; left: 0;"></div>
+
+            <div class="card-body p-4 p-md-5 mt-3">
+                <form asp-action="EditTaiKhoan" method="post">
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div asp-validation-summary="All" class="alert alert-danger mb-4 zzz-text-mono fw-bold rounded-0 shadow-sm border-dark border-2"></div>
+                    }
+
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="zzz-fieldset border-dark border-2">
+                        <div class="zzz-fieldset-title border-dark border-2 text-warning">SYS.01 // THÔNG TIN ĐỊNH DANH</div>
+
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-6">
+                                <label class="form-label zzz-cmd-label">USERNAME (TÊN ĐĂNG NHẬP)</label>
+                                <input asp-for="UserName" class="form-control zzz-terminal-input fw-bold text-danger border-dark border-2 fs-5" autocomplete="off" />
+                                <span asp-validation-for="UserName" class="text-danger zzz-text-mono fw-bold small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label zzz-cmd-label">EMAIL ĐỊNH DANH</label>
+                                <input asp-for="Email" type="email" class="form-control zzz-terminal-input fw-bold border-dark border-2 zzz-text-mono" />
+                                <span asp-validation-for="Email" class="text-danger zzz-text-mono fw-bold small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column flex-md-row gap-3 mt-5">
+                        <button type="submit" class="btn btn-primary fw-bold fs-5 py-3 border-dark border-3 rounded-0 flex-grow-1 shadow-sm" style="transition: all 0.1s;">
+                            <i class="fas fa-save me-2"></i> LƯU THAY ĐỔI
+                        </button>
+
+                        <a asp-controller="Admin" asp-action="Index" class="btn zzz-btn-cancel fw-bold fs-5 px-md-5 py-3 border-dark border-3 rounded-0 d-flex align-items-center justify-content-center" style="transition: all 0.1s;">
+                            <i class="fas fa-undo me-2"></i> RÚT LUI
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

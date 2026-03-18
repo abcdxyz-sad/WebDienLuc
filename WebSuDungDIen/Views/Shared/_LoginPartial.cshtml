@@ -1,0 +1,33 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using WebSuDungDIen.Models
+
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+
+<ul class="navbar-nav align-items-center gap-2">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item">
+            <a class="zzz-user-tag" asp-area="Identity" asp-page="/Account/Manage/Index" title="Thông tin Đặc Vụ">
+                <span class="status-dot-green"></span>
+                <span class="ms-1">ID: @User.Identity?.Name?.Split('@')[0]</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <form class="form-inline m-0" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button type="submit" class="zzz-logout-btn">
+                    <i class="fas fa-power-off"></i> THOÁT
+                </button>
+            </form>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="zzz-auth-link" asp-area="Identity" asp-page="/Account/Register">ĐĂNG KÝ</a>
+        </li>
+        <li class="nav-item">
+            <a class="zzz-auth-btn" asp-area="Identity" asp-page="/Account/Login">ĐĂNG NHẬP</a>
+        </li>
+    }
+</ul>

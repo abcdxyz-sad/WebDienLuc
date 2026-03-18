@@ -1,0 +1,30 @@
+﻿@inject SignInManager<WebSuDungDIen.Models.ApplicationUser> SignInManager
+@{
+    // Máy quét: Kiểm tra xem có phải phe còng lưng đi làm không
+    bool isStaff = User.Identity?.IsAuthenticated == true && (User.IsInRole("Admin") || User.IsInRole("NhanVien"));
+
+    // Nếu là Admin -> Nhét class bạo lực và class ép màu đen
+    // Nếu là Khách -> Để trống, cho CSS Corporate tự lo
+    string staffLinkClass = isStaff ? "zzz-urban-link admin-dark-unselected" : "";
+
+    // Admin thì Menu dọc (flex-column), Khách thì Menu ngang (flex-row) cho sang chảnh
+    string ulLayoutClass = isStaff ? "flex-column gap-3" : "flex-row gap-3 border-bottom pb-2";
+}
+
+<ul class="nav nav-pills @ulLayoutClass">
+    <li class="nav-item">
+        <a class="nav-link @staffLinkClass @ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-page="./Index">
+            <i class="bi bi-person-badge"></i> Thông tin người dùng
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @staffLinkClass @ManageNavPages.EmailNavClass(ViewContext)" id="email" asp-page="./Email">
+            <i class="bi bi-envelope-at"></i> Email
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @staffLinkClass @ManageNavPages.ChangePasswordNavClass(ViewContext)" id="change-password" asp-page="./ChangePassword">
+            <i class="bi bi-key"></i> Password
+        </a>
+    </li>
+</ul>

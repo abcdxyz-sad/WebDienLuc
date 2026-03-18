@@ -1,0 +1,448 @@
+﻿/* === ZZZ NEO-URBAN BRUTALISM THEME (UPGRADED) === */
+:root {
+    --zzz-bg: #F4F4F6;
+    --zzz-card: #FFFFFF;
+    --zzz-black: #111111;
+    --zzz-primary: #D2FF00;
+    --zzz-cyan: #00E5FF;
+    --text-muted: #777777;
+}
+
+/* Nền toàn màn hình */
+.zzz-login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--zzz-bg);
+    background-image: radial-gradient(#cccccc 2px, transparent 2px);
+    background-size: 30px 30px;
+    font-family: 'Arial Black', Impact, sans-serif;
+    padding: 20px;
+}
+
+/* Card login */
+.zzz-login-card {
+    width: 100%;
+    max-width: 480px; /* Thu gọn lại một chút để form cân đối hơn */
+    padding: 40px;
+    background: var(--zzz-card);
+    border: 4px solid var(--zzz-black);
+    border-radius: 0;
+    box-shadow: 16px 16px 0px rgba(0,0,0,1);
+    position: relative;
+    /* Hiệu ứng xuất hiện từ dưới lên */
+    animation: popup 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popup {
+    0% {
+        transform: translateY(40px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Trang trí: Băng keo cảnh báo (Có hiệu ứng chạy) */
+.zzz-login-card::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    height: 14px;
+    background: repeating-linear-gradient(45deg, var(--zzz-primary), var(--zzz-primary) 15px, var(--zzz-black) 15px, var(--zzz-black) 30px);
+    border: 4px solid var(--zzz-black);
+    border-bottom: none;
+    background-size: 42px 42px;
+}
+
+/* Header */
+.zzz-login-header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 4px solid var(--zzz-black);
+    padding-bottom: 20px;
+    position: relative;
+}
+
+.zzz-title {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: var(--zzz-black);
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.zzz-subtitle {
+    font-size: 13px;
+    color: var(--zzz-black);
+    background-color: var(--zzz-primary);
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    font-family: monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 15px;
+    border: 2px solid var(--zzz-black);
+    box-shadow: 2px 2px 0px var(--zzz-black);
+}
+
+/* Đèn nhấp nháy */
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--zzz-black);
+    border-radius: 50%;
+    margin-right: 8px;
+    animation: blink 1s steps(2) infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+/* =========================================
+   CUSTOM INPUT ZZZ (TỪ TRONG Ô BAY LÊN ĐÈ VIỀN)
+========================================= */
+.zzz-input-group {
+    position: relative;
+    margin-top: 25px; /* Chừa không gian phía trên để nó hạ cánh */
+}
+
+/* Thẻ Input cục súc */
+.zzz-input {
+    width: 100%;
+    background-color: var(--zzz-card) !important;
+    border: 3px solid var(--zzz-black);
+    color: var(--zzz-black);
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 16px 15px;
+    outline: none;
+    box-shadow: 4px 4px 0px #e0e0e0;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Nhãn Label (Trạng thái mặc định: NẰM LỌT THỎM TRONG Ô TEXT) */
+.zzz-label {
+    position: absolute;
+    left: 15px; /* Thụt vào trong cho bằng chữ */
+    top: 18px; /* Căn giữa theo chiều dọc của input */
+    color: var(--text-muted);
+    font-weight: 900;
+    text-transform: uppercase;
+    font-family: monospace;
+    font-size: 1.1rem;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Hiệu ứng nảy Boing */
+    background: transparent;
+    border: 3px solid transparent;
+    padding: 2px 0;
+    margin: 0;
+    transform: translate(0, 0); /* Nằm im đó */
+    z-index: 5;
+}
+
+/* Hiệu ứng Focus cho ô Text */
+.zzz-input:focus {
+    border-color: var(--zzz-black);
+    transform: translate(-2px, -2px);
+}
+/* Tàng hình chữ của placeholder để làm mồi nhử CSS */
+.zzz-input::placeholder {
+    color: transparent !important;
+}
+
+    /* KHI FOCUS HOẶC ĐÃ CÓ CHỮ: Nhãn Label bay LÊN và SANG PHẢI */
+    .zzz-input:focus ~ .zzz-label,
+    .zzz-input:not(:placeholder-shown) ~ .zzz-label { /* Thêm cái này để lúc có chữ nó không rớt xuống */
+        background: var(--zzz-primary);
+        color: var(--zzz-black);
+        font-size: 0.85rem;
+        padding: 6px 24px;
+        border: 3px solid var(--zzz-black);
+        border-radius: 3px;
+        width: fit-content;
+        white-space: nowrap;
+    }
+
+    .zzz-input:focus ~ .label-user,
+    .zzz-input:not(:placeholder-shown) ~ .label-user {
+        transform: translate(200px, -32px); /* Tinh chỉnh số 140px này cho vừa mắt */
+    }
+
+    /* 2. Ô Mật khẩu (Chữ ngắn -> Cho bay xa ra để mép phải bằng với ô trên) */
+    .zzz-input:focus ~ .label-pass,
+    .zzz-input:not(:placeholder-shown) ~ .label-pass {
+        transform: translate(240px, -32px); /* Tinh chỉnh số 195px này cho vừa mắt */
+    }
+
+/* --- FIX RESPONSIVE CHO ĐIỆN THOẠI (Màn hình nhỏ) --- */
+@media (max-width: 480px) {
+    .zzz-input:focus ~ .label-user,
+    .zzz-input:not(:placeholder-shown) ~ .label-user {
+        transform: translate(60px, 14px); /* Ép ngắn lại trên mobile */
+    }
+
+    .zzz-input:focus ~ .label-pass,
+    .zzz-input:not(:placeholder-shown) ~ .label-pass {
+        transform: translate(110px, 14px); /* Ép ngắn lại trên mobile */
+    }
+}
+
+/* Checkbox */
+.zzz-remember {
+    display: flex;
+    align-items: center;
+    color: var(--zzz-black);
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.form-check-input {
+    border: 3px solid var(--zzz-black) !important;
+    background-color: var(--zzz-card);
+    border-radius: 0 !important;
+    width: 1.4rem;
+    height: 1.4rem;
+    cursor: pointer;
+    margin-top: 0;
+    transition: all 0.1s;
+}
+
+    .form-check-input:checked {
+        background-color: var(--zzz-primary) !important;
+        border-color: var(--zzz-black) !important;
+        box-shadow: 3px 3px 0px var(--zzz-black);
+        /* TÀ THUẬT ÉP MÀU DẤU CHECK BẰNG SVG */
+        /* Phân tích: stroke='%23111111' chính là mã màu #111111 (Đen) */
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23111111' stroke-linecap='square' stroke-linejoin='miter' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e") !important;
+        background-size: 80%; /* Thu nhỏ dấu tick lại một xíu cho sắc nét */
+    }
+
+/* Button */
+.zzz-login-btn {
+    margin-top: 15px;
+    font-weight: 900;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background-color: var(--zzz-primary);
+    color: var(--zzz-black);
+    border: 3px solid var(--zzz-black);
+    border-radius: 0;
+    padding: 15px;
+    box-shadow: 8px 8px 0px var(--zzz-black);
+    transition: all 0.1s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+    /* KHI LƯỚT CHUỘT QUA (HOVER) */
+    .zzz-login-btn:hover {
+        background-color: var(--zzz-black); /* Đổi sang màu Xanh lơ công nghệ */
+        color: var(--zzz-primary);
+        transform: translate(-4px, -4px);
+        border-color: var(--zzz-card) !important;
+        box-shadow: 12px 12px 0px var(--zzz-black), 16px 16px 0px var(--zzz-primary);
+    }
+
+    /* KHI NHẤN CHUỘT XUỐNG (ACTIVE) */
+    .zzz-login-btn:active {
+        transform: translate(8px, 8px);
+        box-shadow: 0px 0px 0px transparent;
+    }
+
+/* Links */
+.zzz-links {
+    margin-top: 25px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+    .zzz-links a {
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        text-transform: uppercase;
+        position: relative;
+        padding: 4px 8px 4px 12px;
+        z-index: 1; /* Bắt buộc đẩy chữ nổi lên trên cùng */
+    }
+
+        /* Thanh kiếm Vàng Chanh tàng hình bên trái (Giữ nguyên vì nó ngầu) */
+        .zzz-links a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--zzz-primary);
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            z-index: 2;
+        }
+
+        /* TÀ THUẬT TẠO LỚP KHÓI BLUR NHÒE VÀO GIAO DIỆN */
+        .zzz-links a::after {
+            content: '';
+            position: absolute;
+            /* Tràn ra ngoài một tí để lúc blur không bị cụt cụt */
+            top: -2px;
+            bottom: -2px;
+            left: 0px;
+            right: -10px;
+            opacity: 0; /* Mặc định tàng hình */
+            transition: opacity 0.3s ease;
+        }
+
+        /* KHI HOVER (LƯỚT CHUỘT QUA) */
+        .zzz-links a:hover {
+            color: var(--zzz-black);
+            /* Tuyệt đối KHÔNG gán background ở đây nữa kẻo nó lại hiện ra hình chữ nhật thô bỉ */
+        }
+
+            .zzz-links a:hover::before {
+                transform: scaleY(1); /* Mọc thanh gươm lên */
+            }
+
+            .zzz-links a:hover::after {
+                opacity: 1; /* Xả khói Xanh lơ ra */
+            }
+
+/* =========================================
+   TỌA ĐỘ BAY RIÊNG CHO TRANG ĐĂNG KÝ (REGISTER)
+   Đã căn chỉnh lại khoảng cách để mép phải thẳng hàng tắp!
+========================================= */
+
+/* Nhóm 1: Tên định danh & Hòm thư điện tử (Chữ dài) */
+.zzz-input:focus ~ .label-reg,
+.zzz-input:not(:placeholder-shown) ~ .label-reg {
+    transform: translate(255px, -32px); /* Tăng X lên để đẩy sát lề phải */
+}
+
+/* Nhóm 1: Tên định danh & Hòm thư điện tử (Chữ dài) */
+.zzz-input:focus ~ .label-reg-email,
+.zzz-input:not(:placeholder-shown) ~ .label-reg-email {
+    transform: translate(310px, -32px); /* Tăng X lên để đẩy sát lề phải */
+}
+
+/* Nhóm 2: Khóa bảo mật (Chữ ngắn -> Phải bay xa hơn) */
+.zzz-input:focus ~ .label-reg-pass,
+.zzz-input:not(:placeholder-shown) ~ .label-reg-pass {
+    transform: translate(285px, -32px);
+}
+
+/* Nhóm 3: Xác nhận khóa (Chữ độ dài vừa) */
+.zzz-input:focus ~ .label-reg-confirm,
+.zzz-input:not(:placeholder-shown) ~ .label-reg-confirm {
+    transform: translate(220px, -32px);
+}
+
+/* Cân chỉnh lại form khi trên Mobile (Điện thoại) */
+@media (max-width: 480px) {
+    .zzz-input:focus ~ .label-reg,
+    .zzz-input:not(:placeholder-shown) ~ .label-reg {
+        transform: translate(50px, -32px);
+    }
+
+    .zzz-input:focus ~ .label-reg-pass,
+    .zzz-input:not(:placeholder-shown) ~ .label-reg-pass {
+        transform: translate(75px, -32px);
+    }
+
+    .zzz-input:focus ~ .label-reg-confirm,
+    .zzz-input:not(:placeholder-shown) ~ .label-reg-confirm {
+        transform: translate(60px, -32px);
+    }
+}
+
+/* =========================================
+   THÊM THẮT: NÚT BACK VÀ CON MẮT NHÌN TRỘM
+========================================= */
+
+/* Nút rút lui về trang chủ (Nằm lơ lửng góc trên cùng bên trái) */
+.zzz-back-home {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: var(--zzz-black);
+    text-decoration: none;
+    font-family: monospace;
+    font-weight: 900;
+    font-size: 14px;
+    text-transform: uppercase;
+    background-color: var(--zzz-primary);
+    padding: 8px 16px;
+    border: 3px solid var(--zzz-black);
+    box-shadow: 4px 4px 0px var(--zzz-black);
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: 100;
+}
+
+    .zzz-back-home:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0px var(--zzz-black);
+        color: var(--zzz-black);
+    }
+
+    .zzz-back-home:active {
+        transform: translate(4px, 4px);
+        box-shadow: 0px 0px 0px transparent;
+    }
+
+/* Chừa chỗ bên phải cho cái input mật khẩu kẻo gõ dài nó đè lên con mắt */
+.zzz-password-input {
+    padding-right: 50px !important;
+}
+
+/* =========================================
+   NÚT HIỂN THỊ MẬT KHẨU (KIỂU CÔNG TẮC DƯỚI GẦM)
+========================================= */
+.zzz-eye-btn-bottom {
+    background: transparent;
+    border: 2px solid var(--zzz-black);
+    color: var(--zzz-black);
+    font-family: monospace;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.1s cubic-bezier(0.25, 0.8, 0.25, 1);
+    text-transform: uppercase;
+    box-shadow: 2px 2px 0px var(--zzz-black);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    outline: none;
+}
+
+    .zzz-eye-btn-bottom:hover {
+        background: var(--zzz-primary);
+        transform: translate(-2px, -2px);
+        box-shadow: 4px 4px 0px var(--zzz-black);
+    }
+
+    .zzz-eye-btn-bottom:active {
+        transform: translate(2px, 2px);
+        box-shadow: 0px 0px 0px transparent;
+    }

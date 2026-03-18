@@ -1,0 +1,241 @@
+﻿/* === RESET & CÀI ĐẶT IN ẤN === */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Cambria, 'Times New Roman', Times, serif; /* Font văn bản trang trọng */
+    font-size: 14px;
+    color: #222;
+    background-color: #555;
+    padding: 20px;
+}
+
+/* Khung tờ giấy A4 */
+.invoice-paper {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 15mm;
+    border: 1px solid #333;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+/* === HEADER HÓA ĐƠN === */
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid #0a4275; /* Đổi viền sang xanh navy */
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.logo-box {
+    width: 15%;
+    text-align: center;
+}
+
+    .logo-box img {
+        width: 90px;
+        height: auto;
+        border-radius: 8px;
+    }
+
+.company-info {
+    width: 80%;
+    line-height: 1.5;
+}
+
+    .company-info h3 {
+        color: #0a4275; /* Màu Xanh doanh nghiệp tư nhân */
+        font-size: 17px;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
+
+/* === TIÊU ĐỀ HÓA ĐƠN === */
+.invoice-title-zone {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.qr-placeholder {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 70px;
+    height: 70px;
+    border: 1px solid #0a4275;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #0a4275;
+    font-weight: bold;
+    background-color: #f0f4f8;
+}
+
+.serial-info {
+    text-align: right;
+    font-size: 13px;
+    margin-bottom: 10px; /* Đẩy tiêu đề chính xuống một chút cho thoáng */
+    word-break: break-word; /* Tránh trường hợp mã dài quá khổ làm vỡ khung */
+    padding-right: 5px;
+}
+
+.main-title {
+    color: #0a4275; /* Xanh Navy thay cho Đỏ cờ */
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+}
+
+.sub-title {
+    font-style: italic;
+    font-size: 13px;
+    margin-bottom: 5px;
+    color: #444;
+}
+
+/* === THÔNG TIN KHÁCH HÀNG === */
+.customer-info {
+    line-height: 1.8;
+    margin-bottom: 15px;
+    background-color: #fafbfc;
+    padding: 10px;
+    border: 1px dotted #ccc;
+}
+
+    .customer-info span.label {
+        font-weight: bold;
+        color: #333;
+    }
+
+/* === BẢNG TÍNH TIỀN === */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+    .data-table th, .data-table td {
+        border: 1px solid #666; /* Viền xám đậm thay vì đen xì */
+        padding: 8px 6px;
+        text-align: center;
+    }
+
+    .data-table th {
+        font-weight: bold;
+        color: #0a4275;
+    }
+
+    .data-table .text-left {
+        text-align: left;
+    }
+
+    .data-table .text-right {
+        text-align: right;
+    }
+
+.summary-row td {
+    font-weight: bold;
+}
+
+.amount-words {
+    font-style: italic;
+    font-weight: bold;
+    padding: 10px 0;
+    border-bottom: 2px solid #0a4275;
+    color: #0a4275;
+}
+
+/* === CHỮ KÝ === */
+.signature-zone {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.signature-box {
+    width: 45%;
+}
+
+.seller-stamp {
+    margin-top: 10px;
+    border: 2px solid #0a4275; /* Mộc xanh navy */
+    color: #0a4275;
+    padding: 12px;
+    font-size: 12px;
+    display: inline-block;
+    border-radius: 4px; /* Bo góc chút cho hiện đại */
+}
+
+/* === NÚT IN (ZZZ STYLE) === */
+.print-control {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.btn-zzz-print {
+    background-color: #d2ff00;
+    color: #000;
+    border: 2px solid #000;
+    padding: 12px 30px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 #000;
+    transition: transform 0.1s;
+}
+
+    .btn-zzz-print:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 #000;
+    }
+
+/* WATERMARK MỜ */
+.watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    font-size: 100px;
+    color: rgba(10, 66, 117, 0.04); /* Chữ chìm màu xanh nhạt */
+    font-family: 'Arial Black', sans-serif;
+    font-weight: bold;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.content-layer {
+    position: relative;
+    z-index: 1;
+}
+
+/* === ẨN KHI IN === */
+@@media print {
+    body {
+        background-color: #fff;
+        padding: 0;
+    }
+
+    .invoice-paper {
+        box-shadow: none;
+        border: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .print-control {
+        display: none;
+    }
+}

@@ -1,0 +1,66 @@
+﻿@model KhachHang
+
+@{
+    ViewData["Title"] = "Đăng ký sử dụng điện";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-5">
+
+            <h3 class="mb-4 text-center fw-bold text-primary">
+                Đăng ký sử dụng dịch vụ điện
+            </h3>
+
+            <form asp-action="DangKyThongTin" method="post">
+                <input type="hidden" id="maMien" name="MaMien" />
+                <input type="hidden" id="diaChiDayDu" name="DiaChiDayDu" />
+                <div class="mb-3">
+                    <label class="form-label">Họ và tên</label>
+                    <input asp-for="TenKh"
+                           class="form-control rounded-3" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Số điện thoại</label>
+                    <input asp-for="DienThoai" class="form-control rounded-3" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Tỉnh/Thành phố</label>
+                    <select id="province" class="form-control">
+                        <option value="">-- Chọn Tỉnh/Thành --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Quận/Huyện</label>
+                    <select id="district" class="form-control">
+                        <option value="">-- Chọn Quận/Huyện --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Phường/Xã (Cái này quan trọng nhất nè)</label>
+                    <select id="ward" name="MaPhuongApi" class="form-control">
+                        <option value="">-- Chọn Phường/Xã --</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Địa chỉ sử dụng điện</label>
+                    <input asp-for="DiaChi" class="form-control rounded-3" required />
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary px-4 py-2 rounded-3">
+                        Gửi yêu cầu
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+<script src="~/js/PhuongAPI.js"></script>

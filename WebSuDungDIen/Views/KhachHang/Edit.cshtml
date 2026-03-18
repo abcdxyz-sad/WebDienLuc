@@ -1,0 +1,93 @@
+﻿@model WebSuDungDIen.Models.KhachHang
+
+@{
+    ViewData["Title"] = "Cập nhật thông tin Khách Hàng";
+}
+
+<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel">
+    <h1 class="m-0 zzz-page-title">
+        [ TỆP HỒ SƠ ] CẬP NHẬT DỮ LIỆU
+    </h1>
+    <div class="d-flex align-items-center gap-3">
+        <span class="zzz-sys-status text-primary fw-bold">
+            HỆ THỐNG: <span class="zzz-blink-dot text-warning">●</span> ĐANG CHỈNH SỬA
+        </span>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card position-relative border-dark border-3 rounded-0 shadow-lg">
+
+            <div class="zzz-hazard-strip m-0" style="position: absolute; top: 0; left: 0;"></div>
+
+            <div class="card-body p-4 p-md-5 mt-3">
+                <form asp-action="Edit" method="post">
+
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="IdentityUserId" />
+                    <input type="hidden" asp-for="MaPhuongApi" />
+                    <input type="hidden" asp-for="DiaChiDayDu" />
+
+                    <div class="zzz-fieldset">
+                        <div class="zzz-fieldset-title text-muted border-dark">SYS.01 // DỮ LIỆU LÕI (BỊ KHÓA)</div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="MaKh" class="form-label zzz-cmd-label">ĐỊNH DANH (MÃ KH)</label>
+                                <input asp-for="MaKh" class="form-control zzz-terminal-input zzz-locked-input fw-bold fs-5" readonly tabindex="-1" />
+                                <small class="text-danger zzz-text-mono mt-1 d-block fw-bold">* Mã định danh không thể thay đổi.</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DiaChi" class="form-label zzz-cmd-label">ĐỊA CHỈ ĐĂNG KÝ SỬ DỤNG ĐIỆN</label>
+                                <input value="@Model.DiaChiDayDu" class="form-control zzz-terminal-input zzz-locked-input text-muted text-uppercase fw-bold" readonly tabindex="-1" />
+                                <small class="text-danger zzz-text-mono mt-1 d-block fw-bold">* Liên hệ Tổng đài để làm thủ tục chỉnh sửa.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="zzz-fieldset zzz-fieldset-highlight border-dark">
+                        <div class="zzz-fieldset-title zzz-fieldset-title-highlight border-dark">INF.02 // DỮ LIỆU CHO PHÉP GHI ĐÈ</div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label asp-for="TenKh" class="form-label zzz-cmd-label text-danger">
+                                    <span>TÊN KHÁCH HÀNG / ĐẠI DIỆN</span>
+                                </label>
+                                <input asp-for="TenKh" class="form-control zzz-terminal-input text-uppercase fw-bold text-danger border-dark border-2" />
+                                <span asp-validation-for="TenKh" class="text-danger zzz-text-req d-block mt-1 fw-bold zzz-text-mono"></span>
+                            </div>
+
+                            <div class="col-md-12 mb-2">
+                                <label asp-for="DienThoai" class="form-label zzz-cmd-label text-danger">
+                                    <span>TÍN HIỆU LIÊN LẠC (SĐT)</span>
+                                </label>
+                                <input asp-for="DienThoai" class="form-control zzz-terminal-input fw-bold zzz-badge-id fs-5 border-dark border-2" />
+                                <span asp-validation-for="DienThoai" class="text-danger zzz-text-req d-block mt-1 fw-bold zzz-text-mono"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column flex-md-row gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary fw-bold fs-5 flex-grow-1 py-3 border-dark border-3 rounded-0 shadow-sm" style="transition: all 0.1s;">
+                            <i class="fas fa-save me-2"></i> LƯU GHI ĐÈ
+                        </button>
+
+                        <a asp-action="Index" class="btn zzz-btn-cancel fw-bold fs-5 px-md-5 py-3 border-dark border-3 rounded-0 d-flex align-items-center justify-content-center" style="transition: all 0.1s;">
+                            <i class="fas fa-undo me-2"></i> RÚT LUI
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,68 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Đăng ký tài khoản";
+    Layout = null; // Cắt đứt với giao diện mặc định
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Quản lý Điện Lực</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/Login.css" asp-append-version="true" />
+</head>
+<body>
+
+    <div class="zzz-login-wrapper">
+        <div class="zzz-login-card" style="max-width: 520px;">
+            <div class="zzz-login-header">
+                <h1 class="zzz-title">ĐĂNG KÝ TÀI KHOẢN</h1>
+                <p class="zzz-subtitle"><span class="status-dot"></span> Đăng ký tài khoản hệ thống</p>
+            </div>
+
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3 font-monospace font-weight-bold"></div>
+
+                <div class="zzz-input-group mb-4">
+                    <input asp-for="Input.UserName" class="zzz-input" autocomplete="username" spellcheck="false" required placeholder=" " />
+                    <label class="zzz-label label-reg" asp-for="Input.UserName">Tên tài khoản</label>
+                    <span asp-validation-for="Input.UserName" class="text-danger small mt-1 d-block font-weight-bold font-monospace"></span>
+                </div>
+
+                <div class="zzz-input-group mb-4">
+                    <input asp-for="Input.Email" class="zzz-input" autocomplete="email" spellcheck="false" required placeholder=" " />
+                    <label class="zzz-label label-reg-email" asp-for="Input.Email">Email</label>
+                    <span asp-validation-for="Input.Email" class="text-danger small mt-1 d-block font-weight-bold font-monospace"></span>
+                </div>
+
+                <div class="zzz-input-group mb-4">
+                    <input asp-for="Input.Password" class="zzz-input" autocomplete="new-password" required placeholder=" " />
+                    <label class="zzz-label label-reg-pass" asp-for="Input.Password">Password</label>
+                    <span asp-validation-for="Input.Password" class="text-danger small mt-1 d-block font-weight-bold font-monospace"></span>
+                </div>
+
+                <div class="zzz-input-group mb-4">
+                    <input asp-for="Input.ConfirmPassword" class="zzz-input" autocomplete="new-password" required placeholder=" " />
+                    <label class="zzz-label label-reg-confirm" asp-for="Input.ConfirmPassword">Xác nhận password</label>
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger small mt-1 d-block font-weight-bold font-monospace"></span>
+                </div>
+
+                <button id="registerSubmit" type="submit" class="w-100 btn btn-lg zzz-login-btn">
+                    GHI NHẬN HỒ SƠ
+                </button>
+
+                <div class="zzz-links">
+                    <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">> Quay lại đăng nhập</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+</body>
+</html>

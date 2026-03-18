@@ -1,0 +1,174 @@
+﻿@model WebSuDungDIen.Models.KhachHang
+
+@{
+    ViewData["Title"] = "Khởi tạo hồ sơ Khách hàng";
+    var users = ViewBag.Users;
+}
+
+<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel">
+    <h1 class="m-0 zzz-page-title">
+        [ TỆP HỒ SƠ ] TẠO MỚI KHÁCH HÀNG
+    </h1>
+    <div class="d-flex align-items-center gap-3">
+        <span class="zzz-sys-status text-primary fw-bold">
+            HỆ THỐNG: <span class="zzz-blink-dot text-warning">●</span> ĐANG CHỜ NHẬP LIỆU
+        </span>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card position-relative border-dark border-3 rounded-0 shadow-lg">
+            
+            <div class="zzz-hazard-line"></div>
+
+            <div class="card-body p-4 p-md-5 mt-2">
+                <form asp-action="Create" method="post">
+                    
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4 zzz-text-mono fw-bold rounded-0"></div>
+
+                    <div class="zzz-fieldset">
+                        <div class="zzz-fieldset-title">SYS.01 // LIÊN KẾT TÀI KHOẢN</div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label zzz-cmd-label">
+                                    <span>CHỌN UID HỆ THỐNG</span>
+                                    <span class="zzz-text-req">* REQ</span>
+                                </label>
+                                <select asp-for="IdentityUserId" class="form-select zzz-terminal-input fw-bold" id="userSelect">
+                                    <option value="">-- CHỌN TÀI KHOẢN ĐĂNG KÝ --</option>
+                                    @foreach (var u in users)
+                                    {
+                                        <option value="@u.Id"
+                                                data-email="@u.Email"
+                                                data-username="@u.UserName"
+                                                data-hoten="@u.HoTen">
+                                            @u.Email
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label zzz-cmd-label text-muted small">EMAIL LIÊN KẾT</label>
+                                <input type="text" id="emailBox" class="form-control zzz-terminal-input zzz-locked-input text-danger fw-bold" readonly placeholder="[ TỰ ĐỘNG ĐIỀN ]" />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label zzz-cmd-label text-muted small">USERNAME</label>
+                                <input type="text" id="usernameBox" class="form-control zzz-terminal-input zzz-locked-input fw-bold" readonly placeholder="[ TỰ ĐỘNG ĐIỀN ]" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="zzz-fieldset">
+                        <div class="zzz-fieldset-title text-warning border-dark">INF.02 // HỒ SƠ KHÁCH HÀNG</div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label asp-for="TenKh" class="form-label zzz-cmd-label">
+                                    <span>TÊN KHÁCH HÀNG / CHỦ HỘ</span>
+                                    <span class="zzz-text-req">* REQ</span>
+                                </label>
+                                <input asp-for="TenKh" class="form-control zzz-terminal-input fw-bold text-uppercase text-danger" id="tenKhBox" placeholder="Nhập tên người đại diện..." />
+                                <span asp-validation-for="TenKh" class="text-danger zzz-text-req d-block mt-1 fw-bold zzz-text-mono"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DienThoai" class="form-label zzz-cmd-label">
+                                    <span>TÍN HIỆU LIÊN LẠC (SĐT)</span>
+                                    <span class="zzz-text-req">* REQ</span>
+                                </label>
+                                <input asp-for="DienThoai" class="form-control zzz-terminal-input fw-bold zzz-badge-id fs-5" placeholder="09xx..." />
+                                <span asp-validation-for="DienThoai" class="text-danger zzz-text-req d-block mt-1 fw-bold zzz-text-mono"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="zzz-fieldset zzz-fieldset-highlight border-dark">
+                        <div class="zzz-fieldset-title zzz-fieldset-title-highlight border-dark">LOC.03 // ĐỊNH VỊ TỌA ĐỘ</div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label zzz-cmd-label">TỈNH / THÀNH PHỐ</label>
+                                <select id="province" class="form-select zzz-terminal-input fw-bold">
+                                    <option value="">-- CHỌN TỈNH/THÀNH --</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label zzz-cmd-label text-danger">
+                                    <i class="fas fa-map-marker-alt"></i> QUẢN LÝ CẤP PHƯỜNG
+                                    <span class="zzz-text-req text-danger">* REQ</span>
+                                </label>
+                                <select id="ward" name="MaPhuongApi" class="form-select zzz-terminal-input border-dark border-3 fw-bold" style="background-color: rgba(210, 255, 0, 0.1);">
+                                    <option value="">-- CHỌN PHƯỜNG/XÃ --</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-12 mb-2">
+                                <label asp-for="DiaChi" class="form-label zzz-cmd-label">SỐ NHÀ, TÊN ĐƯỜNG</label>
+                                <input asp-for="DiaChi" id="inputSoNha" class="form-control zzz-terminal-input fw-bold text-uppercase" placeholder="Ví dụ: 123 Đường Lê Lợi..." />
+                                <span asp-validation-for="DiaChi" class="text-danger zzz-text-req d-block mt-1 fw-bold zzz-text-mono"></span>
+
+                                <input type="hidden" asp-for="DiaChiDayDu" id="DiaChiDayDu" />
+                                <input type="hidden" name="MaMien" id="maMien" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column flex-md-row gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary fw-bold fs-5 flex-grow-1 py-3 border-dark border-3 rounded-0 shadow-sm">
+                            <i class="fas fa-save me-2"></i> LƯU VÀO CƠ SỞ DỮ LIỆU
+                        </button>
+                        
+                        <a asp-action="Index" class="btn zzz-btn-cancel fw-bold fs-5 px-md-5 py-3 border-dark border-3 rounded-0 d-flex align-items-center justify-content-center">
+                            <i class="fas fa-undo me-2"></i> RÚT LUI
+                        </a>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/PhuongAPI.js"></script>
+    <script>
+        // Code tự điền thông tin User
+        document.getElementById("userSelect").addEventListener("change", function () {
+            var selected = this.options[this.selectedIndex];
+            var email = selected.getAttribute("data-email");
+            var username = selected.getAttribute("data-username");
+            var hoten = selected.getAttribute("data-hoten");
+
+            document.getElementById("emailBox").value = email || "";
+            document.getElementById("usernameBox").value = username || "";
+            document.getElementById("tenKhBox").value = hoten || "";
+        });
+
+        function capNhatDiaChiFull() {
+            var soNha = $("#inputSoNha").val().trim();
+            var tenTinh = $("#province").val() ? $("#province option:selected").text() : "";
+            var tenPhuong = $("#ward").val() ? $("#ward option:selected").text() : "";
+
+            var cacPhan = [];
+            if (soNha) cacPhan.push(soNha);
+            if (tenPhuong) cacPhan.push(tenPhuong);
+            if (tenTinh) cacPhan.push(tenTinh);
+
+            var diaChiHoanChinh = cacPhan.join(", ");
+
+            // Gán vào đúng ID của ô hidden DiaChiDayDu
+            $("#DiaChiDayDu").val(diaChiHoanChinh);
+        }
+
+        $("#inputSoNha").on("input", capNhatDiaChiFull);
+        $("#ward, #province").on("change", capNhatDiaChiFull);
+    </script>
+}

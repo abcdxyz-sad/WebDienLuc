@@ -1,0 +1,130 @@
+﻿@model IEnumerable<WebSuDungDIen.Models.KhachHang>
+
+@{
+    ViewData["Title"] = "Dữ Liệu Khách Hàng";
+}
+
+<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel border-dark border-3">
+
+    <h1 class="m-0 zzz-page-title fw-bold text-uppercase">
+        [ TỆP HỒ SƠ ] KHÁCH HÀNG
+    </h1>
+
+    <div class="d-flex align-items-center flex-wrap gap-3 ms-auto">
+
+        <form method="get" asp-action="Index" class="m-0" style="min-width: 380px;">
+            <div class="input-group border border-dark border-2 rounded-0 shadow-sm">
+                <input type="text" id="liveSearchInput" name="searchKeyword" value="@ViewBag.SearchKeyword" class="form-control border-0 rounded-0 font-monospace fw-bold" placeholder="Tên, SĐT, Mã KH..." />
+                <button type="submit" class="btn zzz-btn-cancel fw-bold px-4 border-start border-dark border-2 rounded-0">
+                    TÌM <i class="bi bi-radar ms-1"></i>
+                </button>
+            </div>
+        </form>
+
+        <a asp-action="Create" class="btn btn-primary border-dark border-2 rounded-0 fw-bold shadow-sm zzz-text-mono" style="box-shadow: 4px 4px 0px #000;">
+            <i class="bi bi-plus-square-fill me-1"></i> [ THÊM MỚI ]
+        </a>
+
+    </div>
+</div>
+<div class="card bg-white border-dark border-3 rounded-0 mt-4" style="box-shadow: 8px 8px 0px var(--zzz-black);">
+
+    <div class="bg-dark text-warning px-3 py-2 zzz-text-mono d-flex justify-content-between border-bottom border-dark border-3 fw-bold">
+        <span>DỮ LIỆU TỔNG HỢP KHÁCH HÀNG</span>
+        <span class="text-muted small">BẢN GHI HỆ THỐNG</span>
+    </div>
+
+    <div class="card-body p-4 p-md-5 zzz-text-mono text-dark" id="vung-du-lieu-thay-doi" style="overflow-x: auto; background-image: radial-gradient(#d1d1d1 1px, transparent 1px); background-size: 20px 20px;">
+
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <div class="customer-item mb-4 p-4 border border-dark border-2 bg-white" style="border-style: dashed !important; box-shadow: 4px 4px 0px rgba(0,0,0,0.05);">
+
+                    <div class="d-flex flex-column flex-md-row gap-3 justify-content-between align-items-md-center mb-3">
+                        <div>
+                            <span class="bg-dark text-white fw-bold px-2 py-1 fs-5">MÃ KHÁCH: [@item.MaKh]</span>
+                            <span class="fw-bolder text-danger fs-3 text-uppercase ms-2" style="vertical-align: middle;">@item.TenKh</span>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary fw-bold rounded-0 border-2 zzz-text-mono px-3">[INFO]</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary fw-bold rounded-0 border-2 zzz-text-mono px-3">[EDIT]</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm zzz-btn-danger fw-bold rounded-0 border-2 zzz-text-mono px-3">[DROP]</a>
+                        </div>
+                    </div>
+
+                    <div class="ms-md-2 mt-2 p-3 border border-dark border-1 bg-white" style="font-size: 1.1rem; box-shadow: 2px 2px 0px #eee;">
+                        <div><span class="text-muted fw-bold">|-- SỐ ĐIỆN THOẠI:</span> <span class="fw-bold zzz-badge-id">@item.DienThoai</span></div>
+                        <div class="mt-2"><span class="text-muted fw-bold">|-- ĐỊA ĐIỂM:</span> <span class="fw-bold text-uppercase">@item.DiaChiDayDu</span></div>
+                        <div class="mt-2"><span class="text-muted fw-bold">|-- EMAIL:</span> <span class="fw-bold">@(item.User?.Email ?? "NULL")</span></div>
+                    </div>
+
+                </div>
+            }
+        }
+        else
+        {
+            <div id="noMatchMessage" class="text-center py-5" style="display: none;">
+                <i class="bi bi-search text-muted mb-3" style="font-size: 3rem;"></i>
+                <h4 class="fw-bold text-danger zzz-text-mono">KHÔNG TÌM THẤY TỪ KHÓA PHÙ HỢP.</h4>
+                <p class="text-muted fw-bold">Vui lòng thử lại với Tên, SĐT hoặc Mã KH khác.</p>
+            </div>
+        }
+
+    </div>
+</div>
+@section Scripts {
+    <script>
+        let timeout = null;
+
+        document.getElementById('liveSearchInput').addEventListener('input', function (e) {
+            clearTimeout(timeout);
+
+            // Trễ 300ms để không spam request
+            timeout = setTimeout(function () {
+                let keyword = e.target.value;
+                let form = e.target.closest('form');
+                let url = form.action + '?searchKeyword=' + encodeURIComponent(keyword);
+
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        let parser = new DOMParser();
+                        let doc = parser.parseFromString(html, 'text/html');
+
+                        // Lấy và đập dữ liệu mới vào
+                        let newContent = doc.getElementById('vung-du-lieu-thay-doi').innerHTML;
+                        document.getElementById('vung-du-lieu-thay-doi').innerHTML = newContent;
+
+                        /* =========================================================
+                           PHẦN THÊM MỚI: XỬ LÝ HIỆN THÔNG BÁO KHÔNG CÓ DỮ LIỆU
+                           ========================================================= */
+                        // 1. Quét xem trong vùng dữ liệu mới có thẻ khách hàng nào không
+                        let itemCount = document.querySelectorAll('#vung-du-lieu-thay-doi .customer-item').length;
+
+                        // 2. Gọi cái thông báo ra
+                        let noMatchMessage = document.getElementById('noMatchMessage');
+
+                        if (noMatchMessage) {
+                            if (itemCount === 0) {
+                                // Không có thẻ nào -> Mở thông báo lên
+                                noMatchMessage.style.display = 'block';
+
+                                // (Tùy chọn) Ẩn luôn cái block "0 RECORDS FOUND" mặc định của C# nếu có để không bị trùng
+                                let defaultEmpty = document.querySelector('#vung-du-lieu-thay-doi .fa-database');
+                                if(defaultEmpty) defaultEmpty.parentElement.style.display = 'none';
+                            } else {
+                                // Có ít nhất 1 thẻ -> Giấu thông báo đi
+                                noMatchMessage.style.display = 'none';
+                            }
+                        }
+
+                    })
+                    .catch(error => console.error('Lỗi cmnr sếp ơi:', error));
+
+            }, 300);
+        });
+    </script>
+}

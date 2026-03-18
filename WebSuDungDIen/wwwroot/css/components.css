@@ -1,0 +1,322 @@
+﻿/* =========================================================
+   ZENLESS ZONE ZERO COMPONENTS (wwwroot/css/components.css)
+========================================================= */
+
+/* =========================================================
+   1. BUTTONS (PHONG CÁCH KHỐI HỘP)
+========================================================= */
+
+/* Nút chính (Primary) */
+.btn-primary {
+    background-color: var(--zzz-black);
+    color: var(--zzz-primary);
+    border: 2px solid var(--zzz-black);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 2px;
+    box-shadow: 4px 4px 0px var(--zzz-primary) !important;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+    .btn-primary:hover {
+        background-color: var(--zzz-primary); /* Đảo màu: Vàng */
+        color: var(--zzz-black);
+        border-color: var(--zzz-black);
+        transform: translate(-2px, -2px); /* Nhảy lên */
+        box-shadow: 4px 4px 0px #000 !important; /* Bóng đen cứng */
+    }
+
+    .btn-primary:active {
+        transform: translate(0, 0); /* Ấn xuống */
+        box-shadow: 0 0 0 transparent;
+    }
+
+/* Nút phụ (Secondary/Outline) */
+.btn-outline-secondary {
+    background-color: #fff;
+    color: var(--zzz-black);
+    border: 2px solid var(--zzz-black);
+    font-weight: 700;
+    box-shadow: 2px 2px 0px #ccc;
+    transition: all 0.15s;
+}
+
+    .btn-outline-secondary:hover {
+        background-color: var(--zzz-black);
+        color: #fff;
+        border-color: var(--zzz-black);
+        box-shadow: 4px 4px 0px var(--zzz-accent); /* Bóng hồng */
+        transform: translate(-2px, -2px);
+    }
+
+/* Nút Nguy hiểm (Delete) */
+.btn-danger {
+    background-color: var(--zzz-accent);
+    border: 2px solid var(--zzz-black);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 2px 2px 0px #000;
+}
+
+    .btn-danger:hover {
+        background-color: #d90429;
+        transform: translate(-2px, -2px);
+        box-shadow: 4px 4px 0px #000;
+    }
+
+/* Nút Nguy hiểm Custom ZZZ */
+.zzz-btn-danger {
+    background-color: #FF3366;
+    color: #FFFFFF;
+    border: 3px solid var(--zzz-black, #111111);
+    text-transform: uppercase;
+    font-family: monospace;
+    box-shadow: 4px 4px 0px var(--zzz-black, #111111);
+    border-radius: 0;
+    transition: all 0.1s;
+}
+
+    .zzz-btn-danger:hover {
+        background-color: var(--zzz-black, #111111);
+        color: #FF3366;
+        border-color: #FF3366;
+        transform: translate(-2px, -2px);
+        box-shadow: 4px 4px 0px #FF3366; /* Tỏa bóng đỏ */
+    }
+
+    .zzz-btn-danger:active {
+        transform: translate(4px, 4px);
+        box-shadow: 0px 0px 0px transparent !important;
+    }
+
+/* Nút Công Nghệ / Hệ Thống (Xanh Cyan) */
+.zzz-btn-tech {
+    background-color: var(--zzz-blue, #00E5FF);
+    color: var(--zzz-black, #111111) !important;
+    border: 3px solid var(--zzz-black, #111111) !important;
+    text-transform: uppercase;
+    font-family: monospace;
+    font-weight: 900;
+    box-shadow: 4px 4px 0px var(--zzz-black, #111111) !important;
+    border-radius: 0;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    display: inline-block;
+}
+
+    .zzz-btn-tech:hover {
+        background-color: var(--zzz-black, #111111);
+        color: var(--zzz-blue, #00E5FF) !important;
+        border-color: var(--zzz-blue, #00E5FF) !important;
+        transform: translate(-2px, -2px);
+        box-shadow: 4px 4px 0px var(--zzz-blue, #00E5FF) !important; /* Tỏa bóng Cyan cực gắt */
+    }
+
+    .zzz-btn-tech:active {
+        transform: translate(4px, 4px) !important;
+        box-shadow: 0px 0px 0px transparent !important;
+    }
+
+/* Nút RÚT LUI (Trắng, an toàn) - Đã bọc thép chống đè class */
+.zzz-btn-cancel {
+    background-color: #FFFFFF !important; /* Ép nền trắng */
+    color: #111111 !important;
+    border: 3px solid #111111 !important;
+    text-transform: uppercase;
+    font-family: monospace;
+    box-shadow: 4px 4px 0px #111111 !important;
+    border-radius: 0 !important;
+    transition: all 0.1s ease-in-out;
+    text-decoration: none !important;
+}
+
+    .zzz-btn-cancel:hover {
+        background-color: #111111 !important;
+        color: #FFFFFF !important;
+        transform: translate(-2px, -2px);
+        box-shadow: 4px 4px 0px 0px #FFFFFF, 4px 4px 0px 2px #111111 !important;
+    }
+
+    .zzz-btn-cancel:active {
+        transform: translate(4px, 4px) !important;
+        box-shadow: 0px 0px 0px transparent !important;
+    }
+
+/* Icon trong nút */
+.btn i {
+    margin-right: 6px;
+    font-size: 1.1em;
+    vertical-align: bottom;
+}
+
+/* =========================================================
+   2. BADGES (STICKER VUÔNG)
+========================================================= */
+
+.badge {
+    border: 2px solid var(--zzz-black);
+    border-radius: 0;
+    padding: 0.5em 0.8em;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    color: #000 !important;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.15);
+}
+
+    .badge.bg-success {
+        background-color: #00FF99 !important;
+    }
+
+    .badge.bg-danger {
+        background-color: #FF3366 !important;
+        color: #fff !important;
+    }
+
+    .badge.bg-warning {
+        background-color: var(--zzz-primary) !important;
+    }
+
+    .badge.bg-secondary {
+        background-color: #e9ecef !important;
+    }
+
+/* =========================================================
+   3. DROPDOWN MENU
+========================================================= */
+
+.dropdown-menu {
+    background-color: #fff;
+    border: 2px solid var(--zzz-black);
+    border-radius: 0;
+    box-shadow: 6px 6px 0px rgba(0,0,0,1); /* Bóng đen đậm đặc trưng */
+    padding: 0;
+    margin-top: 8px !important;
+    z-index: 9999 !important;
+}
+
+.dropdown-item {
+    color: var(--zzz-black);
+    font-weight: 600;
+    padding: 10px 20px;
+    border-bottom: 1px solid #eee;
+    transition: all 0.1s;
+    z-index: 9999 !important;
+}
+
+    .dropdown-item:last-child {
+        border-bottom: none;
+    }
+
+    .dropdown-item:hover {
+        background-color: var(--zzz-primary);
+        color: var(--zzz-black);
+        font-weight: 800;
+        padding-left: 25px; /* Hiệu ứng đẩy chữ */
+    }
+
+    /* Mục xóa trong dropdown */
+    .dropdown-item.text-danger:hover {
+        background-color: var(--zzz-accent);
+        color: #fff !important;
+    }
+
+.dropdown-divider {
+    border-top: 2px solid var(--zzz-black);
+    margin: 0;
+}
+
+/* =========================================================
+   4. UTILITIES & ALERTS
+========================================================= */
+
+.border-dashed {
+    border: 2px dashed var(--zzz-black) !important;
+    background-color: #fafafa;
+}
+
+.alert {
+    border: 2px solid var(--zzz-black);
+    border-radius: 0;
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+    font-weight: 600;
+    color: #000;
+}
+
+.alert-success {
+    background-color: #ccffdd;
+}
+
+.alert-danger {
+    background-color: #ffcccc;
+}
+
+/* Text colors override */
+.text-primary {
+    color: #0066cc !important;
+}
+
+.text-success {
+    color: #009933 !important;
+}
+
+.text-danger {
+    color: #cc0000 !important;
+}
+
+/* =========================================================
+   5. ZZZ CUSTOM SWITCH (NÚT GẠT TRẠNG THÁI)
+========================================================= */
+
+.zzz-switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+    vertical-align: middle;
+}
+
+    /* Ẩn checkbox mặc định đi */
+    .zzz-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+/* Khung ngoài của nút gạt */
+.zzz-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #fff;
+    border: 2px solid var(--zzz-black);
+    transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.2); /* Bóng mờ khi tắt */
+}
+
+    /* Cục gạt bên trong */
+    .zzz-slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: var(--zzz-black);
+        transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+/* HIỆU ỨNG KHI TRẠNG THÁI LÀ TRUE (CHECKED) */
+.zzz-switch input:checked + .zzz-slider {
+    background-color: #00FF99; /* Màu xanh lá Neon của Badge Success */
+    box-shadow: 3px 3px 0px var(--zzz-black); /* Bóng đen cứng đặc trưng */
+}
+
+    /* Đẩy cục gạt sang phải */
+    .zzz-switch input:checked + .zzz-slider:before {
+        transform: translateX(22px);
+    }

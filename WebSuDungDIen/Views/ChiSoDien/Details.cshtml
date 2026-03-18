@@ -1,0 +1,105 @@
+﻿@model WebSuDungDIen.Models.KhachHang
+
+@{
+    ViewData["Title"] = "Hồ sơ lịch sử tiêu thụ";
+}
+
+<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <h1 class="m-0">
+        [ BẢN GHI ] LỊCH SỬ TIÊU THỤ
+    </h1>
+
+    <div class="d-flex align-items-center gap-3">
+        <span class="zzz-sys-status text-success">
+            <i class="fas fa-check-circle"></i>
+            <span class="zzz-blink-dot text-success">●</span> TRUY XUẤT THÀNH CÔNG
+        </span>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+
+        <div class="zzz-fieldset">
+            <div class="zzz-fieldset-title">INF.01 // THÔNG TIN ĐỐI TƯỢNG</div>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label zzz-cmd-label text-muted small">MÃ KHÁCH HÀNG (ID)</label>
+                    <input class="form-control zzz-terminal-input zzz-locked-input fw-bold"
+                           value="#@Model.MaKh" readonly tabindex="-1" />
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label zzz-cmd-label text-muted small">TÊN KHÁCH HÀNG</label>
+                    <input class="form-control zzz-terminal-input zzz-locked-input text-danger fw-bold"
+                           value="@Model.TenKh" readonly tabindex="-1" />
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label zzz-cmd-label text-muted small">ĐỊA CHỈ</label>
+                    <input class="form-control zzz-terminal-input zzz-locked-input fw-bold text-uppercase"
+                           value="@Model.DiaChi" readonly tabindex="-1" />
+                </div>
+            </div>
+        </div>
+
+        <div class="zzz-fieldset zzz-fieldset-highlight">
+            <div class="zzz-fieldset-title zzz-fieldset-title-highlight">HIS.02 // BIẾN ĐỘNG CHỈ SỐ</div>
+
+            <div class="table-responsive bg-white border border-dark mt-2">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-center">KỲ CHỐT</th>
+                            <th class="text-end">CHỈ SỐ CŨ</th>
+                            <th class="text-end text-warning">CHỈ SỐ MỚI</th>
+                            <th class="text-center text-danger">TỔNG TIÊU THỤ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ChiSoDien != null && Model.ChiSoDien.Any())
+                        {
+                            @foreach (var item in Model.ChiSoDien.OrderByDescending(x => x.Nam).ThenByDescending(x => x.Thang))
+                            {
+                                <tr>
+                                    <td class="text-center fw-bold">
+                                        Tháng @item.Thang / @item.Nam
+                                    </td>
+
+                                    <td class="text-end">
+                                        <span class="badge bg-secondary">@item.ChiSoCu</span>
+                                    </td>
+
+                                    <td class="text-end">
+                                        <span class="badge bg-warning">@item.ChiSoMoi</span>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <span class="badge bg-danger">
+                                            ⚡ @(item.ChiSoMoi - item.ChiSoCu) kWh
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center py-5 fw-bold text-muted">
+                                    <i class="fas fa-folder-open mb-3" style="font-size: 2rem;"></i><br />
+                                    HỒ SƠ TRẮNG: CHƯA CÓ LỊCH SỬ GHI NHẬN
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+            <a asp-action="Index" class="btn zzz-btn-cancel fw-bold fs-5 px-5 py-2">
+                <i class="fas fa-sign-out-alt me-2"></i> QUAY VỀ
+            </a>
+        </div>
+
+    </div>
+</div>

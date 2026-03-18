@@ -1,0 +1,97 @@
+﻿@model WebSuDungDIen.Models.NhanVien
+
+@{
+    ViewData["Title"] = "XÓA NHÂN VIÊN";
+}
+
+<div class="container-fluid p-0" style="max-width: 800px; margin: 0 auto;">
+
+    <div class="border border-danger border-4 bg-danger text-white p-4 mb-4 position-relative" style="box-shadow: 8px 8px 0px var(--zzz-black);">
+        <h1 class="zzz-page-title m-0 fw-bold text-uppercase d-flex align-items-center gap-2">
+            <i class="fas fa-exclamation-triangle"></i> CẢNH BÁO HỆ THỐNG
+        </h1>
+        <p class="m-0 zzz-text-mono mt-2 fw-bold" style="font-size: 1.1rem;">
+            XÓA NHÂN SỰ. Hành động này là vĩnh viễn và không thể khôi phục!
+        </p>
+    </div>
+
+    <div class="card rounded-0 border-dark border-3 mb-4 bg-white" style="box-shadow: 8px 8px 0px var(--zzz-black);">
+        <div class="card-header bg-dark text-white rounded-0 border-bottom border-dark border-3 p-3 d-flex justify-content-between align-items-center">
+            <h4 class="m-0 zzz-text-mono text-white fw-bold">MÃ HỒ SƠ: #@Model.MaNV</h4>
+            <span class="badge bg-danger border border-white zzz-text-mono fs-6">CHỜ XÓA</span>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <div class="col-md-12">
+                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">Mã nhân viên</label>
+                    <div class="zzz-text-name fs-4 border-bottom border-dark border-2 pb-1 text-danger">
+                        @Html.DisplayFor(model => model.TenNV)
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">Tài khoản Hệ Thống (User ID)</label>
+                    <div class="zzz-text-mono fw-bold fs-6">
+                        @Html.DisplayFor(model => model.User.MaNV)
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">Chức vụ</label>
+                    <div class="fw-bold fs-6">
+                        <span class="zzz-tag border border-dark border-2 px-2 py-1" style="background-color: var(--zzz-surface);">
+                            @Html.DisplayFor(model => model.ChucVu)
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">Số điện thoại</label>
+                    <div class="zzz-badge-id fs-5 fw-bold">
+                        @Html.DisplayFor(model => model.DienThoai)
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">Tình trạng hiện tại</label>
+                    <div>
+                        @if (Model.TrangThai)
+                        {
+                            <span class="badge bg-success zzz-status-badge border border-dark border-2 text-dark fw-bold">
+                                <span class="zzz-status-dot">●</span> ĐANG HOẠT ĐỘNG
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary zzz-status-badge border border-dark border-2 text-dark fw-bold">
+                                <i class="zzz-status-x">×</i> NGỪNG HOẠT ĐỘNG
+                            </span>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">Địa chỉ cứ điểm</label>
+                    <div class="fw-bold fs-6 border p-2 bg-light border-dark">
+                        @Html.DisplayFor(model => model.DiaChi)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-3 mt-4">
+        <form asp-action="Delete" class="w-50">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn w-100 zzz-btn-danger fs-5 fw-bold py-3">
+                <i class="fas fa-skull me-2"></i> XÁC NHẬN XÓA
+            </button>
+        </form>
+
+        <a asp-action="Index" class="btn w-50 zzz-btn-cancel fs-5 fw-bold py-3 text-center">
+            <i class="fas fa-undo me-2"></i> QUAY LẠI
+        </a>
+    </div>
+
+</div>
