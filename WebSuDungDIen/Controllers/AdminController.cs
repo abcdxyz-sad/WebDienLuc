@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebSuDungDIen.Data;
 using WebSuDungDIen.Models;
@@ -124,23 +125,60 @@ namespace WebSuDungDIen.Controllers
 
             return View(vm);
         }
-
+        // 1. HÀM GET: Đẩy danh sách khách hàng lên View
         public IActionResult TaoTaiKhoan()
         {
+            // Tìm những ông Khách Hàng mà cột IdentityUserId đang rỗng (Chưa có nick)
+            var khachChuaCoNick = _context.KhachHang
+                .Where(k => string.IsNullOrEmpty(k.IdentityUserId))
+                .Select(k => new SelectListItem
+                {
+                    Value = k.Id.ToString(),
+                    // Hiển thị Mã KH - Tên KH - SĐT cho dễ nhìn
+                    Text = $"[{k.MaKh}] {k.TenKh} - SĐT: {k.DienThoai}"
+                }).ToList();
+
+            ViewBag.DanhSachKhachCu = khachChuaCoNick;
             return View();
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> TaoTaiKhoan(TaoTaiKhoanVM model)
         {
             if (!ModelState.IsValid)
+            {
+                ViewBag.DanhSachKhachCu = _context.KhachHang.Where(k => string.IsNullOrEmpty(k.IdentityUserId)).Select(k => new SelectListItem { Value = k.Id.ToString(), Text = $"[{k.MaKh}] {k.TenKh} - SĐT: {k.DienThoai}" }).ToList();
                 return View(model);
+            }
 
+            // =======================================================
+            // 🚨 BƯỚC 1: XỬ LÝ CÁI TÊN TRƯỚC KHI TẠO TÀI KHOẢN
+            // =======================================================
+            string tenChinhThuc = model.LoaiTaiKhoan == "NhanVien" ? model.TenNV : model.TenKh;
+            KhachHang hoSoKhachCu = null;
+
+            // Nếu là chọn Khách Hàng CŨ từ Dropdown
+            if (model.LoaiTaiKhoan == "KhachHang" && !string.IsNullOrEmpty(model.KhachHangId))
+            {
+                // Chạy vào DB lôi hồ sơ cũ lên trước
+                hoSoKhachCu = await _context.KhachHang.FindAsync(model.KhachHangId);
+
+                // Nếu lỡ tay xóa ô Textbox Tên -> Lấy lại tên cũ trong DB bù vào!
+                if (hoSoKhachCu != null && string.IsNullOrWhiteSpace(tenChinhThuc))
+                {
+                    tenChinhThuc = hoSoKhachCu.TenKh;
+                }
+            }
+
+            // =======================================================
+            // 🚨 BƯỚC 2: TẠO TÀI KHOẢN WEB (BẢO ĐẢM KHÔNG BỊ NULL TÊN)
+            // =======================================================
             var user = new ApplicationUser
             {
                 UserName = model.UserName,
                 Email = model.Email,
-                HoTen = model.TenNV ?? model.TenKh // lưu tên vào user
+                HoTen = tenChinhThuc // Đã được bọc thép, không sợ rỗng nữa!
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -150,11 +188,32 @@ namespace WebSuDungDIen.Controllers
                 foreach (var error in result.Errors)
                     ModelState.AddModelError("", error.Description);
 
+                ViewBag.DanhSachKhachCu = _context.KhachHang.Where(k => string.IsNullOrEmpty(k.IdentityUserId)).Select(k => new SelectListItem { Value = k.Id.ToString(), Text = $"[{k.MaKh}] {k.TenKh} - SĐT: {k.DienThoai}" }).ToList();
                 return View(model);
             }
 
+            // Gán Quyền
             await _userManager.AddToRoleAsync(user, model.LoaiTaiKhoan);
 
+            // =============================================================
+            // 🚨 BƯỚC 3: CẬP NHẬT LẠI HỒ SƠ KHÁCH HÀNG
+            // =============================================================
+            if (hoSoKhachCu != null)
+            {
+                // Nhét cái User ID vừa tạo vào hồ sơ
+                hoSoKhachCu.IdentityUserId = user.Id;
+
+                // CHỈ ĐÈ TÊN MỚI NẾU NHÂN VIÊN THỰC SỰ GÕ CÁI GÌ ĐÓ VÀO TEXTBOX
+                if (!string.IsNullOrWhiteSpace(model.TenKh))
+                {
+                    hoSoKhachCu.TenKh = model.TenKh;
+                }
+
+                _context.KhachHang.Update(hoSoKhachCu);
+                await _context.SaveChangesAsync();
+            }
+
+            TempData["ThongBao"] = "Khởi tạo tài khoản thành công!";
             return RedirectToAction("QuanLyTaiKhoan");
         }
 

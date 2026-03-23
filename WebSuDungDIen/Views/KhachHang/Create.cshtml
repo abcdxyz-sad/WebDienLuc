@@ -77,17 +77,24 @@
 
                             <div class="col-md-6 mb-3">
                                 <label asp-for="DienThoai" class="form-label zzz-cmd-label">
-                                    <span>TÍN HIỆU LIÊN LẠC (SĐT)</span>
+                                    <span>SỐ ĐIỆN THOẠI</span>
                                     <span class="zzz-text-req">* REQ</span>
                                 </label>
                                 <input asp-for="DienThoai" class="form-control zzz-terminal-input fw-bold zzz-badge-id fs-5" placeholder="09xx..." />
                                 <span asp-validation-for="DienThoai" class="text-danger zzz-text-req d-block mt-1 fw-bold zzz-text-mono"></span>
                             </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label zzz-cmd-label text-warning bg-dark px-2">
+                                    <i class="fas fa-tachometer-alt"></i> CHỈ SỐ CÔNG TƠ LÚC LẮP ĐẶT (KỲ 0)
+                                </label>
+                                <input type="number" name="chiSoBanDau" class="form-control zzz-terminal-input fw-bold border-warning border-3 fs-5" value="0" min="0" style="background-color: #fffbdd;" />
+                                <small class="text-danger zzz-text-mono d-block mt-1 fw-bold">* Nếu đồng hồ mới bóc hộp thì để số 0. Nếu xài đồng hồ cũ thì nhập số trên mặt kính vào đây!</small>
+                            </div>
                         </div>
                     </div>
 
                     <div class="zzz-fieldset zzz-fieldset-highlight border-dark">
-                        <div class="zzz-fieldset-title zzz-fieldset-title-highlight border-dark">LOC.03 // ĐỊNH VỊ TỌA ĐỘ</div>
+                        <div class="zzz-fieldset-title zzz-fieldset-title-highlight border-dark">LOC.03 // ĐỊA CHỈ</div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">

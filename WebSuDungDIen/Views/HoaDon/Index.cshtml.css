@@ -53,7 +53,7 @@
 
 /* Ô chọn file Upload */
 .zzz-file-input {
-    max-width: 280px;
+    max-width: 320px;
     border: 2px solid var(--zzz-black, #111111);
     border-radius: 0;
     font-family: monospace;

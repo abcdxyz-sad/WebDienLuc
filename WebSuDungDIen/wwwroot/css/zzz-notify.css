@@ -4,6 +4,11 @@
     --zzz-secondary: #000000; /* Đen tuyền */
     --zzz-accent: #ff0055; /* Hồng neon điểm nhấn */
     --zzz-glitch: #00f0ff; /* Xanh Cyan lỗi kỹ thuật */
+    /* TRANG KHÁCH */
+    --corp-bg: #ffffff; /* Nền trắng tinh khôi */
+    --corp-text: #2c3e50; /* Chữ xanh đen xám lịch sự, không dùng đen tuyền */
+    --corp-success: #10b981; /* Xanh ngọc lục bảo (Màu của tiền và sự an tâm) */
+    --corp-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
 #thongBao.zzz-notification {
@@ -96,5 +101,88 @@
 
     .zzz-content {
         transform: skewX(0);
+    }
+}
+
+/* TRANG KHÁCH */
+#thongBao.corp-notification {
+    /* Vị trí */
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+    min-width: 320px;
+    max-width: 450px;
+    /* Hình dáng hiện đại, bo góc mềm mại */
+    background-color: var(--corp-bg);
+    border-radius: 8px; /* Khách hàng thích sự tròn trịa, an toàn */
+    border-left: 6px solid var(--corp-success); /* Vạch xanh định vị ánh nhìn */
+    box-shadow: var(--corp-shadow);
+    overflow: hidden; /* Để không bị lòi cái thanh progress bar ra ngoài góc bo */
+    /* Chuyển động lướt vào êm ái như xe Rolls-Royce, không giật cục (glitch) */
+    animation: slideInSmooth 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.corp-content {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; /* Font chuẩn quốc dân, dễ đọc */
+    color: var(--corp-text);
+}
+
+.corp-icon {
+    font-size: 22px;
+    /* Không thèm xài filter bóng đổ chói lóa nữa */
+}
+
+.corp-text {
+    font-size: 0.95rem;
+    font-weight: 600; /* Đậm vừa phải */
+    line-height: 1.5;
+}
+
+/* Thanh tiến trình báo hiệu thời gian sống của thông báo */
+.corp-progress-bar {
+    height: 4px;
+    background-color: var(--corp-success);
+    width: 100%;
+    /* Tự động thụt lùi trong 3 giây (Khớp với thời gian sếp dùng JS để ẩn nó đi) */
+    animation: shrinkProgress 3s linear forwards;
+}
+
+/* --- ANIMATION DOANH NGHIỆP --- */
+@keyframes slideInSmooth {
+    0% {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes shrinkProgress {
+    0% {
+        width: 100%;
+    }
+
+    100% {
+        width: 0%;
+    }
+}
+
+/* Responsive Mobile */
+@media (max-width: 576px) {
+    #thongBao.corp-notification {
+        top: 20px;
+        right: 15px;
+        left: 15px;
+        width: auto;
+        min-width: 0;
+        border-radius: 6px;
     }
 }

@@ -38,30 +38,24 @@
     <div class="card-body p-4">
         <form asp-action="Index" method="get" class="row g-3 align-items-end">
 
-            <div class="col-md-2">
-                <label class="form-label fw-bold" style="font-size: 0.85rem;">Tỉnh/Thành</label>
-                <select id="filterProvince" class="form-select">
-                    <option value="">-- Tất cả --</option>
-                </select>
-            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold" style="font-size: 0.85rem;">Khu vực (Đã có Hóa đơn)</label>
 
-            <div class="col-md-2">
-                <label class="form-label fw-bold" style="font-size: 0.85rem;">Phường/Xã</label>
-                <select id="filterWard" name="maPhuongApi" class="form-select">
-                    <option value="">-- Tất cả --</option>
+                <select name="maPhuongApi" class="form-select fw-bold border-dark border-2 text-truncate" style="padding-right: 2.5rem;" asp-items="ViewBag.PhuongList">
+                    <option value="">-- Tất cả khu vực --</option>
                 </select>
             </div>
 
             <div class="col-md-2">
                 <label class="form-label fw-bold" style="font-size: 0.85rem;">Tháng</label>
-                <select name="thang" class="form-select" asp-items="ViewBag.ThangList">
+                <select name="thang" class="form-select fw-bold border-dark border-2" asp-items="ViewBag.ThangList">
                     <option value="">-- ALL --</option>
                 </select>
             </div>
 
             <div class="col-md-2">
                 <label class="form-label fw-bold" style="font-size: 0.85rem;">Năm</label>
-                <select name="nam" class="form-select" asp-items="ViewBag.NamList">
+                <select name="nam" class="form-select fw-bold border-dark border-2" asp-items="ViewBag.NamList">
                     <option value="">-- ALL --</option>
                 </select>
             </div>
@@ -87,27 +81,38 @@
     </div>
 </div>
 
-<div class="zzz-data-toolbar">
+<div class="zzz-data-toolbar d-flex flex-column flex-xl-row justify-content-between align-items-center flex-wrap gap-3 p-3 bg-white border-dark border-2 mb-4" style="box-shadow: 4px 4px 0px rgba(0,0,0,0.1);">
 
-    <div class="zzz-sync-badge">
-        <i class="bi bi-database-fill"></i> [ DATA_SYNC ]
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+        <div class="bg-dark text-white px-3 py-2 fw-bold zzz-text-mono border-dark border-2 d-flex align-items-center shadow-sm">
+            <i class="bi bi-database-fill text-success me-2"></i> [ DATA_SYNC ]
+        </div>
+
+        <form asp-action="ResetAllTrangThai" method="post" class="m-0" onsubmit="return confirm('⚠️ CẢNH BÁO: Đưa TOÀN BỘ hóa đơn về trạng thái CHƯA THANH TOÁN. Xác nhận?');">
+            <button type="submit" class="btn btn-outline-secondary fw-bold zzz-text-mono px-3 border-dark border-2 rounded-0" title="Reset toàn bộ trạng thái thanh toán">
+                <i class="bi bi-rewind-fill me-1"></i> [DEBUG] RESET
+            </button>
+        </form>
     </div>
 
-    <a asp-action="ExportMongoFormatToExcel" class="btn btn-primary fw-bold zzz-text-mono px-3 py-2">
-        <i class="bi bi-file-earmark-excel-fill me-1"></i> XUẤT TỔNG HỢP [XLSX]
-    </a>
+    <div class="d-flex align-items-center gap-3 flex-wrap">
 
-    <div class="zzz-toolbar-divider"></div>
+        <form asp-action="ImportFromExcel" method="post" enctype="multipart/form-data" class="d-flex align-items-center m-0 gap-2">
+            <div class="input-group shadow-sm">
+                <input type="file" name="file" class="form-control border-dark border-2 rounded-0 fw-bold text-muted" style="max-width: 250px;" accept=".xlsx, .xls" required />
+                <button type="submit" class="btn btn-outline-secondary fw-bold zzz-text-mono px-3 border-dark border-2 rounded-0">
+                    <i class="bi bi-cloud-arrow-up-fill me-1"></i> NẠP DATA
+                </button>
+            </div>
+        </form>
 
-    <form asp-action="ImportFromExcel" method="post" enctype="multipart/form-data" class="d-flex flex-wrap gap-2 m-0 align-items-center">
+        <div class="vr bg-dark opacity-50 d-none d-md-block" style="width: 2px;"></div>
 
-        <input type="file" name="file" class="form-control zzz-file-input" accept=".xlsx, .xls" required />
+        <a asp-action="ExportMongoFormatToExcel" class="btn btn-primary fw-bold zzz-text-mono px-3 py-2 border-dark border-2 rounded-0 shadow-sm">
+            <i class="bi bi-file-earmark-excel-fill me-1"></i> XUẤT TỔNG HỢP [XLSX]
+        </a>
 
-        <button type="submit" class="btn zzz-btn-tech fw-bold px-3 py-2">
-            <i class="bi bi-cloud-arrow-up-fill me-1"></i> NẠP DỮ LIỆU CƠ SỞ
-        </button>
-
-    </form>
+    </div>
 </div>
 
 <div class="container-fluid px-0 mt-4">
@@ -194,10 +199,6 @@
                                             <i class="bi bi-printer-fill me-2"></i> IN BẢN SAO
                                         </a>
                                     </li>
-                                    @if (!item.TrangThai)
-                                    {
-                                        <li><a class="dropdown-item text-primary" asp-action="DuyetThanhToan" asp-route-id="@item.Id"><i class="bi bi-shield-check me-2"></i>Duyệt thanh toán</a></li>
-                                    }
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item text-danger" asp-action="Delete" asp-route-id="@item.Id"><i class="bi bi-trash3 me-2"></i>Xóa hóa đơn</a></li>
                                 </ul>
@@ -211,9 +212,9 @@
     else
     {
         <div class="text-center py-5 border-dashed m-5">
-            <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
-            <h4 class="text-uppercase fw-bold">Không có dữ liệu</h4>
-            <p class="text-muted">Hệ thống chưa ghi nhận hóa đơn nào khớp với bộ lọc.</p>
+            <i class="bi bi-inbox text-muted mb-3" style="font-size: 3rem;"></i>
+            <h4 class="fw-bold text-danger zzz-text-mono">KHÔNG CÓ DỮ LIỆU</h4>
+            <p class="text-muted fw-bold">Hệ thống chưa ghi nhận hóa đơn nào khớp với bộ lọc.</p>
         </div>
     }
 </div>

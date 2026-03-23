@@ -19,7 +19,9 @@ namespace WebSuDungDIen.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+            modelBuilder.Entity<KhachHang>()
+               .Property(k => k.IdentityUserId)
+               .IsRequired(false);
             // 🔗 NhanVien ↔ ApplicationUser (1–1)
             modelBuilder.Entity<NhanVien>()
                 .HasOne(nv => nv.User)

@@ -122,62 +122,79 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var user in Model.KhachHang)
+                        @if (Model.KhachHang != null && Model.KhachHang.Any())
                         {
-                            var hoSo = Model.DanhSachKhach.FirstOrDefault(k => k.IdentityUserId == user.Id);
-                            <tr class="border-bottom border-dark-subtle">
-                                <td class="border-end border-dark-subtle">
-                                    <span class="badge bg-secondary zzz-badge-id fs-6">@(hoSo?.MaKh ?? "N/A")</span>
-                                </td>
-                                <td class="border-end border-dark-subtle">
-                                    <div class="zzz-text-name text-danger">@(hoSo?.TenKh ?? "[ CHƯA CẬP NHẬT ]")</div>
-                                </td>
-                                <td class="border-end border-dark-subtle fw-bold zzz-text-mono">@user.UserName</td>
-                                <td class="border-end border-dark-subtle fw-bold zzz-text-mono text-muted">@user.Email</td>
-                                <td class="text-center border-end border-dark-subtle">
-                                    @if (hoSo == null)
-                                    {
-                                        <span class="badge bg-secondary zzz-status-badge border border-dark border-2 text-dark fw-bold"><i class="zzz-status-x">!</i> THIẾU HỒ SƠ</span>
-                                    }
-                                    else if (!hoSo.TrangThai)
-                                    {
-                                        <span class="badge bg-warning zzz-status-badge border border-dark border-2 text-dark fw-bold"><i class="fas fa-hourglass-half me-1"></i> CHỜ DUYỆT</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-success zzz-status-badge border border-dark border-2 text-dark fw-bold"><span class="zzz-status-dot">●</span> HOẠT ĐỘNG</span>
-                                    }
-                                </td>
-                                <td class="text-center">
-                                    <div class="dropdown">
-                                        <button class="btn btn-dark border-2 rounded-0 dropdown-toggle zzz-btn-action fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            CHỌN
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow">
-                                            <li>
-                                                <a class="dropdown-item fw-bold zzz-text-mono" asp-controller="Admin" asp-action="ChiTietTaiKhoan" asp-route-userId="@user.Id">
-                                                    <i class="fas fa-id-card me-2"></i> XEM TÀI KHOẢN
-                                                </a>
-                                            </li>
-                                            @if (hoSo != null && hoSo.TrangThai)
-                                            {
-                                                <li><hr class="dropdown-divider border-dark border-2"></li>
+                            @foreach (var user in Model.KhachHang)
+                            {
+                                var hoSo = Model.DanhSachKhach.FirstOrDefault(k => k.IdentityUserId == user.Id);
+                                <tr class="border-bottom border-dark-subtle">
+                                    <td class="border-end border-dark-subtle">
+                                        <span class="badge bg-secondary zzz-badge-id fs-6">@(hoSo?.MaKh ?? "N/A")</span>
+                                    </td>
+                                    <td class="border-end border-dark-subtle">
+                                        <div class="zzz-text-name text-danger">
+                                            @(string.IsNullOrWhiteSpace(hoSo?.TenKh) ? "[ CHƯA CẬP NHẬT ]" : hoSo.TenKh)
+                                        </div>
+                                    </td>
+                                    <td class="border-end border-dark-subtle fw-bold zzz-text-mono">@user.UserName</td>
+                                    <td class="border-end border-dark-subtle fw-bold zzz-text-mono text-muted">@user.Email</td>
+                                    <td class="text-center border-end border-dark-subtle">
+                                        @if (hoSo == null)
+                                        {
+                                            <span class="badge bg-secondary zzz-status-badge border border-dark border-2 text-dark fw-bold"><i class="zzz-status-x">!</i> THIẾU HỒ SƠ</span>
+                                        }
+                                        else if (!hoSo.TrangThai)
+                                        {
+                                            <span class="badge bg-warning zzz-status-badge border border-dark border-2 text-dark fw-bold"><i class="fas fa-hourglass-half me-1"></i> CHỜ DUYỆT</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success zzz-status-badge border border-dark border-2 text-dark fw-bold"><span class="zzz-status-dot">●</span> HOẠT ĐỘNG</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="dropdown">
+                                            <button class="btn btn-dark border-2 rounded-0 dropdown-toggle zzz-btn-action fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                CHỌN
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow">
                                                 <li>
-                                                    <a class="dropdown-item fw-bold zzz-text-mono text-primary" asp-controller="KhachHang" asp-action="Details" asp-route-id="@hoSo.Id">
-                                                        <i class="fas fa-folder-open me-2"></i> XEM HỒ SƠ KH
+                                                    <a class="dropdown-item fw-bold zzz-text-mono" asp-controller="Admin" asp-action="ChiTietTaiKhoan" asp-route-userId="@user.Id">
+                                                        <i class="fas fa-id-card me-2"></i> XEM TÀI KHOẢN
                                                     </a>
                                                 </li>
-                                            }
-                                            @if (hoSo == null || !hoSo.TrangThai)
-                                            {
-                                                <li><hr class="dropdown-divider border-dark border-2"></li>
-                                                <li>
-                                                    <a class="dropdown-item text-success fw-bold zzz-text-mono" asp-controller="Admin" asp-action="DuyetKhach" asp-route-userId="@user.Id">
-                                                        <i class="fas fa-check-circle me-2"></i> PHÊ DUYỆT
-                                                    </a>
-                                                </li>
-                                            }
-                                        </ul>
+                                                @if (hoSo != null && hoSo.TrangThai)
+                                                {
+                                                    <li><hr class="dropdown-divider border-dark border-2"></li>
+                                                    <li>
+                                                        <a class="dropdown-item fw-bold zzz-text-mono text-primary" asp-controller="KhachHang" asp-action="Details" asp-route-id="@hoSo.Id">
+                                                            <i class="fas fa-folder-open me-2"></i> XEM HỒ SƠ KH
+                                                        </a>
+                                                    </li>
+                                                }
+                                                @if (hoSo == null || !hoSo.TrangThai)
+                                                {
+                                                    <li><hr class="dropdown-divider border-dark border-2"></li>
+                                                    <li>
+                                                        <a class="dropdown-item text-success fw-bold zzz-text-mono" asp-controller="Admin" asp-action="DuyetKhach" asp-route-userId="@user.Id">
+                                                            <i class="fas fa-check-circle me-2"></i> PHÊ DUYỆT
+                                                        </a>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-2 border-0">
+                                    <div class="text-center py-5">
+                                        <i class="bi bi-search text-muted mb-3" style="font-size: 3rem;"></i>
+                                        <h4 class="fw-bold text-danger zzz-text-mono">KHÔNG TÌM THẤY TỪ KHÓA PHÙ HỢP.</h4>
+                                        <p class="text-muted fw-bold">Vui lòng thử lại với Tên, SĐT hoặc Mã KH khác.</p>
                                     </div>
                                 </td>
                             </tr>

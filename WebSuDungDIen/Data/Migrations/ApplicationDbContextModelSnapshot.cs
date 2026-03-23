@@ -255,7 +255,6 @@ namespace WebSuDungDIen.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("NhanVienId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Thang")
@@ -375,7 +374,6 @@ namespace WebSuDungDIen.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IdentityUserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("MaKh")
@@ -394,7 +392,8 @@ namespace WebSuDungDIen.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdentityUserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[IdentityUserId] IS NOT NULL");
 
                     b.ToTable("KhachHang");
                 });
@@ -503,8 +502,7 @@ namespace WebSuDungDIen.Data.Migrations
                     b.HasOne("WebSuDungDIen.Models.NhanVien", null)
                         .WithMany()
                         .HasForeignKey("NhanVienId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("KhachHang");
                 });

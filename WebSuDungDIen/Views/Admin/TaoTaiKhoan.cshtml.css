@@ -1,0 +1,111 @@
+﻿/* --- ZZZ PRO FORM ELEMENTS --- */
+
+/* Text hiển thị trạng thái hệ thống */
+.zzz-sys-status {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.zzz-text-yellow {
+    color: var(--zzz-primary) !important;
+}
+
+/* Card viền dày */
+.zzz-card-thick {
+    border-width: 3px;
+}
+
+/* Phân khu nhập liệu (Fieldset) */
+.zzz-fieldset {
+    border: 1px solid var(--zzz-gray);
+    background-color: #fafafa;
+    position: relative;
+    padding: 25px 20px 20px;
+    margin-bottom: 25px;
+}
+
+/* Phân khu Highlight (Dành cho phần Phê duyệt) */
+.zzz-fieldset-highlight {
+    background-color: rgba(210, 255, 0, 0.05);
+    border-color: var(--zzz-primary);
+}
+
+/* Tiêu đề phân khu đè lên viền */
+.zzz-fieldset-title {
+    position: absolute;
+    top: -14px;
+    left: 15px;
+    background-color: var(--zzz-black);
+    color: var(--zzz-primary);
+    padding: 2px 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    border: 2px solid var(--zzz-black);
+}
+
+/* Tiêu đề Highlight */
+.zzz-fieldset-title-highlight {
+    background-color: var(--zzz-primary);
+    color: var(--zzz-black);
+}
+
+/* Kiểu nhãn (Label) dòng lệnh */
+.zzz-cmd-label {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    color: var(--zzz-black);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+}
+
+    .zzz-cmd-label::before {
+        content: ">_ ";
+        color: var(--zzz-accent);
+    }
+
+/* Dấu sao bắt buộc (Required) */
+.zzz-text-req {
+    font-size: 0.7rem;
+    color: var(--zzz-accent);
+}
+
+/* Ô nhập liệu phong cách Terminal */
+.zzz-terminal-input {
+    border: 2px solid var(--zzz-gray) !important;
+    border-radius: 0 !important;
+    background-color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+}
+
+    .zzz-terminal-input:focus {
+        border-color: var(--zzz-black) !important;
+        box-shadow: 4px 4px 0px var(--zzz-primary) !important;
+        transform: translate(-2px, -2px);
+    }
+
+/* Ô bị khóa (Readonly) phong cách hệ thống */
+.zzz-locked-input {
+    background: repeating-linear-gradient(45deg, #e9ecef, #e9ecef 10px, #f4f4f6 10px, #f4f4f6 20px) !important;
+    border: 2px dashed #ccc !important;
+    color: #666;
+    cursor: not-allowed;
+    font-family: 'Courier New', monospace;
+}
+
+/* Chữ tiêu đề và mô tả của Nút gạt Switch */
+.zzz-switch-title {
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.zzz-switch-desc {
+    font-size: 0.8rem;
+    font-family: 'Courier New', monospace;
+    color: var(--zzz-gray);
+}

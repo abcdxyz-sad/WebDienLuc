@@ -29,6 +29,7 @@
                     <input type="hidden" asp-for="IdentityUserId" />
                     <input type="hidden" asp-for="MaPhuongApi" />
                     <input type="hidden" asp-for="DiaChiDayDu" />
+                    <input type="hidden" asp-for="DiaChi" />
 
                     <div class="zzz-fieldset">
                         <div class="zzz-fieldset-title text-muted border-dark">SYS.01 // DỮ LIỆU LÕI (BỊ KHÓA)</div>
@@ -54,7 +55,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label asp-for="TenKh" class="form-label zzz-cmd-label text-danger">
-                                    <span>TÊN KHÁCH HÀNG / ĐẠI DIỆN</span>
+                                    <span>TÊN KHÁCH HÀNG</span>
                                 </label>
                                 <input asp-for="TenKh" class="form-control zzz-terminal-input text-uppercase fw-bold text-danger border-dark border-2" />
                                 <span asp-validation-for="TenKh" class="text-danger zzz-text-req d-block mt-1 fw-bold zzz-text-mono"></span>
@@ -62,7 +63,7 @@
 
                             <div class="col-md-12 mb-2">
                                 <label asp-for="DienThoai" class="form-label zzz-cmd-label text-danger">
-                                    <span>TÍN HIỆU LIÊN LẠC (SĐT)</span>
+                                    <span>SỐ ĐIỆN THOẠI</span>
                                 </label>
                                 <input asp-for="DienThoai" class="form-control zzz-terminal-input fw-bold zzz-badge-id fs-5 border-dark border-2" />
                                 <span asp-validation-for="DienThoai" class="text-danger zzz-text-req d-block mt-1 fw-bold zzz-text-mono"></span>

@@ -281,35 +281,60 @@ namespace WebSuDungDIen.Controllers
 
         public async Task<IActionResult> Index(string maPhuongApi, int? thang, int? nam)
         {
-            // 1. Chuẩn bị dữ liệu cho Dropdown (ViewBag)
-            // ĐÃ XÓA TẠO SELECTLIST PHƯỜNG Ở ĐÂY VÌ ĐÃ GIAO CHO JAVASCRIPT XỬ LÝ
+            // ====================================================================
+            // 1. TẠO DROPDOWN ĐỘNG TỪ DATABASE (CẢ PHƯỜNG, THÁNG, NĂM)
+            // ====================================================================
 
-            // Tạo danh sách Tháng (1 -> 12)
-            var listThang = Enumerable.Range(1, 12).Select(x => new { Value = x, Text = "Tháng " + x }).ToList();
+            // 🟢 BÙA CHÚ 1: Lọc Địa Bàn (Chỉ lấy Phường/Xã ĐÃ CÓ HÓA ĐƠN)
+            // Kéo dữ liệu thô lên RAM trước để tránh EF Core báo lỗi khi GroupBy
+            var rawPhuongData = await (from hd in _context.HoaDon
+                                       join kh in _context.KhachHang on hd.KhachHangId equals kh.Id.ToString()
+                                       where !string.IsNullOrEmpty(kh.MaPhuongApi)
+                                       select new { kh.MaPhuongApi, kh.DiaChiDayDu })
+                                       .Distinct()
+                                       .ToListAsync();
+
+            // Nhóm lại trên RAM để lấy tên địa chỉ đầy đủ (Ví dụ: Phường A, Quận B, Tỉnh C) làm nhãn
+            var listPhuong = rawPhuongData
+                .GroupBy(x => x.MaPhuongApi)
+                .Select(g => new
+                {
+                    Value = g.Key,
+                    Text = g.First().DiaChiDayDu ?? ("Mã địa bàn: " + g.Key)
+                })
+                .ToList();
+
+            ViewBag.PhuongList = new SelectList(listPhuong, "Value", "Text", maPhuongApi);
+
+            // 🟢 BÙA CHÚ 2: Lọc Tháng / Năm (Chỉ lấy Tháng/Năm ĐÃ CÓ HÓA ĐƠN)
+            var existingDates = await (from hd in _context.HoaDon
+                                       join cs in _context.ChiSoDien on hd.ChiSoDienId equals cs.Id.ToString()
+                                       select new { cs.Thang, cs.Nam })
+                                       .Distinct()
+                                       .ToListAsync();
+
+            var listThang = existingDates.Select(x => x.Thang).Distinct().OrderBy(x => x)
+                                         .Select(x => new { Value = x, Text = "Tháng " + x }).ToList();
+
+            var listNam = existingDates.Select(x => x.Nam).Distinct().OrderByDescending(x => x)
+                                       .Select(x => new { Value = x, Text = "Năm " + x }).ToList();
+
             ViewBag.ThangList = new SelectList(listThang, "Value", "Text", thang);
-
-            // Tạo danh sách Năm (5 năm gần nhất)
-            int currentYear = DateTime.Now.Year;
-            var listNam = Enumerable.Range(currentYear - 4, 5).OrderByDescending(x => x).Select(x => new { Value = x, Text = "Năm " + x }).ToList();
             ViewBag.NamList = new SelectList(listNam, "Value", "Text", nam);
 
-            // Lưu lại giá trị đang chọn để hiển thị lại trên View
+            // Lưu trạng thái đang chọn
             ViewBag.CurrentPhuong = maPhuongApi;
             ViewBag.CurrentThang = thang;
             ViewBag.CurrentNam = nam;
 
-            // 2. Truy vấn dữ liệu (LINQ) - ĐÃ XÓA BẢNG PHƯỜNG
+            // ====================================================================
+            // 2. TRUY VẤN VÀ LỌC DỮ LIỆU (Đoạn này giữ nguyên của sếp)
+            // ====================================================================
             var query = from hd in _context.HoaDon
                         join cs in _context.ChiSoDien on hd.ChiSoDienId equals cs.Id.ToString()
                         join kh in _context.KhachHang on hd.KhachHangId equals kh.Id.ToString()
-                        select new
-                        {
-                            hd,
-                            cs,
-                            kh
-                        };
+                        select new { hd, cs, kh };
 
-            // 3. Áp dụng bộ lọc (Filter)
             if (!string.IsNullOrEmpty(maPhuongApi))
             {
                 query = query.Where(x => x.kh.MaPhuongApi == maPhuongApi);
@@ -325,7 +350,7 @@ namespace WebSuDungDIen.Controllers
                 query = query.Where(x => x.cs.Nam == nam.Value);
             }
 
-            // 4. Sắp xếp và Select ra ViewModel
+            // 4. Sắp xếp và xuất ViewModel
             var result = await query
                 .OrderByDescending(x => x.cs.Nam)
                 .ThenByDescending(x => x.cs.Thang)
@@ -335,7 +360,6 @@ namespace WebSuDungDIen.Controllers
                     Id = x.hd.Id,
                     MaHd = x.hd.MaHd,
                     TenKhachHang = x.kh.TenKh,
-                    // Thay vì TenPhuong (bảng cũ), ta dùng luôn địa chỉ đầy đủ để hiển thị
                     DiaChi = x.kh.DiaChiDayDu ?? x.kh.DiaChi,
                     Thang = x.cs.Thang,
                     Nam = x.cs.Nam,
@@ -438,23 +462,62 @@ namespace WebSuDungDIen.Controllers
         [HttpGet]
         public async Task<IActionResult> GetKhachByPhuong(string maPhuongApi)
         {
-            var ds = await _context.KhachHang
-                .Where(k => k.MaPhuongApi == maPhuongApi)
-                .Select(k => new
-                {
-                    k.Id,
-                    Ten = k.MaKh + " - " + k.TenKh,
-                    // Lấy tháng mới nhất luôn!
-                    ChiSo = _context.ChiSoDien
-                        .Where(c => c.KhachHangId == k.Id)
-                        .OrderByDescending(c => c.Nam)     // Năm mới nhất
-                        .ThenByDescending(c => c.Thang)    // Tháng mới nhất
-                        .Select(c => (int?)(c.ChiSoMoi - c.ChiSoCu))
-                        .FirstOrDefault()
-                })
+            // 1. Lấy tập Khách Hàng (Đang Active)
+            var dsKhach = await _context.KhachHang
+                .Where(k => k.MaPhuongApi == maPhuongApi && k.TrangThai == true)
+                .Select(k => new { k.Id, k.MaKh, k.TenKh })
                 .ToListAsync();
 
-            return Json(ds);
+            var khachIds = dsKhach.Select(k => k.Id).ToList();
+            if (!khachIds.Any()) return Json(new List<object>());
+
+            // ==========================================================
+            // 2. SỬA LỖI 1: TÌM THÁNG MỚI NHẤT (ĐỒNG BỘ VỚI HÀM CREATE)
+            // ==========================================================
+            var thangMoiNhat = await _context.ChiSoDien
+                .Where(x => khachIds.Contains(x.KhachHangId))
+                .OrderByDescending(x => x.Nam)
+                .ThenByDescending(x => x.Thang)
+                .Select(x => new { x.Thang, x.Nam })
+                .FirstOrDefaultAsync();
+
+            // Nếu khu vực này chưa có ai ghi điện thì trả về rỗng
+            if (thangMoiNhat == null) return Json(new List<object>());
+
+            // 3. Lấy Chỉ Số Điện của THÁNG MỚI NHẤT (thay vì DateTime.Now)
+            var dsChiSoThangNay = await _context.ChiSoDien
+                .Where(c => khachIds.Contains(c.KhachHangId) && c.Thang == thangMoiNhat.Thang && c.Nam == thangMoiNhat.Nam)
+                .ToListAsync();
+
+            // 4. Lấy danh sách Hóa Đơn của các khách hàng này
+            var dsHoaDon = await _context.HoaDon
+                .Where(hd => khachIds.Contains(hd.KhachHangId))
+                .Select(hd => hd.ChiSoDienId)
+                .ToListAsync();
+
+            var chiSoDienIdsDaLap = new HashSet<string>(dsHoaDon);
+
+            // 5. Trả kết quả về giao diện
+            var result = new List<object>();
+            foreach (var k in dsKhach)
+            {
+                var chiSo = dsChiSoThangNay.FirstOrDefault(c => c.KhachHangId == k.Id);
+
+                // ==========================================================
+                // 6. SỬA LỖI 2: ÉP KIỂU Tostring() ĐỂ HASHSET SOI ĐÚNG CHUẨN
+                // ==========================================================
+                bool daLapHoaDon = chiSo != null && chiSoDienIdsDaLap.Contains(chiSo.Id.ToString());
+
+                result.Add(new
+                {
+                    id = k.Id,
+                    ten = k.MaKh + " - " + k.TenKh,
+                    chiSo = chiSo != null ? (int?)(chiSo.ChiSoMoi - chiSo.ChiSoCu) : null,
+                    daLapHoaDon = daLapHoaDon
+                });
+            }
+
+            return Json(result);
         }
 
         // GET: HoaDon/Create
@@ -922,6 +985,61 @@ namespace WebSuDungDIen.Controllers
             model.NhanVien = invoice.NhanVien;
 
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetAllTrangThai()
+        {
+            try
+            {
+                Console.WriteLine("\n[DEBUG] BẮT ĐẦU ĐẢO NGƯỢC TRẠNG THÁI TOÀN BỘ HÓA ĐƠN...");
+
+                // 1. Kéo toàn bộ hóa đơn lên
+                var danhSachHoaDon = await _context.HoaDon.ToListAsync();
+
+                if (!danhSachHoaDon.Any())
+                {
+                    TempData["ThongBao"] = "Hệ thống chưa có hóa đơn nào để reset!";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // 2. Vẩy bùa: Đưa tất cả về Chưa Thanh Toán và Xóa ngày thu
+                foreach (var hd in danhSachHoaDon)
+                {
+                    hd.TrangThai = "ChuaThanhToan"; // Set lại đúng cái chữ gốc trong Model của sếp
+                    hd.NgayThanhToan = null;        // Xóa ngày giờ đã nộp tiền
+                }
+
+                // 3. Lưu xuống SQL
+                _context.HoaDon.UpdateRange(danhSachHoaDon);
+                await _context.SaveChangesAsync();
+
+                // 4. (Tùy chọn) Lưu xuống MongoDB nếu sếp đang sync 2 bên
+                try
+                {
+                    if (_hoaDonCollection != null)
+                    {
+                        var filter = Builders<HoaDon>.Filter.Empty; // Chọc tất cả
+                        var update = Builders<HoaDon>.Update
+                            .Set(x => x.TrangThai, "ChuaThanhToan")
+                            .Set(x => x.NgayThanhToan, null);
+
+                        await _hoaDonCollection.UpdateManyAsync(filter, update);
+                    }
+                }
+                catch (Exception exMongo)
+                {
+                    Console.WriteLine("[CẢNH BÁO MONGO] Lỗi khi reset mongo: " + exMongo.Message);
+                }
+
+                TempData["ThongBao"] = $"Đã reset thành công {danhSachHoaDon.Count} hóa đơn về trạng thái CHƯA THANH TOÁN!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Lỗi hệ thống khi reset: " + ex.Message;
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -9,7 +9,7 @@ namespace WebSuDungDIen.Models
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
         public string KhachHangId { get; set; }
-        public string NhanVienId { get; set; }
+        public string? NhanVienId { get; set; }
 
         public int Thang { get; set; }
         public int Nam { get; set; }

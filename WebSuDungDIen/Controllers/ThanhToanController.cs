@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using MongoDB.Driver;
 using WebSuDungDIen.Data;
@@ -28,6 +29,7 @@ public class ThanhToanController : Controller
     // 2. API Xử lý thanh toán khi bấm nút trên điện thoại
     [HttpPost]
     [IgnoreAntiforgeryToken]
+    [AllowAnonymous]
     public async Task<IActionResult> XacNhanThanhToan(string id)
     {
         // 1. Tìm hóa đơn trong SQL Server bằng _context

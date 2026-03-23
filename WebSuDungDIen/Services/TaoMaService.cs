@@ -43,13 +43,20 @@ public class TaoMaService
 
     public async Task<string> TaoMaHopDongChuanAPIAsync(ApplicationDbContext context, string maMien, string maPhuongApi)
     {
-        // Tiền tố: "PB-28864-"
-        string prefix = $"{maMien}{maPhuongApi}";
+        // =========================================================================
+        // 🚨 BÍ QUYẾT LÀ ĐÂY: Ép mã phường luôn đủ 5 số (Độn số 0 ở đầu nếu thiếu)
+        // Ví dụ: "1" -> "00001", "25" -> "00025", "28864" -> "28864"
+        // =========================================================================
+        string phuongPadded = maPhuongApi.PadLeft(5, '0');
+
+        // Tiền tố bây giờ luôn cố định CỨNG 7 ký tự: 2 chữ (Miền) + 5 số (Phường)
+        // Ví dụ: "PD00001" hoặc "PB28864"
+        string prefix = $"{maMien}{phuongPadded}";
 
         // KHÓA LUỒNG: Chỉ 1 người được vào sinh mã tại 1 thời điểm
         lock (_lockTaoMa)
         {
-            // Dùng context truy vấn đồng bộ (Bỏ async/await đi)
+            // Dùng context truy vấn đồng bộ
             var lastCode = context.KhachHang
                 .Where(k => k.MaKh.StartsWith(prefix))
                 .OrderByDescending(k => k.MaKh)
@@ -57,17 +64,17 @@ public class TaoMaService
                 .FirstOrDefault();
 
             int stt = 1;
-            if (lastCode != null)
+            if (lastCode != null && lastCode.Length >= prefix.Length)
             {
-                // Cắt chuỗi lấy phần đuôi
+                // Cắt chuỗi lấy phần đuôi (đảm bảo luôn cắt chuẩn vì prefix cố định 7 ký tự)
                 string lastNumberStr = lastCode.Substring(prefix.Length);
                 if (int.TryParse(lastNumberStr, out int lastNumber))
                 {
-                    stt = lastNumber + 1; // Tăng lên 1
+                    stt = lastNumber + 1; // Tăng số thứ tự lên 1
                 }
             }
 
-            // Trả về kết quả 5 số cực đẹp: PB-28864-00001
+            // Kết quả: 7 ký tự prefix + 5 ký tự số thứ tự (D5) = LUÔN LUÔN 12 KÝ TỰ!
             return $"{prefix}{stt:D5}";
         }
     }

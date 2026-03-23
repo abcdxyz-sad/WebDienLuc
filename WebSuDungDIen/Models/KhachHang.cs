@@ -18,8 +18,8 @@ namespace WebSuDungDIen.Models
 
         public string DiaChiDayDu { get; set; }
 
-        public string? IdentityUserId { get; set; } = null!;
-        public ApplicationUser? User { get; set; } = null!;
+        public string? IdentityUserId { get; set; }
+        public ApplicationUser? User { get; set; }
         public bool TrangThai { get; set; } = true;
         public List<ChiSoDien>? ChiSoDien { get; set; }
     }

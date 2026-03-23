@@ -97,6 +97,7 @@ namespace WebSuDungDIen.Controllers
         // GET: KhachHang/Create
         public async Task<IActionResult> Create()
         {
+            // Lấy danh sách những cái Nick "Cô đơn" (Có Role Khách Hàng nhưng chưa có Hồ Sơ Điện)
             var usersInRole = await _userManager.GetUsersInRoleAsync("KhachHang");
             var users = usersInRole
                 .Where(u => !_context.KhachHang.Any(k => k.IdentityUserId == u.Id))
@@ -110,115 +111,103 @@ namespace WebSuDungDIen.Controllers
                 .ToList();
 
             ViewBag.Users = users;
-
             return View();
         }
 
         // POST: KhachHang/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TenKh,DiaChi,DienThoai,IdentityUserId,MaPhuongApi,DiaChiDayDu")] KhachHang khachHang, string MaMien = "PB")
+        public async Task<IActionResult> Create([Bind("TenKh,DiaChi,DienThoai,IdentityUserId,MaPhuongApi,DiaChiDayDu")] KhachHang khachHang, string MaMien = "PB", int chiSoBanDau = 0)
         {
             Console.WriteLine("\n=== [DEBUG] BẮT ĐẦU TẠO KHÁCH HÀNG MỚI ===");
 
             try
             {
-                // 1. Kiểm tra đối tượng gửi lên
-                if (khachHang == null)
+                if (khachHang == null) return BadRequest("Dữ liệu gửi lên rỗng.");
+
+                // =====================================================================
+                // 🚨 BÙA GIẢI NGHIỆP: BẮT BUỘC PHẢI THÁO XÍCH CHO THẰNG IDENTITYUSERID
+                // Vì ta cho phép nó NULL, nên nếu người dùng không chọn User trên Form,
+                // C# sẽ báo lỗi ModelState vì mặc định chuỗi rỗng không được phép với FK.
+                // Ta gỡ lỗi này ra để nó đi tiếp.
+                // =====================================================================
+                if (string.IsNullOrEmpty(khachHang.IdentityUserId))
                 {
-                    Console.WriteLine("[LỖI] Đối tượng khachHang bị null hoàn toàn từ Form gửi lên!");
-                    return BadRequest("Dữ liệu gửi lên rỗng.");
+                    khachHang.IdentityUserId = null; // Gán cứng thành NULL cho an toàn
+                    ModelState.Remove("IdentityUserId");
                 }
 
-                Console.WriteLine($"[Data nhận được]: TenKh: {khachHang.TenKh}, DienThoai: {khachHang.DienThoai}, MaPhuongApi: {khachHang.MaPhuongApi}, UserId: {khachHang.IdentityUserId}");
+                // Bỏ qua lỗi của Navigation Property (nếu có)
+                ModelState.Remove("User");
+                ModelState.Remove("ChiSoDiens");
+                ModelState.Remove("HoaDons");
 
-                // 2. Kiểm tra ModelState
                 if (!ModelState.IsValid)
                 {
-                    Console.WriteLine("[CẢNH BÁO] ModelState KHÔNG hợp lệ! Chi tiết lỗi:");
-                    foreach (var state in ModelState)
+                    Console.WriteLine("[CẢNH BÁO] ModelState KHÔNG hợp lệ!");
+                    // Nạp lại danh sách UID nếu Form bị đá về
+                    await LoadViewBagUsersAsync();
+                    return View(khachHang);
+                }
+
+                // Nếu có chọn UID, kiểm tra xem thằng UID đó có bị ai hớt tay trên chưa
+                if (!string.IsNullOrEmpty(khachHang.IdentityUserId))
+                {
+                    var existing = await _context.KhachHang.FirstOrDefaultAsync(x => x.IdentityUserId == khachHang.IdentityUserId);
+                    if (existing != null)
                     {
-                        foreach (var error in state.Value.Errors)
-                        {
-                            Console.WriteLine($"  -> Lỗi ở trường '{state.Key}': {error.ErrorMessage}");
-                        }
+                        ModelState.AddModelError("IdentityUserId", "Tài khoản Web này đã có hồ sơ Khách Hàng!");
+                        await LoadViewBagUsersAsync();
+                        return View(khachHang);
                     }
-
-                    ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Email", khachHang.IdentityUserId);
-                    return View(khachHang);
                 }
 
-                // 3. Check trùng hồ sơ
-                Console.WriteLine("[Tiến trình] Đang kiểm tra trùng hồ sơ...");
-                var existing = await _context.KhachHang
-                                .FirstOrDefaultAsync(x => x.IdentityUserId == khachHang.IdentityUserId);
-
-                if (existing != null)
-                {
-                    Console.WriteLine($"[CẢNH BÁO] Tài khoản {khachHang.IdentityUserId} đã có hồ sơ khách hàng!");
-                    ModelState.AddModelError("", "Tài khoản này đã có hồ sơ.");
-                    ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Email", khachHang.IdentityUserId);
-                    return View(khachHang);
-                }
-
-                // 4. KIỂM TRA CÁC DỊCH VỤ (Kẻ khả nghi lớn nhất gây lỗi Null)
-                if (_taoMaService == null)
-                {
-                    Console.WriteLine("[LỖI NGHIÊM TRỌNG] _taoMaService đang bị NULL! Bạn chưa Inject dịch vụ này vào Constructor của KhachHangController.");
-                    throw new Exception("Chưa khởi tạo _taoMaService.");
-                }
-
-                if (string.IsNullOrEmpty(khachHang.MaPhuongApi))
-                {
-                    Console.WriteLine("[LỖI] MaPhuongApi bị null hoặc rỗng. Giao diện chưa gửi mã phường về Controller!");
-                }
-
-                // 5. Sinh mã
-                Console.WriteLine("[Tiến trình] Đang sinh mã API...");
+                // Sinh mã API
                 string maChinhThuc = await _taoMaService.TaoMaHopDongChuanAPIAsync(_context, MaMien, khachHang.MaPhuongApi);
                 khachHang.MaKh = maChinhThuc;
-                Console.WriteLine($"[Thành công] Mã sinh ra: {maChinhThuc}");
 
-                // 6. Xử lý địa chỉ
-                Console.WriteLine($"[Tiến trình] Xử lý địa chỉ. Địa chỉ hiện tại (Số nhà): {khachHang.DiaChi} | Phường/Tỉnh: {khachHang.DiaChiDayDu}");
-
-                // Nếu cả 2 đều có giá trị, ta ghép lại và GÁN VÀO CỘT DiaChi chính thức
+                // Xử lý ghép địa chỉ
                 if (!string.IsNullOrEmpty(khachHang.DiaChi) && !string.IsNullOrEmpty(khachHang.DiaChiDayDu))
                 {
                     khachHang.DiaChi = $"{khachHang.DiaChi}, {khachHang.DiaChiDayDu}";
-                    Console.WriteLine($"[Thành công] Địa chỉ hoàn chỉnh lưu DB: {khachHang.DiaChi}");
                 }
 
+                // Gán trạng thái (Ví dụ NV tự nhập thì Active luôn, khách tự nhập thì chờ duyệt)
                 khachHang.TrangThai = true;
 
-                // 7. Lưu DB
-                Console.WriteLine("[Tiến trình] Đang lưu vào Database...");
+                // Lưu Database
                 _context.Add(khachHang);
                 await _context.SaveChangesAsync();
-                Console.WriteLine("[THÀNH CÔNG] Đã lưu khách hàng mới xong!");
-
+                Console.WriteLine($"[Tiến trình] Khởi tạo chỉ số công tơ ban đầu: {chiSoBanDau}");
+                var chiSoKyKhong = new ChiSoDien
+                {
+                    KhachHangId = khachHang.Id, // Nối dây xích vào cổ ông khách vừa đẻ
+                    Thang = DateTime.Now.Month,
+                    Nam = DateTime.Now.Year,
+                    ChiSoCu = 0,               // Chả có cũ đâu, gốc bằng 0
+                    ChiSoMoi = chiSoBanDau,    // Số mà sếp gõ ngoài giao diện
+                };
+                _context.ChiSoDien.Add(chiSoKyKhong);
+                await _context.SaveChangesAsync();
+                TempData["ThongBao"] = $"Đã khởi tạo thành công khách hàng: {khachHang.MaKh}";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                Console.WriteLine("\n================ BẮT ĐƯỢC LỖI TẠO KHÁCH HÀNG ================");
-                Console.WriteLine($"[Lỗi chính]: {ex.Message}");
-                if (ex.InnerException != null)
-                {
-                    Console.WriteLine($"[Inner Exception]: {ex.InnerException.Message}");
-                }
-                Console.WriteLine($"[Nguồn lỗi (Source)]: {ex.Source}");
-                Console.WriteLine($"[Stack Trace]:\n{ex.StackTrace}");
-                Console.WriteLine("=============================================================\n");
-
-                ModelState.AddModelError("", "Có lỗi hệ thống xảy ra: " + ex.Message);
-
-                // Trả lại View để khỏi trắng trang
-                ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Email", khachHang?.IdentityUserId);
+                Console.WriteLine("\n[LỖI TẠO KHÁCH HÀNG]: " + ex.Message);
+                ModelState.AddModelError("", "Lỗi hệ thống: " + ex.Message);
+                await LoadViewBagUsersAsync();
                 return View(khachHang);
             }
+        }
+
+        // Hàm hỗ trợ nạp lại danh sách User cho View (Để code đỡ lặp lại)
+        private async Task LoadViewBagUsersAsync()
+        {
+            var usersInRole = await _userManager.GetUsersInRoleAsync("KhachHang");
+            ViewBag.Users = usersInRole
+                .Where(u => !_context.KhachHang.Any(k => k.IdentityUserId == u.Id))
+                .Select(u => new { u.Id, u.Email, u.UserName, u.HoTen }).ToList();
         }
 
         // GET: KhachHang/Edit/5
@@ -243,6 +232,12 @@ namespace WebSuDungDIen.Controllers
 
             if (kh == null || id != kh.Id)
                 return NotFound();
+
+            ModelState.Remove("MaKh");
+            ModelState.Remove("IdentityUserId");
+            // Nếu trong Model KhachHang sếp có liên kết tới bảng khác thì Remove luôn cho chắc:
+            ModelState.Remove("ChiSoDienId");
+            ModelState.Remove("HoaDonId");
 
             if (ModelState.IsValid)
             {
@@ -312,7 +307,6 @@ namespace WebSuDungDIen.Controllers
             }
 
             var khachHang = await _context.KhachHang
-                .Include(k => k.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (khachHang == null)
             {
@@ -327,13 +321,46 @@ namespace WebSuDungDIen.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var khachHang = await _context.KhachHang.FindAsync(id);
+            // 1. Lôi cổ thằng Khách Hàng lên, nhớ kèm bùa .Include() 
+            // để lôi luôn cả tông ti họ hàng nhà Chỉ Số Điện của nó lên!
+            var khachHang = await _context.KhachHang
+                .Include(k => k.ChiSoDien)
+                .FirstOrDefaultAsync(k => k.Id == id);
+
             if (khachHang != null)
             {
+                // 🚨 2. DIỆT CỎ PHẢI DIỆT TẬN GỐC: Xóa sạch lịch sử Chỉ số điện trước!
+                // (Nếu sếp có bảng HoaDon nữa thì cũng phải lôi lên xóa tương tự)
+                if (khachHang.ChiSoDien != null && khachHang.ChiSoDien.Any())
+                {
+                    _context.ChiSoDien.RemoveRange(khachHang.ChiSoDien);
+                }
+
+                // 3. Ghi nhớ cái ID Tài khoản Web của nó (nếu có) để tí nữa trảm
+                string uidNickWeb = khachHang.IdentityUserId;
+
+                // 4. CHÍNH THỨC TRẢM HỒ SƠ KHÁCH HÀNG
                 _context.KhachHang.Remove(khachHang);
+                await _context.SaveChangesAsync(); // Xóa sạch sẽ dữ liệu nghiệp vụ
+
+                // 🚨 5. DỌN RÁC IDENTITY: Xóa luôn tài khoản đăng nhập Web!
+                // Phải dùng _userManager để xóa cho đúng chuẩn của Identity
+                if (!string.IsNullOrEmpty(uidNickWeb))
+                {
+                    var userWeb = await _userManager.FindByIdAsync(uidNickWeb);
+                    if (userWeb != null)
+                    {
+                        var result = await _userManager.DeleteAsync(userWeb);
+                        if (!result.Succeeded)
+                        {
+                            Console.WriteLine("[CẢNH BÁO] Xóa hồ sơ xong nhưng không xóa được Nick Web!");
+                        }
+                    }
+                }
+
+                TempData["ThongBao"] = $"Đã tiễn khách hàng {khachHang.TenKh} và toàn bộ dữ liệu liên quan vào dĩ vãng!";
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -376,50 +403,101 @@ namespace WebSuDungDIen.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> DangKyThongTin(KhachHang model)
+        [ValidateAntiForgeryToken] // Nên thêm cái này để bảo mật form
+        public async Task<IActionResult> DangKyThongTin([Bind("TenKh,DiaChi,DienThoai,MaPhuongApi,DiaChiDayDu")] KhachHang model)
         {
-            var userId = _userManager.GetUserId(User);
-            var user = await _userManager.FindByIdAsync(userId);
+            Console.WriteLine("\n=== [DEBUG] BẮT ĐẦU ĐĂNG KÝ THÔNG TIN KHÁCH HÀNG ===");
 
-            if (user == null)
-                return RedirectToAction("Login", "Account");
-
-            if (string.IsNullOrWhiteSpace(model.TenKh))
+            try
             {
-                model.TenKh = user.HoTen;
+                var userId = _userManager.GetUserId(User);
+                var user = await _userManager.FindByIdAsync(userId);
+
+                if (user == null)
+                    return RedirectToAction("Login", "Account");
+
+                // Nếu khách không nhập tên, lấy tạm tên từ tài khoản
+                if (string.IsNullOrWhiteSpace(model.TenKh))
+                {
+                    model.TenKh = user.HoTen;
+                }
+
+                var khachHang = await _context.KhachHang
+                    .FirstOrDefaultAsync(x => x.IdentityUserId == userId);
+
+                if (khachHang == null)
+                {
+                    Console.WriteLine("[Tiến trình] Bắt đầu thêm hồ sơ mới cho User...");
+
+                    // 1. LẤY MÃ MIỀN VÀ MÃ PHƯỜNG TỪ FORM
+                    string maMien = Request.Form["MaMien"].ToString();
+                    if (string.IsNullOrEmpty(maMien)) maMien = "PB"; // Fallback mặc định
+
+                    if (string.IsNullOrEmpty(model.MaPhuongApi))
+                    {
+                        Console.WriteLine("[CẢNH BÁO] MaPhuongApi rỗng. Giao diện chưa gửi mã phường!");
+                    }
+
+                    // 2. SINH MÃ CHUẨN API
+                    Console.WriteLine($"[Tiến trình] Đang gọi TaoMaHopDongChuanAPIAsync. Miền: {maMien}, Phường: {model.MaPhuongApi}");
+                    string maChinhThuc = await _taoMaService.TaoMaHopDongChuanAPIAsync(_context, maMien, model.MaPhuongApi);
+                    Console.WriteLine($"[Thành công] Mã sinh ra: {maChinhThuc}");
+
+                    model.MaKh = maChinhThuc;
+                    model.IdentityUserId = userId;
+                    model.TrangThai = false; // Đăng ký xong phải chờ duyệt
+
+                    // 3. XỬ LÝ GHÉP ĐỊA CHỈ Y NHƯ BÊN CREATE
+                    Console.WriteLine($"[Tiến trình] Ghép địa chỉ. Số nhà: {model.DiaChi} | Tỉnh/Phường: {model.DiaChiDayDu}");
+                    if (!string.IsNullOrEmpty(model.DiaChi) && !string.IsNullOrEmpty(model.DiaChiDayDu))
+                    {
+                        // Vì bên form sếp đang lưu (Số nhà) vào model.DiaChi và (Phường, Tỉnh) vào model.DiaChiDayDu
+                        model.DiaChi = $"{model.DiaChi}, {model.DiaChiDayDu}";
+                        Console.WriteLine($"[Thành công] Địa chỉ hoàn chỉnh lưu DB: {model.DiaChi}");
+                    }
+
+                    _context.KhachHang.Add(model);
+                    await _context.SaveChangesAsync();
+                    Console.WriteLine("[THÀNH CÔNG] Đã lưu thông tin đăng ký vào Database!");
+
+                    TempData["ThongBao"] = "Thêm thông tin thành công, đang chờ duyệt";
+                }
+                else
+                {
+                    Console.WriteLine($"[Tiến trình] Cập nhật hồ sơ có sẵn của User: {userId}");
+
+                    khachHang.TenKh = model.TenKh;
+                    khachHang.DienThoai = model.DienThoai;
+                    khachHang.MaPhuongApi = model.MaPhuongApi;
+
+                    // Xử lý địa chỉ khi Cập nhật
+                    if (!string.IsNullOrEmpty(model.DiaChi) && !string.IsNullOrEmpty(model.DiaChiDayDu))
+                    {
+                        khachHang.DiaChi = $"{model.DiaChi}, {model.DiaChiDayDu}";
+                    }
+                    else
+                    {
+                        khachHang.DiaChi = model.DiaChi;
+                    }
+
+                    await _context.SaveChangesAsync();
+                    Console.WriteLine("[THÀNH CÔNG] Đã cập nhật xong!");
+
+                    TempData["ThongBao"] = "Bạn đã hoàn tất cập nhật thông tin. Hệ thống đã ghi nhận.";
+                }
+
+                return RedirectToAction("Index", "Home");
             }
-
-            var khachHang = await _context.KhachHang
-                .FirstOrDefaultAsync(x => x.IdentityUserId == userId);
-
-            if (khachHang == null)
+            catch (Exception ex)
             {
-                var maKH = _taoMaService.GenerateUniqueCode(
-                    "KH",
-                    code => _context.KhachHang.Any(x => x.MaKh == code)
-                );
+                Console.WriteLine("\n================ LỖI ĐĂNG KÝ THÔNG TIN ================");
+                Console.WriteLine($"[Lỗi chính]: {ex.Message}");
+                Console.WriteLine($"[Stack Trace]:\n{ex.StackTrace}");
+                Console.WriteLine("========================================================\n");
 
-                model.MaKh = maKH;
-                model.IdentityUserId = userId;
-                model.TrangThai = false;
-
-                _context.KhachHang.Add(model);
-                await _context.SaveChangesAsync();
-
-                TempData["ThongBao"] ="Thêm thông tin thành công, đang chờ duyệt";
+                TempData["Loi"] = "Đã xảy ra lỗi hệ thống khi đăng ký. Vui lòng thử lại.";
+                return RedirectToAction("Index", "Home");
             }
-            else
-            {
-                khachHang.TenKh = model.TenKh;
-                khachHang.DiaChi = model.DiaChi;
-                khachHang.DienThoai = model.DienThoai;
-
-                await _context.SaveChangesAsync();
-
-                TempData["ThongBao"] ="Bạn đã hoàn tất cập nhật thông tin. Hệ thống đã ghi nhận.";
-            }
-
-            return RedirectToAction("Index", "Home");
         }
 
         [Authorize(Roles = "KhachHang")]
@@ -430,7 +508,20 @@ namespace WebSuDungDIen.Controllers
             if (user == null) return NotFound();
 
             var khachHang = await _context.KhachHang.FirstOrDefaultAsync(k => k.IdentityUserId == user.Id);
-            if (khachHang == null) return NotFound();
+
+            // 👉 [SỬA LẠI CHỖ NÀY]: Thay NotFound() bằng thông báo cho thân thiện
+            if (khachHang == null)
+            {
+                TempData["ThongBao"] = "Bạn chưa đăng ký hồ sơ sử dụng điện!";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // 👉 [THÊM MỚI CHỖ NÀY]: Chặn luôn mấy ông đã đăng ký nhưng Admin chưa duyệt
+            if (khachHang.TrangThai == false)
+            {
+                TempData["ThongBao"] = "Hồ sơ của bạn đang chờ duyệt, hệ thống chưa thể cấp hóa đơn.";
+                return RedirectToAction("Index", "Home");
+            }
 
             // 2. Tự động lấy hóa đơn MỚI NHẤT của đúng khách hàng này
             var hoaDon = await _context.HoaDon
@@ -438,10 +529,11 @@ namespace WebSuDungDIen.Controllers
                 .OrderByDescending(h => h.NgayLap)
                 .FirstOrDefaultAsync();
 
+            // Đoạn check hóa đơn null này của sếp làm quá chuẩn rồi, giữ nguyên!
             if (hoaDon == null)
             {
                 TempData["ThongBao"] = "Bạn chưa có hóa đơn tiền điện nào trong hệ thống.";
-                return RedirectToAction("Index", "Home"); // Chuyển về trang chủ hoặc lịch sử
+                return RedirectToAction("Index", "Home");
             }
 
             // 3. Lấy các thông tin liên quan y hệt trang Details
@@ -459,7 +551,7 @@ namespace WebSuDungDIen.Controllers
             ViewBag.Thang = chiSo != null ? chiSo.Thang : 0;
             ViewBag.Nam = chiSo != null ? chiSo.Nam : 0;
             ViewBag.MaKh = khachHang.MaKh;
-            ViewBag.BangGia = bangGia; // Đã dùng bảng giá THẬT từ DB!
+            ViewBag.BangGia = bangGia;
             ViewBag.NgayLap = hoaDon.NgayLap;
 
             return View(hoaDon);

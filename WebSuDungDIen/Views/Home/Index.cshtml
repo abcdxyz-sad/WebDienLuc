@@ -3,18 +3,20 @@
 }
 
 <link rel="stylesheet" href="~/css/home-enterprise.css" />
-
-@if (TempData["ThongBao"] != null)
-{
-    <div class="container mt-3">
-        <div class="erp-alert">
-            <i class="fas fa-info-circle me-2"></i> @TempData["ThongBao"]
-        </div>
-    </div>
-}
+<link rel="stylesheet" href="~/css/zzz-notify.css" asp-append-version="true" />
 
 @if (User.Identity?.IsAuthenticated == true && (User.IsInRole("Admin") || User.IsInRole("NhanVien")))
 {
+    @if (TempData["ThongBao"] != null)
+    {
+        <div id="thongBao" class="zzz-notification">
+            <div class="zzz-content">
+                <span class="zzz-icon">👾</span> <span class="zzz-text">@TempData["ThongBao"]</span>
+            </div>
+            <div class="zzz-decor-line"></div>
+        </div>
+    }
+
     <div class="erp-hero-section" style="padding: 4rem 0 6rem 0;">
         <div class="container erp-hero-content">
             <div class="row align-items-center">
@@ -132,6 +134,16 @@ else
        ========================================================================= *@
 
     <div class="corp-wrapper">
+        @if (TempData["ThongBao"] != null)
+        {
+            <div id="thongBao" class="corp-notification">
+                <div class="corp-content">
+                    <span class="corp-icon">✅</span>
+                    <span class="corp-text">@TempData["ThongBao"]</span>
+                </div>
+                <div class="corp-progress-bar"></div>
+            </div>
+        }
         <div class="corp-customer-home">
 
             <div class="position-relative overflow-hidden rounded-bottom-5 hero-section">
@@ -302,3 +314,4 @@ else
         </div>
     </div>
 }
+<script src="~/js/auto-alert.js"></script>

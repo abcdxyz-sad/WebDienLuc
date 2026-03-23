@@ -16,7 +16,7 @@
             <div class="input-group border border-dark border-2 rounded-0 shadow-sm">
                 <input type="text" id="liveSearchInput" name="searchKeyword" value="@ViewBag.SearchKeyword" class="form-control border-0 rounded-0 font-monospace fw-bold" placeholder="Tên, SĐT, Mã KH..." />
                 <button type="submit" class="btn zzz-btn-cancel fw-bold px-4 border-start border-dark border-2 rounded-0">
-                    TÌM <i class="bi bi-radar ms-1"></i>
+                    <i class="bi bi-search ms-1"></i>TÌM
                 </button>
             </div>
         </form>
@@ -45,7 +45,7 @@
                     <div class="d-flex flex-column flex-md-row gap-3 justify-content-between align-items-md-center mb-3">
                         <div>
                             <span class="bg-dark text-white fw-bold px-2 py-1 fs-5">MÃ KHÁCH: [@item.MaKh]</span>
-                            <span class="fw-bolder text-danger fs-3 text-uppercase ms-2" style="vertical-align: middle;">@item.TenKh</span>
+                            <span class="fw-bolder text-danger fs-3 text-uppercase ms-2" style="vertical-align: middle;">TÊN KHÁCH: @item.TenKh</span>
                         </div>
 
                         <div class="d-flex gap-2">
@@ -66,7 +66,7 @@
         }
         else
         {
-            <div id="noMatchMessage" class="text-center py-5" style="display: none;">
+            <div id="noDataMessage" class="text-center py-2">
                 <i class="bi bi-search text-muted mb-3" style="font-size: 3rem;"></i>
                 <h4 class="fw-bold text-danger zzz-text-mono">KHÔNG TÌM THẤY TỪ KHÓA PHÙ HỢP.</h4>
                 <p class="text-muted fw-bold">Vui lòng thử lại với Tên, SĐT hoặc Mã KH khác.</p>
@@ -97,30 +97,6 @@
                         // Lấy và đập dữ liệu mới vào
                         let newContent = doc.getElementById('vung-du-lieu-thay-doi').innerHTML;
                         document.getElementById('vung-du-lieu-thay-doi').innerHTML = newContent;
-
-                        /* =========================================================
-                           PHẦN THÊM MỚI: XỬ LÝ HIỆN THÔNG BÁO KHÔNG CÓ DỮ LIỆU
-                           ========================================================= */
-                        // 1. Quét xem trong vùng dữ liệu mới có thẻ khách hàng nào không
-                        let itemCount = document.querySelectorAll('#vung-du-lieu-thay-doi .customer-item').length;
-
-                        // 2. Gọi cái thông báo ra
-                        let noMatchMessage = document.getElementById('noMatchMessage');
-
-                        if (noMatchMessage) {
-                            if (itemCount === 0) {
-                                // Không có thẻ nào -> Mở thông báo lên
-                                noMatchMessage.style.display = 'block';
-
-                                // (Tùy chọn) Ẩn luôn cái block "0 RECORDS FOUND" mặc định của C# nếu có để không bị trùng
-                                let defaultEmpty = document.querySelector('#vung-du-lieu-thay-doi .fa-database');
-                                if(defaultEmpty) defaultEmpty.parentElement.style.display = 'none';
-                            } else {
-                                // Có ít nhất 1 thẻ -> Giấu thông báo đi
-                                noMatchMessage.style.display = 'none';
-                            }
-                        }
-
                     })
                     .catch(error => console.error('Lỗi cmnr sếp ơi:', error));
 

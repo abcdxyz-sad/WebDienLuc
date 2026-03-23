@@ -1,51 +1,86 @@
 ﻿@model WebSuDungDIen.Models.HoaDon
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "XÓA HÓA ĐƠN";
 }
 
-<h1>Delete</h1>
+<div class="container-fluid p-0" style="max-width: 800px; margin: 0 auto;">
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>HoaDon</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MaHd)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MaHd)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.KhachHangId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.KhachHangId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ChiSoDienId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ChiSoDienId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TrangThai)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TrangThai)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NgayThanhToan)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NgayThanhToan)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+    <div class="border border-danger border-4 bg-danger text-white p-4 mb-4 position-relative" style="box-shadow: 8px 8px 0px var(--zzz-black);">
+        <h1 class="zzz-page-title m-0 fw-bold text-uppercase d-flex align-items-center gap-2">
+            <i class="fas fa-exclamation-triangle"></i> CẢNH BÁO HỆ THỐNG
+        </h1>
+        <p class="m-0 zzz-text-mono mt-2 fw-bold" style="font-size: 1.1rem;">
+            YÊU CẦU TIÊU HỦY BIÊN LAI HÓA ĐƠN. HÀNH ĐỘNG NÀY LÀ VĨNH VIỄN VÀ KHÔNG THỂ KHÔI PHỤC!
+        </p>
+    </div>
+
+    <div class="card rounded-0 border-dark border-3 mb-4 bg-white" style="box-shadow: 8px 8px 0px var(--zzz-black);">
+        <div class="card-header bg-dark text-white rounded-0 border-bottom border-dark border-3 p-3 d-flex justify-content-between align-items-center">
+            <h4 class="m-0 zzz-text-mono text-white fw-bold">MÃ HÓA ĐƠN: #@Model.MaHd</h4>
+            <span class="badge bg-danger border border-white zzz-text-mono fs-6">CHỜ XÓA</span>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row g-4">
+
+                <div class="col-md-12">
+                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">Số hiệu Hóa đơn</label>
+                    <div class="zzz-text-name fs-4 border-bottom border-dark border-2 pb-1 text-danger">
+                        @Html.DisplayFor(model => model.MaHd)
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">ID Khách Hàng</label>
+                    <div class="zzz-text-mono fw-bold fs-6 text-truncate" title="@Model.KhachHangId">
+                        @Html.DisplayFor(model => model.KhachHangId)
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">ID Chỉ Số Điện</label>
+                    <div class="zzz-badge-id fs-5 fw-bold text-end text-md-start text-truncate" title="@Model.ChiSoDienId">
+                        @Html.DisplayFor(model => model.ChiSoDienId)
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">Trạng thái thanh toán</label>
+                    <div class="fw-bold fs-6 border p-2 bg-light border-dark">
+                        @if (Model.TrangThai == "DaThanhToan" || Model.TrangThai == "Đã thanh toán")
+                        {
+                            <span class="text-success"><i class="fas fa-check-circle me-2"></i> ĐÃ THANH TOÁN</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger"><i class="fas fa-hourglass-half me-2"></i> CHƯA THANH TOÁN</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">Ngày thanh toán</label>
+                    <div class="fw-bold fs-6 border p-2 bg-light border-dark text-primary">
+                        <i class="fas fa-calendar-check me-2"></i> @(Model.NgayThanhToan?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-3 mt-4">
+        <form asp-action="Delete" class="w-50">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn w-100 btn-danger zzz-btn-danger fs-5 fw-bold py-3 rounded-0 border-dark border-3" style="box-shadow: 4px 4px 0px var(--zzz-black);">
+                <i class="fas fa-skull me-2"></i> XÁC NHẬN TIÊU HỦY
+            </button>
+        </form>
+
+        <a asp-action="Index" class="btn w-50 btn-light zzz-btn-cancel fs-5 fw-bold py-3 text-center d-flex justify-content-center align-items-center border-dark border-3 rounded-0" style="box-shadow: 4px 4px 0px var(--zzz-black);">
+            <i class="fas fa-undo me-2"></i> RÚT LUI
+        </a>
+    </div>
+
 </div>

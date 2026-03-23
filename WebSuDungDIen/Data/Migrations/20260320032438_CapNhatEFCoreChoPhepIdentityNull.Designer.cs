@@ -12,8 +12,8 @@ using WebSuDungDIen.Data;
 namespace WebSuDungDIen.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260304024418_FixDBPhuong")]
-    partial class FixDBPhuong
+    [Migration("20260320032438_CapNhatEFCoreChoPhepIdentityNull")]
+    partial class CapNhatEFCoreChoPhepIdentityNull
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -193,6 +193,9 @@ namespace WebSuDungDIen.Data.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("MaNV")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -255,7 +258,6 @@ namespace WebSuDungDIen.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("NhanVienId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Thang")
@@ -314,6 +316,9 @@ namespace WebSuDungDIen.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("NgayLap")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("NgayThanhToan")
                         .HasColumnType("datetime2");
 
@@ -363,19 +368,23 @@ namespace WebSuDungDIen.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DiaChiDayDu")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("DienThoai")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IdentityUserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("MaKh")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PhuongId")
-                        .HasColumnType("int");
+                    b.Property<string>("MaPhuongApi")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TenKh")
                         .HasColumnType("nvarchar(max)");
@@ -386,9 +395,8 @@ namespace WebSuDungDIen.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdentityUserId")
-                        .IsUnique();
-
-                    b.HasIndex("PhuongId");
+                        .IsUnique()
+                        .HasFilter("[IdentityUserId] IS NOT NULL");
 
                     b.ToTable("KhachHang");
                 });
@@ -429,23 +437,6 @@ namespace WebSuDungDIen.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("NhanVien");
-                });
-
-            modelBuilder.Entity("WebSuDungDIen.Models.Phuong", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("TenPhuong")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Phuong");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -514,8 +505,7 @@ namespace WebSuDungDIen.Data.Migrations
                     b.HasOne("WebSuDungDIen.Models.NhanVien", null)
                         .WithMany()
                         .HasForeignKey("NhanVienId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("KhachHang");
                 });
@@ -553,12 +543,6 @@ namespace WebSuDungDIen.Data.Migrations
                         .WithOne()
                         .HasForeignKey("WebSuDungDIen.Models.KhachHang", "IdentityUserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebSuDungDIen.Models.Phuong", null)
-                        .WithMany()
-                        .HasForeignKey("PhuongId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");

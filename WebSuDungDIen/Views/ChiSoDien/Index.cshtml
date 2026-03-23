@@ -25,7 +25,7 @@
             @if (!string.IsNullOrEmpty(ViewBag.MaPhuongApi))
             {
                 <a asp-controller="ChiSoDien" asp-action="Create" asp-route-maPhuongApi="@ViewBag.MaPhuongApi" class="btn btn-primary fw-bold border-dark border-2 rounded-0 shadow-sm">
-                    <i class="bi bi-plus-square-fill me-1"> NHẬP CHỈ SỐ
+                    <i class="bi bi-plus-square-fill me-1"> NHẬP CHỈ SỐ</i>
                 </a>
             }
         </div>
@@ -51,7 +51,7 @@
             <div class="input-group border border-dark border-2 rounded-0">
                 <input type="text" id="liveSearchInput" name="searchKeyword" value="@ViewBag.SearchKeyword" class="form-control border-0 rounded-0" placeholder="Tên KH, Điện thoại..." />
                 <button type="submit" class="btn btn-primary fw-bold px-4 border-start border-dark border-2 rounded-0">
-                    <i class="bi bi-radar me-1"></i> TÌM KIẾM
+                    <i class="bi bi-search ms-1"></i>TÌM KIẾM
                 </button>
             </div>
         </div>
@@ -89,7 +89,14 @@
                                     @item.DiaChi
                                 </td>
                                 <td class="text-center zzz-text-mono fw-bold">
-                                    @item.ThangGanNhat/@item.NamGanNhat
+                                    @if (item.ThangGanNhat == 0)
+                                    {
+                                        <span class="text-danger small">CHƯA CÓ</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@item.ThangGanNhat/@item.NamGanNhat</span>
+                                    }
                                 </td>
 
                                 <td class="text-end">
@@ -101,11 +108,23 @@
                                 </td>
 
                                 <td class="text-center">
-                                    <span class="badge bg-danger zzz-status-badge zzz-status-offline border border-dark border-2">
-                                        <i class="zzz-status-x">⚠</i> @item.DienTieuThu kWh
-                                    </span>
+                                    @if (item.ThangGanNhat == 0)
+                                    {
+                                        <span class="text-muted fw-bold">-</span>
+                                    }
+                                    else if (item.ChiSoCu == 0)
+                                    {
+                                        <span class="badge bg-primary zzz-status-badge border border-dark border-2 text-white">
+                                            <i class="fas fa-tools me-1"></i> MỐC LẮP ĐẶT
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger zzz-status-badge zzz-status-offline border border-dark border-2">
+                                            <i class="zzz-status-x"></i> @item.DienTieuThu kWh
+                                        </span>
+                                    }
                                 </td>
-
                                 <td class="text-center">
                                     <div class="dropdown">
                                         <button class="btn btn-outline-dark border-2 rounded-0 dropdown-toggle zzz-btn-action fw-bold" type="button" id="dropdown_@item.KhachHangId" data-bs-toggle="dropdown" aria-expanded="false">
@@ -124,22 +143,18 @@
                             </tr>
                         }
                     }
-                    else
-                    {
-                        <tr>
-                            <td colspan="7" class="text-center py-5 border-0">
-                                <div class="text-center py-5" id="noMatchMessage" style="display: none;">
-
-                                    <i class="bi bi-search text-muted mb-3" style="font-size: 3rem;"></i>
-
-                                    <h4 class="fw-bold text-danger zzz-text-mono">KHÔNG TÌM THẤY TỪ KHÓA PHÙ HỢP.</h4>
-
-                                    <p class="text-muted fw-bold">Vui lòng thử lại với Tên, SĐT hoặc Mã KH khác.</p>
-
-                                </div>
-                            </td>
-                        </tr>
-                    }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-2 border-0">
+                                    <div class="text-center py-5">
+                                        <i class="bi bi-search text-muted mb-3" style="font-size: 3rem;"></i>
+                                        <h4 class="fw-bold text-danger zzz-text-mono">KHÔNG TÌM THẤY TỪ KHÓA PHÙ HỢP.</h4>
+                                        <p class="text-muted fw-bold">Vui lòng thử lại với Tên, SĐT hoặc Mã KH khác.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
                 </tbody>
             </table>
         </div>
@@ -168,62 +183,46 @@
             observer.observe(wardSelect, { childList: true });
         }
 
-        // 2. BỘ MÁY AJAX LIVE SEARCH (NÂNG CẤP DÀNH CHO NHIỀU INPUT)
         let timeout = null;
-        const filterForm = document.getElementById('filterForm');
+        let currentAbortController = null; // Bùa hộ mệnh chống kẹt xe
 
-        // Bắt sự kiện 'input' (khi gõ chữ) và 'change' (khi chọn Dropdown)
-        filterForm.addEventListener('input', handleLiveSearch);
-        filterForm.addEventListener('change', handleLiveSearch);
-
-        function handleLiveSearch(e) {
-            // Hủy bộ đếm cũ
+        document.getElementById('liveSearchInput').addEventListener('input', function (e) {
             clearTimeout(timeout);
 
-            // Đếm ngược 300ms rồi mới bắn request
             timeout = setTimeout(function () {
+                let form = e.target.closest('form');
+                let searchParams = new URLSearchParams(new FormData(form)).toString();
 
-                // Gom toàn bộ dữ liệu (Tỉnh, Phường, Từ khóa) đang có trong Form lại
-                let formData = new FormData(filterForm);
-                let searchParams = new URLSearchParams(formData).toString();
+                // TRỊ BỆNH 1: Dùng pathname để dọn sạch URL rác, chỉ giữ lại thư mục gốc
+                let url = window.location.pathname + '?' + searchParams;
 
-                // Tạo đường link truy vấn ngầm
-                let url = filterForm.action + '?' + searchParams;
+                // TRỊ BỆNH 2: Nếu có thằng request cũ đang chạy lề mề, chém đầu nó ngay lập tức!
+                if (currentAbortController) {
+                    currentAbortController.abort();
+                }
+                currentAbortController = new AbortController(); // Cấp lệnh bài mới
 
-                // Phái sát thủ AJAX đi lấy dữ liệu
-                fetch(url)
+                // Phái sát thủ đi, mang theo lệnh bài
+                fetch(url, { signal: currentAbortController.signal })
                     .then(response => response.text())
                     .then(html => {
-                        // Mổ bụng kết quả, lấy đúng cái Bảng nhét đè lên cái cũ
                         let parser = new DOMParser();
                         let doc = parser.parseFromString(html, 'text/html');
 
+                        // Lấy và đập dữ liệu mới vào
                         let newContent = doc.getElementById('vung-du-lieu-thay-doi').innerHTML;
                         document.getElementById('vung-du-lieu-thay-doi').innerHTML = newContent;
-
-                        // 1. Đếm xem có bao nhiêu thẻ khách hàng (bạn nhớ dùng đúng class của thẻ nhé)
-                        let itemCount = document.querySelectorAll('#vung-du-lieu-thay-doi .customer-item').length;
-
-                        // 2. Gọi cái thông báo ra
-                        let noMatchMessage = document.getElementById('noMatchMessage');
-
-                        if (noMatchMessage) {
-                            if (itemCount === 0) {
-                                // Không có thẻ nào -> Mở thông báo lên
-                                noMatchMessage.style.display = 'block';
-
-                                // (Tùy chọn) Ẩn luôn cái block "0 RECORDS FOUND" mặc định của C# nếu có để không bị trùng
-                                let defaultEmpty = document.querySelector('#vung-du-lieu-thay-doi .fa-database');
-                                if(defaultEmpty) defaultEmpty.parentElement.style.display = 'none';
-                            } else {
-                                // Có ít nhất 1 thẻ -> Giấu thông báo đi
-                                noMatchMessage.style.display = 'none';
-                            }
-                        }
                     })
-                    .catch(error => console.error('Gãy nạng rồi sếp ơi:', error));
+                    .catch(error => {
+                        // Bỏ qua báo lỗi nếu request bị ta chủ động chém đầu
+                        if (error.name === 'AbortError') {
+                            console.log('Đã triệt tiêu request cũ dĩ vãng!');
+                        } else {
+                            console.error('Lỗi cmnr sếp ơi:', error);
+                        }
+                    });
 
-            }, 300);
-        }
+            }, 300); // 300ms là độ trễ vàng, không nên chỉnh sửa
+        });
     </script>
 }

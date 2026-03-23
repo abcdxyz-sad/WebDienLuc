@@ -44,21 +44,26 @@ namespace WebSuDungDIen.Controllers
                 query = query.Where(k => k.MaPhuongApi == maPhuongApi);
             }
 
-            // 4. LỌC THEO TỪ KHÓA (FULL-TEXT SEARCH)
-            // Thay vì dùng _khachHangCollection, ta dùng cú pháp lọc trực tiếp trên Query
+            // 4. Kiểm tra xem người dùng có gõ tìm kiếm không
             if (!string.IsNullOrEmpty(searchKeyword))
             {
-                // Lưu ý: Để dòng này chạy được, bạn vẫn phải tạo Text Index trong MongoDB Compass như tôi hướng dẫn ở trên
-                var filter = Builders<KhachHang>.Filter.Text(searchKeyword);
+                // Phải dùng cái biến keyword này cho toàn bộ quá trình so sánh bên dưới!
+                string keyword = searchKeyword.Trim().ToLower();
 
-                // Chuyển đổi từ Filter sang Queryable
-                // Nếu _context.KhachHang là IMongoCollection thì dùng lệnh này:
-                // query = _context.KhachHang.Find(filter).AsQueryable();
+                bool isNumberOnly = keyword.All(char.IsDigit); // Kiểm tra trên keyword đã Trim
 
-                // Hoặc đơn giản hơn nếu bạn muốn tìm kiếm cơ bản (không cần Index phức tạp):
-                query = query.Where(k => k.TenKh.Contains(searchKeyword) ||
-                                         k.MaKh.Contains(searchKeyword) ||
-                                         k.DienThoai.Contains(searchKeyword));
+                if (isNumberOnly)
+                {
+                    // NẾU LÀ SỐ: Chỉ quất đúng cột Số điện thoại. 
+                    query = query.Where(k => k.DienThoai.StartsWith(keyword));
+                }
+                else
+                {
+                    // NẾU LÀ CHỮ: Chỉ quét cột Tên hoặc Mã Khách Hàng.
+                    // Mã KH thì bắt buộc gõ chính xác, Tên thì cho phép chứa (Contains)
+                    query = query.Where(k => k.TenKh.ToLower().Contains(keyword) ||
+                                             k.MaKh.ToLower() == keyword);
+                }
             }
 
             // --- GIỮ NGUYÊN PHẦN LOGIC ĐỔ DATA VÀO DROPDOWN CỦA BẠN ---
@@ -88,17 +93,38 @@ namespace WebSuDungDIen.Controllers
             ViewBag.MaPhuongApi = maPhuongApi;
 
             // --- ĐỔ DỮ LIỆU RA VIEWMODEL ---
-            var data = await query.Select(k => new ChiSoDienIndexVM
+            // 1. Lôi dữ liệu thô từ Database lên trước (Tránh lỗi EF Core không dịch được phép trừ)
+            var rawData = await query.Select(k => new
             {
                 KhachHangId = k.Id,
                 TenKh = k.TenKh,
                 DiaChi = k.DiaChiDayDu ?? k.DiaChi,
-                ThangGanNhat = k.ChiSoDien.OrderByDescending(c => c.Nam).ThenByDescending(c => c.Thang).Select(c => c.Thang).FirstOrDefault(),
-                NamGanNhat = k.ChiSoDien.OrderByDescending(c => c.Nam).ThenByDescending(c => c.Thang).Select(c => c.Nam).FirstOrDefault(),
-                ChiSoCu = k.ChiSoDien.OrderByDescending(c => c.Nam).ThenByDescending(c => c.Thang).Select(c => c.ChiSoCu).FirstOrDefault(),
-                ChiSoMoi = k.ChiSoDien.OrderByDescending(c => c.Nam).ThenByDescending(c => c.Thang).Select(c => c.ChiSoMoi).FirstOrDefault(),
-                DienTieuThu = k.ChiSoDien.OrderByDescending(c => c.Nam).ThenByDescending(c => c.Thang).Select(c => c.ChiSoMoi - c.ChiSoCu).FirstOrDefault()
+                // Chỉ bốc ĐÚNG 1 dòng chỉ số mới nhất của ông khách này
+                ChiSoGanNhat = k.ChiSoDien
+                                .OrderByDescending(c => c.Nam)
+                                .ThenByDescending(c => c.Thang)
+                                .FirstOrDefault()
             }).ToListAsync();
+
+            // 2. Map sang ViewModel và xử lý Logic tính tiền trên RAM (Bao mượt, không bao giờ lỗi SQL)
+            var data = rawData.Select(x => new ChiSoDienIndexVM
+            {
+                KhachHangId = x.KhachHangId,
+                TenKh = x.TenKh,
+                DiaChi = x.DiaChi,
+
+                // Nếu không có chỉ số (null) thì cho mặc định là 0
+                ThangGanNhat = x.ChiSoGanNhat?.Thang ?? 0,
+                NamGanNhat = x.ChiSoGanNhat?.Nam ?? 0,
+                ChiSoCu = x.ChiSoGanNhat?.ChiSoCu ?? 0,
+                ChiSoMoi = x.ChiSoGanNhat?.ChiSoMoi ?? 0,
+
+                // 🚨 BÙA CHỐNG KHÁCH HÀNG CHÉM: 
+                // Nếu là mốc lắp đặt (ChiSoCu == 0), thì Tiêu thụ = 0! Không tính tiền!
+                DienTieuThu = (x.ChiSoGanNhat != null && x.ChiSoGanNhat.ChiSoCu > 0)
+                              ? (x.ChiSoGanNhat.ChiSoMoi - x.ChiSoGanNhat.ChiSoCu)
+                              : 0
+            }).ToList();
 
             return View(data);
         }
@@ -380,8 +406,6 @@ namespace WebSuDungDIen.Controllers
             }
 
             // --- QUAN TRỌNG: BỎ QUA LỖI VALIDATION CỦA NHÂN VIÊN ---
-            // Vì Form không gửi NhanVienId lên (để bảo mật), nên Model sẽ báo lỗi thiếu trường này.
-            // Ta dùng lệnh này để bảo hệ thống: "Đừng lo, tí nữa Server sẽ tự điền ID nhân viên".
             ModelState.Remove("NhanVienId");
             ModelState.Remove("NhanVien"); // Remove cả object navigation nếu cần
 
@@ -419,6 +443,25 @@ namespace WebSuDungDIen.Controllers
             var chiSoDien = await _context.ChiSoDien.FindAsync(model.Id);
             if (chiSoDien == null) return NotFound();
 
+            // =========================================================================
+            // 🚨 Ổ KHÓA BẢO MẬT: KIỂM TRA HÓA ĐƠN TRƯỚC KHI CHO PHÉP CHỈNH SỬA 🚨
+            // =========================================================================
+            // (Lưu ý: Chữ 'HoaDon' sếp tự coi lại DbContext xem có thêm 's' không nhé)
+            bool daLapHoaDon = await _context.HoaDon.AnyAsync(h => h.ChiSoDienId == model.Id);
+
+            if (daLapHoaDon)
+            {
+                // Bắn bùa ngải lỗi ra ngoài TempData
+                TempData["ThongBao"] = "CẢNH BÁO: Kỳ chỉ số này đã được xuất hóa đơn! Hệ thống từ chối ghi đè để bảo vệ tính toàn vẹn dữ liệu tài chính!";
+
+                // Nạp lại tên khách hàng kẻo cái View nó báo lỗi NullReference
+                await LoadThongTinKhachHang();
+
+                // Đá văng ra lại giao diện cũ
+                return View(model);
+            }
+            // =========================================================================
+
             // 5. Logic nghiệp vụ: Chỉ số mới >= cũ
             if (model.ChiSoMoi < chiSoDien.ChiSoCu)
             {
@@ -431,8 +474,6 @@ namespace WebSuDungDIen.Controllers
             chiSoDien.ChiSoMoi = model.ChiSoMoi;
 
             // ĐÂY LÀ CHỖ QUAN TRỌNG NHẤT:
-            // Gán ID của nhân viên đang đăng nhập vào bản ghi.
-            // Dù ai có táy máy F12 sửa HTML thì dòng này vẫn lấy đúng người đang đăng nhập.
             chiSoDien.NhanVienId = nhanVien.Id;
 
             await _context.SaveChangesAsync();
