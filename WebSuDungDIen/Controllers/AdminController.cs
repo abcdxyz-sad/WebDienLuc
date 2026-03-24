@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebSuDungDIen.Data;
 using WebSuDungDIen.Models;
-
+using System.Security.Claims;
 namespace WebSuDungDIen.Controllers
 {
     public class AdminController : Controller
@@ -303,16 +303,49 @@ namespace WebSuDungDIen.Controllers
             return RedirectToAction("ChiTietTaiKhoan", new { userId });
         }
 
+        [HttpPost] // Đã là Xóa thì nên dùng HttpPost cho an toàn sếp nhé
         public async Task<IActionResult> XoaTaiKhoan(string userId)
         {
+            // Lấy thông tin kẻ xấu số sắp bị trảm
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
-                return NotFound();
+            {
+                TempData["Error"] = "Không tìm thấy tài khoản này trong hệ thống!";
+                return RedirectToAction("QuanLyTaiKhoan");
+            }
 
-            await _userManager.DeleteAsync(user);
+            // ==========================================================
+            // 🛡️ LÁ CHẮN 1: BẢO VỆ LONG MẠCH (KHÔNG CHO XÓA ADMIN GỐC)
+            // ==========================================================
+            // Sếp kiểm tra xem UserName có phải là "admin" không (nhớ ToLower để phòng vụ viết hoa viết thường)
+            if (user.UserName.ToLower() == "admin")
+            {
+                TempData["Error"] = "CẢNH BÁO TỐI CAO: Không thể tiêu hủy tài khoản Quản Trị Viên gốc!";
+                return RedirectToAction("QuanLyTaiKhoan");
+            }
 
-            TempData["ThongBao"] = "Đã xóa tài khoản";
+            // ==========================================================
+            // 🛡️ LÁ CHẮN 2: CHỐNG TỰ SÁT (KHÔNG CHO TỰ XÓA CHÍNH MÌNH)
+            // ==========================================================
+            var currentUserId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (user.Id == currentUserId)
+            {
+                TempData["Error"] = "LỖI LÔ-GÍC: Sếp không thể tự tiêu hủy chính mình khi đang cầm quyền!";
+                return RedirectToAction("QuanLyTaiKhoan");
+            }
+
+            // Nếu thoát được 2 lá chắn trên thì mới đem ra chém đầu
+            try
+            {
+                await _userManager.DeleteAsync(user);
+                TempData["ThongBao"] = $"Đã xóa sổ vĩnh viễn tài khoản [{user.UserName}] !";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Lỗi hệ thống khi xóa: " + ex.Message;
+            }
+
             return RedirectToAction("QuanLyTaiKhoan");
         }
     }

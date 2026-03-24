@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using WebSuDungDIen.Data;
 using WebSuDungDIen.Models;
@@ -240,7 +241,6 @@ namespace WebSuDungDIen.Controllers
             return View(model);
         }
 
-
         // GET: NhanVien/Delete/5
         public async Task<IActionResult> Delete(string? id)
         {
@@ -252,9 +252,22 @@ namespace WebSuDungDIen.Controllers
             var nhanVien = await _context.NhanVien
                 .Include(n => n.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (nhanVien == null)
             {
                 return NotFound();
+            }
+
+            // ==========================================================
+            // 🛡️ LÁ CHẮN 1: BẢO VỆ GIAO DIỆN (CHỐNG TỰ SÁT)
+            // ==========================================================
+            var currentUserId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            // So sánh IdentityUserId của hồ sơ nhân viên với ID của kẻ đang online
+            if (nhanVien.IdentityUserId == currentUserId)
+            {
+                TempData["Error"] = "CẢNH BÁO: Định tự đốt hồ sơ của chính mình để chuồn à? Hệ thống đã ghi nhận hành vi khả nghi!";
+                return RedirectToAction(nameof(Index));
             }
 
             return View(nhanVien);
@@ -263,15 +276,27 @@ namespace WebSuDungDIen.Controllers
         // POST: NhanVien/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var nhanVien = await _context.NhanVien.FindAsync(id);
+
             if (nhanVien != null)
             {
+                // ==========================================================
+                // 🛡️ LÁ CHẮN 2: BẢO VỆ API (CHẶN BỌN HACKER DÙNG POSTMAN TỰ SÁT)
+                // ==========================================================
+                var currentUserId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+                if (nhanVien.IdentityUserId == currentUserId)
+                {
+                    TempData["Error"] = "LỖI LÔ-GÍC: Lệnh tự sát đã bị hệ thống từ chối!";
+                    return RedirectToAction(nameof(Index));
+                }
+
                 _context.NhanVien.Remove(nhanVien);
+                await _context.SaveChangesAsync();
+                TempData["ThongBao"] = "Đã tiêu hủy hồ sơ nhân sự thành công!";
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

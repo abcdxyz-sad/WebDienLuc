@@ -446,3 +446,41 @@
         transform: translate(2px, 2px);
         box-shadow: 0px 0px 0px transparent;
     }
+
+/* =========================================
+   FIX RESPONSIVE CHO ĐIỆN THOẠI (Mobile)
+   CHỈ BAY LÊN TRÊN, BÁM TRÁI, KHÔNG BAY SANG PHẢI NỮA ĐỂ TRÁNH VA LỀ!
+========================================= */
+@media (max-width: 480px) {
+    /* TRANG LOGIN */
+    .zzz-input:focus ~ .label-user,
+    .zzz-input:not(:placeholder-shown) ~ .label-user {
+        transform: translate(5px, -32px) !important; /* Chỉ nhích sang trái 5px, bay thẳng lên */
+    }
+
+    .zzz-input:focus ~ .label-pass,
+    .zzz-input:not(:placeholder-shown) ~ .label-pass {
+        transform: translate(5px, -32px) !important;
+    }
+
+    /* TRANG ĐĂNG KÝ (REGISTER) */
+    .zzz-input:focus ~ .label-reg,
+    .zzz-input:not(:placeholder-shown) ~ .label-reg {
+        transform: translate(5px, -32px) !important;
+    }
+
+    .zzz-input:focus ~ .label-reg-email,
+    .zzz-input:not(:placeholder-shown) ~ .label-reg-email {
+        transform: translate(5px, -32px) !important;
+    }
+
+    .zzz-input:focus ~ .label-reg-pass,
+    .zzz-input:not(:placeholder-shown) ~ .label-reg-pass {
+        transform: translate(5px, -32px) !important;
+    }
+
+    .zzz-input:focus ~ .label-reg-confirm,
+    .zzz-input:not(:placeholder-shown) ~ .label-reg-confirm {
+        transform: translate(5px, -32px) !important;
+    }
+}

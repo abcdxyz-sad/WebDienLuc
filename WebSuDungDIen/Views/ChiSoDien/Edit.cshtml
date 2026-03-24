@@ -4,7 +4,7 @@
     ViewData["Title"] = "Ghi đè chỉ số điện";
 }
 
-<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel">
+<div class="border-dashed p-3 mb-4 d-flex flex-column flex-lg-row justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel text-center text-lg-start">
     <h1 class="m-0 zzz-page-title">
         [ TỆP DỮ LIỆU ] CHỈ SỐ ĐIỆN
     </h1>
@@ -21,7 +21,7 @@
 
             <div class="zzz-hazard-line"></div>
 
-            <div class="card-body p-4 p-md-5 mt-2">
+            <div class="card-body p-4 p-lg-5 mt-2">
                 <form asp-action="Edit" method="post">
 
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4 zzz-text-mono fw-bold rounded-0"></div>
@@ -40,17 +40,17 @@
                                 <label class="form-label zzz-cmd-label">HỒ SƠ KHÁCH HÀNG</label>
                                 <input value="@Model.KhachHang?.MaKh - @Model.KhachHang?.TenKh"
                                        class="form-control zzz-terminal-input zzz-locked-input text-uppercase"
-                                       readonly tabindex="-1" />
+                                       readonly tabindex="-1" style="white-space: normal; height: auto;" />
                             </div>
 
-                            <div class="col-md-6 mb-3">
+                            <div class="col-6 col-lg-6 mb-3">
                                 <label class="form-label zzz-cmd-label">KỲ (THÁNG/NĂM)</label>
                                 <input value="@Model.Thang / @Model.Nam"
                                        class="form-control zzz-terminal-input zzz-locked-input text-center fs-5"
                                        readonly tabindex="-1" />
                             </div>
 
-                            <div class="col-md-6 mb-3">
+                            <div class="col-6 col-lg-6 mb-3">
                                 <label class="form-label zzz-cmd-label">CHỈ SỐ ĐIỆN CŨ</label>
                                 <input value="@Model.ChiSoCu"
                                        class="form-control zzz-terminal-input zzz-locked-input text-end fs-5"
@@ -66,7 +66,7 @@
                             <div class="col-md-12 mb-2">
                                 <label asp-for="ChiSoMoi" class="form-label zzz-cmd-label text-danger">
                                     <span>NHẬP CHỈ SỐ MỚI</span>
-                                    <span class="zzz-text-req zzz-text-danger-req">* LƯU Ý KẾT QUẢ SẼ LÀM THAY ĐỔI HÓA ĐƠN</span>
+                                    <span class="zzz-text-req zzz-text-danger-req d-block d-lg-inline mt-1 mt-lg-0">* LƯU Ý KẾT QUẢ SẼ LÀM THAY ĐỔI HÓA ĐƠN</span>
                                 </label>
 
                                 <input asp-for="ChiSoMoi"
@@ -78,12 +78,12 @@
                         </div>
                     </div>
 
-                    <div class="d-flex gap-3 mt-4">
-                        <button type="submit" class="btn btn-primary zzz-btn-large flex-grow-1 fw-bold border-dark border-3 rounded-0 shadow-sm">
+                    <div class="d-flex flex-column flex-lg-row gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary zzz-btn-large flex-grow-1 fw-bold border-dark border-3 rounded-0 shadow-sm w-100">
                             <i class="fas fa-bolt me-2"></i> LƯU GHI ĐÈ
                         </button>
 
-                        <a asp-action="Index" class="btn btn-dark zzz-btn-cancel fw-bold px-5 border-dark border-3 rounded-0 shadow-sm">
+                        <a asp-action="Index" class="btn btn-dark zzz-btn-cancel fw-bold px-5 border-dark border-3 rounded-0 shadow-sm w-100 w-lg-auto text-center">
                             <i class="fas fa-undo me-2"></i> RÚT LUI
                         </a>
                     </div>

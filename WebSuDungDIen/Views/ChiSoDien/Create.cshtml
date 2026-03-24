@@ -6,11 +6,11 @@
     var namMacDinh = ViewBag.Nam ?? DateTime.Now.Year;
 }
 
-<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel">
+<div class="border-dashed p-3 mb-4 d-flex flex-column flex-lg-row justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel text-center text-lg-start">
     <h1 class="m-0 zzz-page-title">
         [ CHIẾN DỊCH ] NHẬP CHỈ SỐ ĐIỆN TỔNG
     </h1>
-    <div class="d-flex align-items-center gap-3">
+    <div class="d-flex align-items-center gap-3 w-100 w-lg-auto justify-content-center">
         <span class="zzz-sys-status">
             HỆ THỐNG: <span class="zzz-blink-dot zzz-text-yellow">●</span> ĐANG CHỜ DỮ LIỆU
         </span>
@@ -30,18 +30,18 @@
 <div class="card position-relative zzz-card-thick">
     <div class="zzz-hazard-line"></div>
 
-    <div class="card-body p-4">
+    <div class="card-body p-3 p-lg-4">
         <form asp-action="Create" method="post">
 
             <div class="zzz-fieldset">
                 <div class="zzz-fieldset-title">SYS.01 // KỲ GHI CHỈ SỐ</div>
                 <div class="row">
-                    <div class="col-md-3 mb-3">
+                    <div class="col-6 col-lg-3 mb-3">
                         <label class="form-label zzz-cmd-label">THÁNG <span class="zzz-text-req zzz-text-danger-req">* REQ</span></label>
                         <input type="number" name="Thang" value="@thangMacDinh" class="form-control zzz-terminal-input text-center" required min="1" max="12" />
                     </div>
 
-                    <div class="col-md-3 mb-3">
+                    <div class="col-6 col-lg-3 mb-3">
                         <label class="form-label zzz-cmd-label">NĂM <span class="zzz-text-req zzz-text-danger-req">* REQ</span></label>
                         <input type="number" name="Nam" value="@namMacDinh" class="form-control zzz-terminal-input text-center" required min="2000" />
                     </div>
@@ -52,32 +52,34 @@
                 <div class="zzz-fieldset-title">SYS.02 // DANH SÁCH MỤC TIÊU</div>
 
                 <div class="table-responsive">
-                    <table class="table table-hover table-bordered mb-0 zzz-data-table">
+                    <table class="table table-hover table-bordered mb-0 zzz-data-table align-middle">
                         <thead class="table-dark">
-                            <tr>
-                                <th>TÊN KHÁCH HÀNG</th>
-                                <th>ĐỊA CHỈ</th>
-                                <th class="text-center">KỲ GẦN NHẤT</th>
-                                <th class="text-center">CHỈ SỐ CŨ</th>
-                                <th style="width: 200px;">CHỈ SỐ MỚI</th>
+                            <tr class="text-nowrap" style="font-size: 0.95rem;">
+                                <th style="min-width: 220px;">TÊN KHÁCH HÀNG</th>
+                                <th style="min-width: 250px;">ĐỊA CHỈ</th>
+                                <th class="text-center" style="min-width: 140px;">KỲ GẦN NHẤT</th>
+                                <th class="text-center" style="min-width: 120px;">CHỈ SỐ CŨ</th>
+                                <th style="min-width: 150px;">CHỈ SỐ MỚI</th>
                             </tr>
                         </thead>
                         <tbody>
                             @for (int i = 0; i < Model.Count; i++)
                             {
                                 <tr>
-                                    <input type="hidden" asp-for="@Model[i].KhachHangId" />
-                                    <input type="hidden" asp-for="@Model[i].TenKh" />
-                                    <input type="hidden" asp-for="@Model[i].DiaChi" />
-                                    <input type="hidden" asp-for="@Model[i].ThangGanNhat" />
-                                    <input type="hidden" asp-for="@Model[i].NamGanNhat" />
-                                    <input type="hidden" asp-for="@Model[i].ChiSoCu" />
+                                    <td class="font-weight-bold">
+                                        <input type="hidden" asp-for="@Model[i].KhachHangId" />
+                                        <input type="hidden" asp-for="@Model[i].TenKh" />
+                                        <input type="hidden" asp-for="@Model[i].DiaChi" />
+                                        <input type="hidden" asp-for="@Model[i].ThangGanNhat" />
+                                        <input type="hidden" asp-for="@Model[i].NamGanNhat" />
+                                        <input type="hidden" asp-for="@Model[i].ChiSoCu" />
 
-                                    <td class="font-weight-bold">@Model[i].TenKh</td>
+                                        @Model[i].TenKh
+                                    </td>
 
-                                    <td class="small">@Model[i].DiaChi</td>
+                                    <td class="small text-wrap">@Model[i].DiaChi</td>
 
-                                    <td class="text-center zzz-text-mono">
+                                    <td class="text-center zzz-text-mono text-nowrap">
                                         @(Model[i].ThangGanNhat)/@(Model[i].NamGanNhat)
                                     </td>
 
@@ -86,7 +88,7 @@
                                     </td>
 
                                     <td>
-                                        <input type="number" asp-for="@Model[i].ChiSoMoi" class="form-control zzz-terminal-input" placeholder="Nhập số..." />
+                                        <input type="number" asp-for="@Model[i].ChiSoMoi" class="form-control zzz-terminal-input" placeholder="Nhập số..." style="min-width: 100px;" />
                                     </td>
                                 </tr>
                             }
@@ -97,11 +99,11 @@
 
             <hr class="mt-4 mb-4 zzz-form-divider" />
 
-            <div class="d-flex gap-3">
-                <button type="submit" class="btn btn-primary zzz-btn-large flex-grow-1">
+            <div class="d-flex flex-column flex-lg-row gap-3">
+                <button type="submit" class="btn btn-primary zzz-btn-large flex-grow-1 w-100">
                     <i>⚡</i> LƯU TOÀN BỘ CHỈ SỐ
                 </button>
-                <a asp-action="Index" class="btn btn-outline-secondary zzz-btn-large">
+                <a asp-action="Index" class="btn btn-outline-secondary zzz-btn-large w-100 w-lg-auto text-center">
                     <i>◄</i> TRỞ VỀ DANH SÁCH
                 </a>
             </div>

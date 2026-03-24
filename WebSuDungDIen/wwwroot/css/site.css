@@ -722,3 +722,60 @@ html, body {
     overflow-x: hidden;
     position: relative;
 }
+
+/* ==============================================================
+   TUYỆT KỸ BẺ BẢNG THÀNH CARD TRÊN MOBILE (CHUẨN ZZZ THEME)
+============================================================== */
+@media screen and (max-width: 768px) {
+
+    /* 1. Ép toàn bộ bảng thành dạng Block thay vì Table */
+    .zzz-table,
+    .zzz-table tbody,
+    .zzz-table tr,
+    .zzz-table td {
+        display: block;
+        width: 100%;
+    }
+
+        /* 2. Tiêu hủy luôn dòng Tiêu đề (Thead) vì trên mobile không cần nữa */
+        .zzz-table thead {
+            display: none;
+        }
+
+        /* 3. Phù phép mỗi dòng (tr) thành một cái Card ZZZ */
+        .zzz-table tr {
+            margin-bottom: 20px;
+            background-color: #fff;
+            border: 3px solid var(--zzz-black) !important;
+            box-shadow: 6px 6px 0px var(--zzz-black); /* Đổ bóng Brutalism */
+            padding: 5px;
+        }
+
+        /* 4. Vuốt lại từng ô (td) cho nằm ngang, dạt sang 2 bên */
+        .zzz-table td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: right;
+            padding: 12px 10px !important;
+            border-bottom: 2px dashed #ccc !important; /* Đường kẻ đứt phân cách các dòng */
+            position: relative;
+        }
+
+            /* Bỏ đường kẻ đứt ở dòng cuối cùng của mỗi Card */
+            .zzz-table td:last-child {
+                border-bottom: none !important;
+            }
+
+            /* 5. TÀ THUẬT: Lôi cái "data-label" trong HTML ra làm tiêu đề bên trái */
+            .zzz-table td::before {
+                content: attr(data-label);
+                float: left;
+                text-align: left;
+                font-family: monospace;
+                font-weight: 900;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                font-size: 0.85rem;
+            }
+}

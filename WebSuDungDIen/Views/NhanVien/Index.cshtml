@@ -4,89 +4,101 @@
     ViewData["Title"] = "Quản lý nhân viên";
 }
 
-<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel">
-    <h1 class="m-0 zzz-page-title">
+<div class="border-dashed p-3 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 zzz-command-panel border-dark border-3 bg-white text-center text-md-start">
+
+    <h1 class="m-0 zzz-page-title fw-bold text-uppercase fs-4 fs-md-3 border-start border-primary border-5 ps-3" style="border-left-color: var(--zzz-primary) !important;">
         [ TỆP HỒ SƠ ] NHÂN SỰ
     </h1>
 
-    <div class="d-flex align-items-center gap-3">
-        <a asp-action="Create" class="btn btn-primary">
-            <i class="bi bi-plus-square-fill me-1"></i> THỀM VÀO NHÂN SỰ MỚI
+    <div class="d-flex align-items-center gap-3 w-100 w-md-auto ms-md-auto justify-content-center justify-content-md-end">
+        <a asp-action="Create" class="btn btn-primary w-100 w-md-auto flex-md-grow-0 align-self-md-center fw-bold border-dark border-2 rounded-0 shadow-sm py-2 py-md-1 zzz-text-mono text-center" style="max-width: max-content;">
+            <i class="bi bi-plus-square-fill me-1"></i> THÊM VÀO NHÂN SỰ MỚI
         </a>
     </div>
+
 </div>
 
-<div class="card position-relative">
-    <div class="card-body p-0" style="overflow: visible;">
-        <table class="table table-hover mb-0 zzz-data-table">
-            <thead>
-                <tr>
-                    <th class="zzz-col-10 text-center">MÃ NHÂN VIÊN</th>
-                    <th class="zzz-col-20">HỌ VÀ TÊN</th>
-                    <th>EMAIL</th>
-                    <th>SỐ ĐIỆN THOẠI</th>
-                    <th>CHỨC VỤ</th>
-                    <th class="zzz-col-12 text-center">TÌNH TRẠNG</th>
-                    <th class="text-center zzz-col-10">CHỨC NĂNG</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
+<div class="card position-relative border-dark border-3 rounded-0 shadow-lg">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 zzz-table align-middle">
+                <thead class="table-dark text-nowrap zzz-text-mono">
                     <tr>
-                        <td>
-                            <span class="badge bg-secondary zzz-badge-id">
-                                #@Html.DisplayFor(modelItem => item.MaNV)
-                            </span>
-                        </td>
-                        <td class="zzz-text-name">
-                            @Html.DisplayFor(modelItem => item.TenNV)
-                        </td>
-                        <td class="zzz-text-mono">
-                            @item.User?.Email
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.DienThoai)
-                        </td>
-                        <td>
-                            <span class="zzz-tag">@Html.DisplayFor(modelItem => item.ChucVu)</span>
-                        </td>
-                        <td class="text-center">
-                            @if (item.TrangThai)
-                            {
-                                <span class="badge bg-success zzz-status-badge">
-                                    <span class="zzz-blink-dot zzz-status-dot">●</span> ONLINE
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger zzz-status-badge zzz-status-offline">
-                                    <i class="zzz-status-x">×</i> OFFLINE
-                                </span>
-                            }
-                        </td>
-                        <td class="text-center">
-                            <div class="dropdown">
-                                <button class="btn btn-outline-secondary dropdown-toggle zzz-btn-action" type="button" id="dropdownMenuButton_@item.Id" data-bs-toggle="dropdown" aria-expanded="false">
-                                    CHỌN
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton_@item.Id">
-                                    <li>
-                                        <a class="dropdown-item" asp-action="Details" asp-route-id="@item.Id">XEM HỒ SƠ</a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id">CẬP NHẬT</a>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item text-danger" asp-action="Delete" asp-route-id="@item.Id">XÓA DỮ LIỆU</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </td>
+                        <th class="text-center" style="min-width: 130px;">MÃ NV</th>
+                        <th style="min-width: 200px;">HỌ VÀ TÊN</th>
+                        <th style="min-width: 220px;">EMAIL</th>
+                        <th style="min-width: 150px;">SỐ ĐIỆN THOẠI</th>
+                        <th style="min-width: 150px;">CHỨC VỤ</th>
+                        <th class="text-center" style="min-width: 160px;">TÌNH TRẠNG</th>
+                        <th class="text-center" style="min-width: 140px;">CHỨC NĂNG</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr class="border-bottom border-dark-subtle">
+                            <td data-label="MÃ NV" class="text-md-center">
+                                <span class="badge bg-secondary zzz-badge-id fs-6 shadow-sm border border-dark">
+                                    #@Html.DisplayFor(modelItem => item.MaNV)
+                                </span>
+                            </td>
+                            <td data-label="HỌ VÀ TÊN" class="zzz-text-name text-danger fw-bold fs-5 text-wrap">
+                                @Html.DisplayFor(modelItem => item.TenNV)
+                            </td>
+                            <td data-label="EMAIL" class="zzz-text-mono fw-bold">
+                                @item.User?.Email
+                            </td>
+                            <td data-label="SỐ ĐIỆN THOẠI" class="zzz-text-mono fw-bold">
+                                @Html.DisplayFor(modelItem => item.DienThoai)
+                            </td>
+                            <td data-label="CHỨC VỤ">
+                                <span class="zzz-tag badge bg-light text-dark border border-dark shadow-sm fs-6">
+                                    @Html.DisplayFor(modelItem => item.ChucVu)
+                                </span>
+                            </td>
+                            <td data-label="TÌNH TRẠNG" class="text-md-center">
+                                @if (item.TrangThai)
+                                {
+                                    <span class="badge bg-success zzz-status-badge border border-dark border-2 text-white shadow-sm fw-bold">
+                                        <span class="zzz-blink-dot zzz-status-dot">●</span> ONLINE
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger zzz-status-badge zzz-status-offline border border-dark border-2 shadow-sm fw-bold">
+                                        <i class="zzz-status-x">×</i> OFFLINE
+                                    </span>
+                                }
+                            </td>
+                            <td data-label="CHỨC NĂNG" class="text-md-center">
+                                <div class="dropdown">
+                                    <button class="btn btn-dark border-2 rounded-0 dropdown-toggle zzz-btn-action fw-bold w-100 w-md-auto text-end text-md-center px-4" type="button" id="dropdownMenuButton_@item.Id" data-bs-toggle="dropdown" aria-expanded="false">
+                                        CHỌN
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow" aria-labelledby="dropdownMenuButton_@item.Id">
+                                        <li>
+                                            <a class="dropdown-item fw-bold zzz-text-mono" asp-action="Details" asp-route-id="@item.Id">
+                                                <i class="bi bi-person-lines-fill me-2"></i>XEM HỒ SƠ
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item fw-bold zzz-text-mono" asp-action="Edit" asp-route-id="@item.Id">
+                                                <i class="bi bi-pencil-square me-2"></i>CẬP NHẬT
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider border-dark border-2"></li>
+                                        <li>
+                                            <a class="dropdown-item text-danger fw-bold zzz-text-mono" asp-action="Delete" asp-route-id="@item.Id">
+                                                <i class="bi bi-trash-fill me-2"></i>XÓA DỮ LIỆU
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

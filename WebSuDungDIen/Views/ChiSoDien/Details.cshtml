@@ -4,12 +4,12 @@
     ViewData["Title"] = "Hồ sơ lịch sử tiêu thụ";
 }
 
-<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+<div class="border-dashed p-3 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-center flex-wrap gap-3 text-center text-md-start">
     <h1 class="m-0">
         [ BẢN GHI ] LỊCH SỬ TIÊU THỤ
     </h1>
 
-    <div class="d-flex align-items-center gap-3">
+    <div class="d-flex align-items-center gap-3 w-100 w-md-auto justify-content-center">
         <span class="zzz-sys-status text-success">
             <i class="fas fa-check-circle"></i>
             <span class="zzz-blink-dot text-success">●</span> TRUY XUẤT THÀNH CÔNG
@@ -27,17 +27,17 @@
                 <div class="col-md-4">
                     <label class="form-label zzz-cmd-label text-muted small">MÃ KHÁCH HÀNG (ID)</label>
                     <input class="form-control zzz-terminal-input zzz-locked-input fw-bold"
-                           value="#@Model.MaKh" readonly tabindex="-1" />
+                           value="#@Model.MaKh" readonly tabindex="-1" style="white-space: normal; height: auto;" />
                 </div>
                 <div class="col-md-8">
                     <label class="form-label zzz-cmd-label text-muted small">TÊN KHÁCH HÀNG</label>
                     <input class="form-control zzz-terminal-input zzz-locked-input text-danger fw-bold"
-                           value="@Model.TenKh" readonly tabindex="-1" />
+                           value="@Model.TenKh" readonly tabindex="-1" style="white-space: normal; height: auto;" />
                 </div>
                 <div class="col-md-12">
                     <label class="form-label zzz-cmd-label text-muted small">ĐỊA CHỈ</label>
                     <input class="form-control zzz-terminal-input zzz-locked-input fw-bold text-uppercase"
-                           value="@Model.DiaChi" readonly tabindex="-1" />
+                           value="@Model.DiaChi" readonly tabindex="-1" style="white-space: normal; height: auto;" />
                 </div>
             </div>
         </div>
@@ -46,7 +46,7 @@
             <div class="zzz-fieldset-title zzz-fieldset-title-highlight">HIS.02 // BIẾN ĐỘNG CHỈ SỐ</div>
 
             <div class="table-responsive bg-white border border-dark mt-2">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover mb-0 zzz-table">
                     <thead>
                         <tr>
                             <th class="text-center">KỲ CHỐT</th>
@@ -61,19 +61,19 @@
                             @foreach (var item in Model.ChiSoDien.OrderByDescending(x => x.Nam).ThenByDescending(x => x.Thang))
                             {
                                 <tr>
-                                    <td class="text-center fw-bold">
+                                    <td data-label="KỲ CHỐT" class="text-md-center fw-bold align-middle">
                                         Tháng @item.Thang / @item.Nam
                                     </td>
 
-                                    <td class="text-end">
+                                    <td data-label="CHỈ SỐ CŨ" class="text-md-end align-middle">
                                         <span class="badge bg-secondary">@item.ChiSoCu</span>
                                     </td>
 
-                                    <td class="text-end">
+                                    <td data-label="CHỈ SỐ MỚI" class="text-md-end align-middle">
                                         <span class="badge bg-warning">@item.ChiSoMoi</span>
                                     </td>
 
-                                    <td class="text-center">
+                                    <td data-label="TỔNG TIÊU THỤ" class="text-md-center align-middle">
                                         <span class="badge bg-danger">
                                             ⚡ @(item.ChiSoMoi - item.ChiSoCu) kWh
                                         </span>
@@ -95,8 +95,8 @@
             </div>
         </div>
 
-        <div class="d-flex justify-content-end mt-4">
-            <a asp-action="Index" class="btn zzz-btn-cancel fw-bold fs-5 px-5 py-2">
+        <div class="d-flex justify-content-md-end mt-4">
+            <a asp-action="Index" class="btn zzz-btn-cancel fw-bold fs-5 px-5 py-2 w-100 w-md-auto text-center">
                 <i class="fas fa-sign-out-alt me-2"></i> QUAY VỀ
             </a>
         </div>

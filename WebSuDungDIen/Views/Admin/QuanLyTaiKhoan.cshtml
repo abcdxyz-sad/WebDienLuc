@@ -14,21 +14,22 @@
     </div>
 }
 
-<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel border-dark border-3">
-    <h1 class="m-0 zzz-page-title fw-bold text-uppercase fs-3">
+<div class="border-dashed p-3 mb-4 d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3 zzz-command-panel border-dark border-3 bg-white">
+
+    <h1 class="m-0 zzz-page-title fw-bold text-uppercase fs-3 text-center text-lg-start w-100 w-lg-auto border-start border-primary border-5 ps-3" style="border-left-color: var(--zzz-primary) !important;">
         [ HỆ THỐNG ] QUẢN LÝ TÀI KHOẢN
     </h1>
 
-    <div class="d-flex align-items-center gap-3">
-        <a asp-controller="Admin" asp-action="TaoTaiKhoan" class="btn btn-primary fw-bold border-dark border-2 rounded-0 shadow-sm" style="box-shadow: 4px 4px 0px var(--zzz-primary);">
+    <div class="d-flex align-items-center gap-3 w-100 w-lg-auto justify-content-center justify-content-lg-end">
+        <a asp-controller="Admin" asp-action="TaoTaiKhoan" class="btn btn-primary w-100 w-lg-auto flex-lg-grow-0 align-self-lg-center fw-bold border-dark border-2 rounded-0 shadow-sm py-2 py-lg-1" style="max-width: max-content;">
             <i class="bi bi-plus-square-fill me-1"></i> CẤP TÀI KHOẢN MỚI
         </a>
     </div>
 </div>
 
-<div class="row">
+<div class="row g-4">
 
-    <div class="col-12 mb-5">
+    <div class="col-12">
         <div class="d-flex align-items-center mb-3">
             <i class="fas fa-user-shield fs-3 me-2 text-primary"></i>
             <h5 class="m-0 fw-bold zzz-text-mono text-uppercase border-bottom border-dark border-3 pb-1">TỆP DỮ LIỆU: NHÂN SỰ</h5>
@@ -36,171 +37,175 @@
 
         <div class="card position-relative border-dark border-3 rounded-0 bg-white shadow-lg">
             <div class="card-body p-0" style="overflow: visible;">
-                <table class="table table-hover mb-0 zzz-data-table align-middle">
-                    <thead class="table-dark">
-                        <tr class="zzz-text-mono text-uppercase">
-                            <th class="border-end border-secondary">MÃ NV</th>
-                            <th class="border-end border-secondary">TÊN NHÂN VIÊN</th>
-                            <th class="border-end border-secondary">USERNAME</th>
-                            <th class="border-end border-secondary">EMAIL</th>
-                            <th class="text-center border-end border-secondary">TRẠNG THÁI</th>
-                            <th class="text-center">LỆNH</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var user in Model.NhanVien)
-                        {
-                            var hoSo = Model.DanhSachNhanVien.FirstOrDefault(nv => nv.IdentityUserId == user.Id);
-                            <tr class="border-bottom border-dark-subtle">
-                                <td class="border-end border-dark-subtle">
-                                    <span class="badge bg-secondary zzz-badge-id fs-6">@(hoSo?.MaNV ?? "N/A")</span>
-                                </td>
-                                <td class="border-end border-dark-subtle">
-                                    <div class="zzz-text-name text-danger">@(hoSo?.TenNV ?? "[ CHƯA CẬP NHẬT ]")</div>
-                                </td>
-                                <td class="border-end border-dark-subtle fw-bold zzz-text-mono">@user.UserName</td>
-                                <td class="border-end border-dark-subtle fw-bold zzz-text-mono text-muted">@user.Email</td>
-                                <td class="text-center border-end border-dark-subtle">
-                                    @if (hoSo == null)
-                                    {
-                                        <span class="badge bg-secondary zzz-status-badge border border-dark border-2 text-dark fw-bold"><i class="zzz-status-x">!</i> THIẾU HỒ SƠ</span>
-                                    }
-                                    else if (user.LockoutEnd != null && user.LockoutEnd > DateTimeOffset.Now)
-                                    {
-                                        <span class="badge bg-danger zzz-status-badge border border-dark border-2 fw-bold"><i class="zzz-status-x">×</i> BỊ KHÓA</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-success zzz-status-badge border border-dark border-2 text-dark fw-bold"><span class="zzz-status-dot">●</span> HOẠT ĐỘNG</span>
-                                    }
-                                </td>
-                                <td class="text-center">
-                                    <div class="dropdown">
-                                        <button class="btn btn-outline-dark border-2 rounded-0 dropdown-toggle zzz-btn-action fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            CHỌN
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow">
-                                            <li>
-                                                <a class="dropdown-item fw-bold zzz-text-mono" asp-controller="Admin" asp-action="ChiTietTaiKhoan" asp-route-userId="@user.Id">
-                                                    <i class="fas fa-id-card me-2"></i> XEM TÀI KHOẢN
-                                                </a>
-                                            </li>
-                                            <li><hr class="dropdown-divider border-dark border-2"></li>
-                                            <li>
-                                                <a class="dropdown-item text-danger fw-bold zzz-text-mono" asp-controller="Admin" asp-action="ResetPassword" asp-route-userId="@user.Id">
-                                                    <i class="fas fa-key me-2"></i> ĐẶT LẠI MẬT KHẨU
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 zzz-table align-middle">
+                        <thead class="table-dark">
+                            <tr class="zzz-text-mono text-uppercase text-nowrap">
+                                <th class="border-end border-secondary" style="min-width: 120px;">MÃ NV</th>
+                                <th class="border-end border-secondary" style="min-width: 220px;">TÊN NHÂN VIÊN</th>
+                                <th class="border-end border-secondary" style="min-width: 150px;">USERNAME</th>
+                                <th class="border-end border-secondary" style="min-width: 250px;">EMAIL</th>
+                                <th class="text-center border-end border-secondary" style="min-width: 160px;">TRẠNG THÁI</th>
+                                <th class="text-center" style="min-width: 140px;">LỆNH</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model.NhanVien)
+                            {
+                                var hoSo = Model.DanhSachNhanVien.FirstOrDefault(nv => nv.IdentityUserId == user.Id);
+                                <tr class="border-bottom border-dark-subtle">
+                                    <td data-label="MÃ NV" class="border-end border-dark-subtle">
+                                        <span class="badge bg-secondary zzz-badge-id fs-6">@(hoSo?.MaNV ?? "N/A")</span>
+                                    </td>
+                                    <td data-label="TÊN NHÂN VIÊN" class="border-end border-dark-subtle">
+                                        <div class="zzz-text-name text-danger fw-bold fs-5 text-wrap">@(hoSo?.TenNV ?? "[ CHƯA CẬP NHẬT ]")</div>
+                                    </td>
+                                    <td data-label="USERNAME" class="border-end border-dark-subtle fw-bold zzz-text-mono fs-6 text-primary">@user.UserName</td>
+                                    <td data-label="EMAIL" class="border-end border-dark-subtle fw-bold zzz-text-mono text-muted small">@user.Email</td>
+                                    <td data-label="TRẠNG THÁI" class="text-center border-end border-dark-subtle">
+                                        @if (hoSo == null)
+                                        {
+                                            <span class="badge bg-secondary zzz-status-badge border border-dark border-2 text-white fw-bold"><i class="zzz-status-x">!</i> THIẾU HỒ SƠ</span>
+                                        }
+                                        else if (user.LockoutEnd != null && user.LockoutEnd > DateTimeOffset.Now)
+                                        {
+                                            <span class="badge bg-danger zzz-status-badge border border-dark border-2 fw-bold"><i class="zzz-status-x">×</i> BỊ KHÓA</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success zzz-status-badge border border-dark border-2 text-white fw-bold"><span class="zzz-status-dot">●</span> HOẠT ĐỘNG</span>
+                                        }
+                                    </td>
+                                    <td data-label="LỆNH" class="text-lg-center align-middle">
+                                        <div class="dropdown">
+                                            <button class="btn btn-outline-dark border-2 rounded-0 dropdown-toggle zzz-btn-action fw-bold w-100 w-lg-auto text-end text-lg-center px-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                CHỌN
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow">
+                                                <li>
+                                                    <a class="dropdown-item fw-bold zzz-text-mono" asp-controller="Admin" asp-action="ChiTietTaiKhoan" asp-route-userId="@user.Id">
+                                                        <i class="fas fa-id-card me-2 text-primary"></i> XEM TÀI KHOẢN
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider border-dark border-2"></li>
+                                                <li>
+                                                    <a class="dropdown-item text-danger fw-bold zzz-text-mono" asp-controller="Admin" asp-action="ResetPassword" asp-route-userId="@user.Id">
+                                                        <i class="fas fa-key me-2"></i> ĐẶT LẠI MẬT KHẨU
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-12">
-        <div class="d-flex align-items-center mb-3 mt-4">
+    <div class="col-12 mt-5">
+        <div class="d-flex align-items-center mb-3">
             <i class="fas fa-users fs-3 me-2 text-warning"></i>
             <h5 class="m-0 fw-bold zzz-text-mono text-uppercase border-bottom border-dark border-3 pb-1">TỆP DỮ LIỆU: KHÁCH HÀNG</h5>
         </div>
 
         <div class="card position-relative border-dark border-3 rounded-0 bg-white shadow-lg">
             <div class="card-body p-0" style="overflow: visible;">
-                <table class="table table-hover mb-0 zzz-data-table align-middle">
-                    <thead class="table-dark">
-                        <tr class="zzz-text-mono text-uppercase">
-                            <th class="border-end border-secondary">MÃ KH</th>
-                            <th class="border-end border-secondary">TÊN KHÁCH HÀNG</th>
-                            <th class="border-end border-secondary">USERNAME</th>
-                            <th class="border-end border-secondary">EMAIL</th>
-                            <th class="text-center border-end border-secondary">TRẠNG THÁI</th>
-                            <th class="text-center">LỆNH</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.KhachHang != null && Model.KhachHang.Any())
-                        {
-                            @foreach (var user in Model.KhachHang)
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 zzz-table align-middle">
+                        <thead class="table-dark">
+                            <tr class="zzz-text-mono text-uppercase text-nowrap">
+                                <th class="border-end border-secondary" style="min-width: 120px;">MÃ KH</th>
+                                <th class="border-end border-secondary" style="min-width: 220px;">TÊN KHÁCH HÀNG</th>
+                                <th class="border-end border-secondary" style="min-width: 150px;">USERNAME</th>
+                                <th class="border-end border-secondary" style="min-width: 250px;">EMAIL</th>
+                                <th class="text-center border-end border-secondary" style="min-width: 160px;">TRẠNG THÁI</th>
+                                <th class="text-center" style="min-width: 140px;">LỆNH</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.KhachHang != null && Model.KhachHang.Any())
                             {
-                                var hoSo = Model.DanhSachKhach.FirstOrDefault(k => k.IdentityUserId == user.Id);
-                                <tr class="border-bottom border-dark-subtle">
-                                    <td class="border-end border-dark-subtle">
-                                        <span class="badge bg-secondary zzz-badge-id fs-6">@(hoSo?.MaKh ?? "N/A")</span>
-                                    </td>
-                                    <td class="border-end border-dark-subtle">
-                                        <div class="zzz-text-name text-danger">
-                                            @(string.IsNullOrWhiteSpace(hoSo?.TenKh) ? "[ CHƯA CẬP NHẬT ]" : hoSo.TenKh)
-                                        </div>
-                                    </td>
-                                    <td class="border-end border-dark-subtle fw-bold zzz-text-mono">@user.UserName</td>
-                                    <td class="border-end border-dark-subtle fw-bold zzz-text-mono text-muted">@user.Email</td>
-                                    <td class="text-center border-end border-dark-subtle">
-                                        @if (hoSo == null)
-                                        {
-                                            <span class="badge bg-secondary zzz-status-badge border border-dark border-2 text-dark fw-bold"><i class="zzz-status-x">!</i> THIẾU HỒ SƠ</span>
-                                        }
-                                        else if (!hoSo.TrangThai)
-                                        {
-                                            <span class="badge bg-warning zzz-status-badge border border-dark border-2 text-dark fw-bold"><i class="fas fa-hourglass-half me-1"></i> CHỜ DUYỆT</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-success zzz-status-badge border border-dark border-2 text-dark fw-bold"><span class="zzz-status-dot">●</span> HOẠT ĐỘNG</span>
-                                        }
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="dropdown">
-                                            <button class="btn btn-dark border-2 rounded-0 dropdown-toggle zzz-btn-action fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                CHỌN
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow">
-                                                <li>
-                                                    <a class="dropdown-item fw-bold zzz-text-mono" asp-controller="Admin" asp-action="ChiTietTaiKhoan" asp-route-userId="@user.Id">
-                                                        <i class="fas fa-id-card me-2"></i> XEM TÀI KHOẢN
-                                                    </a>
-                                                </li>
-                                                @if (hoSo != null && hoSo.TrangThai)
-                                                {
-                                                    <li><hr class="dropdown-divider border-dark border-2"></li>
+                                @foreach (var user in Model.KhachHang)
+                                {
+                                    var hoSo = Model.DanhSachKhach.FirstOrDefault(k => k.IdentityUserId == user.Id);
+                                    <tr class="border-bottom border-dark-subtle">
+                                        <td data-label="MÃ KH" class="border-end border-dark-subtle">
+                                            <span class="badge bg-secondary zzz-badge-id fs-6">@(hoSo?.MaKh ?? "N/A")</span>
+                                        </td>
+                                        <td data-label="TÊN KHÁCH HÀNG" class="border-end border-dark-subtle">
+                                            <div class="zzz-text-name text-danger fw-bold fs-5 text-wrap">
+                                                @(string.IsNullOrWhiteSpace(hoSo?.TenKh) ? "[ CHƯA CẬP NHẬT ]" : hoSo.TenKh)
+                                            </div>
+                                        </td>
+                                        <td data-label="USERNAME" class="border-end border-dark-subtle fw-bold zzz-text-mono fs-6 text-primary">@user.UserName</td>
+                                        <td data-label="EMAIL" class="border-end border-dark-subtle fw-bold zzz-text-mono text-muted small">@user.Email</td>
+                                        <td data-label="TRẠNG THÁI" class="text-center border-end border-dark-subtle">
+                                            @if (hoSo == null)
+                                            {
+                                                <span class="badge bg-secondary zzz-status-badge border border-dark border-2 text-white fw-bold"><i class="zzz-status-x">!</i> THIẾU HỒ SƠ</span>
+                                            }
+                                            else if (!hoSo.TrangThai)
+                                            {
+                                                <span class="badge bg-warning zzz-status-badge border border-dark border-2 text-dark fw-bold shadow-sm"><i class="fas fa-hourglass-half me-1"></i> CHỜ DUYỆT</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success zzz-status-badge border border-dark border-2 text-white fw-bold shadow-sm"><span class="zzz-status-dot">●</span> HOẠT ĐỘNG</span>
+                                            }
+                                        </td>
+                                        <td data-label="LỆNH" class="text-lg-center align-middle">
+                                            <div class="dropdown">
+                                                <button class="btn btn-dark border-2 rounded-0 dropdown-toggle zzz-btn-action fw-bold w-100 w-lg-auto text-end text-lg-center px-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    CHỌN
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow">
                                                     <li>
-                                                        <a class="dropdown-item fw-bold zzz-text-mono text-primary" asp-controller="KhachHang" asp-action="Details" asp-route-id="@hoSo.Id">
-                                                            <i class="fas fa-folder-open me-2"></i> XEM HỒ SƠ KH
+                                                        <a class="dropdown-item fw-bold zzz-text-mono" asp-controller="Admin" asp-action="ChiTietTaiKhoan" asp-route-userId="@user.Id">
+                                                            <i class="fas fa-id-card me-2 text-primary"></i> XEM TÀI KHOẢN
                                                         </a>
                                                     </li>
-                                                }
-                                                @if (hoSo == null || !hoSo.TrangThai)
-                                                {
-                                                    <li><hr class="dropdown-divider border-dark border-2"></li>
-                                                    <li>
-                                                        <a class="dropdown-item text-success fw-bold zzz-text-mono" asp-controller="Admin" asp-action="DuyetKhach" asp-route-userId="@user.Id">
-                                                            <i class="fas fa-check-circle me-2"></i> PHÊ DUYỆT
-                                                        </a>
-                                                    </li>
-                                                }
-                                            </ul>
+                                                    @if (hoSo != null && hoSo.TrangThai)
+                                                    {
+                                                        <li><hr class="dropdown-divider border-dark border-2"></li>
+                                                        <li>
+                                                            <a class="dropdown-item fw-bold zzz-text-mono text-success" asp-controller="KhachHang" asp-action="Details" asp-route-id="@hoSo.Id">
+                                                                <i class="fas fa-folder-open me-2"></i> XEM HỒ SƠ KH
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                    @if (hoSo == null || !hoSo.TrangThai)
+                                                    {
+                                                        <li><hr class="dropdown-divider border-dark border-2"></li>
+                                                        <li>
+                                                            <a class="dropdown-item text-warning fw-bold zzz-text-mono" asp-controller="Admin" asp-action="DuyetKhach" asp-route-userId="@user.Id">
+                                                                <i class="fas fa-check-circle me-2"></i> PHÊ DUYỆT
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center py-5 border-0 bg-light">
+                                        <div class="text-center">
+                                            <i class="bi bi-search text-muted mb-3" style="font-size: 3rem;"></i>
+                                            <h4 class="fw-bold text-danger zzz-text-mono">CHƯA CÓ KHÁCH HÀNG NÀO.</h4>
+                                            <p class="text-muted fw-bold mb-0">Hệ thống ghi nhận tệp dữ liệu khách hàng đang trống.</p>
                                         </div>
                                     </td>
                                 </tr>
                             }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="7" class="text-center py-2 border-0">
-                                    <div class="text-center py-5">
-                                        <i class="bi bi-search text-muted mb-3" style="font-size: 3rem;"></i>
-                                        <h4 class="fw-bold text-danger zzz-text-mono">KHÔNG TÌM THẤY TỪ KHÓA PHÙ HỢP.</h4>
-                                        <p class="text-muted fw-bold">Vui lòng thử lại với Tên, SĐT hoặc Mã KH khác.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

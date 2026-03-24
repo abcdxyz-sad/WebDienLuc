@@ -14,44 +14,48 @@
     </div>
 }
 
-<div class="border-dashed p-3 mb-4 zzz-command-panel border-dark border-3">
+<div class="border-dashed p-3 p-lg-4 mb-4 zzz-command-panel border-dark border-3 bg-white">
 
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 border-bottom border-dark pb-3 mb-3">
-        <h1 class="m-0 zzz-page-title fw-bold text-uppercase">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 border-bottom border-dark pb-3 mb-3">
+
+        <h1 class="m-0 zzz-page-title fw-bold text-uppercase text-center text-lg-start w-100 w-lg-auto border-start border-primary border-5 ps-3" style="border-left-color: var(--zzz-primary) !important;">
             [ TỆP DỮ LIỆU ] CHỈ SỐ ĐIỆN
         </h1>
 
-        <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-3 w-100 w-lg-auto ms-lg-auto justify-content-center justify-content-lg-end">
             @if (!string.IsNullOrEmpty(ViewBag.MaPhuongApi))
             {
-                <a asp-controller="ChiSoDien" asp-action="Create" asp-route-maPhuongApi="@ViewBag.MaPhuongApi" class="btn btn-primary fw-bold border-dark border-2 rounded-0 shadow-sm">
-                    <i class="bi bi-plus-square-fill me-1"> NHẬP CHỈ SỐ</i>
+                <a asp-controller="ChiSoDien" asp-action="Create" asp-route-maPhuongApi="@ViewBag.MaPhuongApi"
+                   class="btn btn-primary w-100 w-lg-auto flex-lg-grow-0 align-self-lg-center fw-bold border-dark border-2 rounded-0 shadow-sm text-nowrap py-2 py-lg-1"
+                   style="max-width: max-content;">
+                    <i class="bi bi-plus-square-fill me-1"></i> NHẬP CHỈ SỐ
                 </a>
             }
         </div>
+
     </div>
 
-    <form method="get" id="filterForm" class="row g-2 align-items-end">
-        <div class="col-md-3">
+    <form method="get" id="filterForm" class="row g-3 align-items-end">
+        <div class="col-12 col-lg-3">
             <label class="fw-bold zzz-text-mono small mb-1">Tỉnh / Thành phố</label>
             <select name="maTinh" id="selectTinh" class="form-select border-dark border-2 rounded-0" asp-items="ViewBag.DanhSachTinh">
                 <option value="">-- Tất cả --</option>
             </select>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-12 col-lg-3">
             <label class="fw-bold zzz-text-mono small mb-1">Phường / Xã</label>
             <select name="maPhuongApi" id="ward" class="form-select border-dark border-2 rounded-0" asp-items="ViewBag.DanhSachPhuong">
                 <option value="">-- Chọn Phường/Xã --</option>
             </select>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-12 col-lg-6">
             <label class="fw-bold zzz-text-mono small mb-1">Tra cứu nhanh</label>
-            <div class="input-group border border-dark border-2 rounded-0">
+            <div class="input-group border border-dark border-2 rounded-0 shadow-sm">
                 <input type="text" id="liveSearchInput" name="searchKeyword" value="@ViewBag.SearchKeyword" class="form-control border-0 rounded-0" placeholder="Tên KH, Điện thoại..." />
-                <button type="submit" class="btn btn-primary fw-bold px-4 border-start border-dark border-2 rounded-0">
-                    <i class="bi bi-search ms-1"></i>TÌM KIẾM
+                <button type="submit" class="btn btn-primary fw-bold px-3 px-lg-4 border-start border-dark border-2 rounded-0">
+                    <i class="bi bi-search ms-1"></i> TÌM
                 </button>
             </div>
         </div>
@@ -61,110 +65,112 @@
 <div id="vung-du-lieu-thay-doi">
     <div class="card position-relative border-dark border-3 rounded-0 bg-white" style="box-shadow: 6px 6px 0px var(--zzz-black);">
         <div class="card-body p-0" style="overflow: visible;">
-            <table class="table table-hover mb-0 zzz-data-table align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th class="zzz-col-20">ĐẶC VỤ / KHÁCH HÀNG</th>
-                        <th>ĐỊA CHỈ</th>
-                        <th class="zzz-col-10 text-center">KỲ CHỐT</th>
-                        <th class="zzz-col-10 text-end">CHỈ SỐ CŨ</th>
-                        <th class="zzz-col-10 text-end text-warning">CHỈ SỐ MỚI</th>
-                        <th class="zzz-col-12 text-center">TIÊU THỤ</th>
-                        <th class="text-center zzz-col-10">LỆNH</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        @foreach (var item in Model)
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 zzz-table align-middle">
+                    <thead class="table-dark zzz-text-mono">
+                        <tr class="text-nowrap" style="font-size: 0.9rem;">
+                            <th style="min-width: 200px;">KHÁCH HÀNG</th>
+                            <th style="min-width: 250px;">ĐỊA CHỈ</th>
+                            <th class="text-center" style="min-width: 110px;">KỲ CHỐT</th>
+                            <th class="text-end" style="min-width: 110px;">CHỈ SỐ CŨ</th>
+                            <th class="text-end text-warning" style="min-width: 120px;">CHỈ SỐ MỚI</th>
+                            <th class="text-center" style="min-width: 130px;">TIÊU THỤ</th>
+                            <th class="text-center" style="min-width: 100px;">LỆNH</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
                         {
-                            <tr class="border-bottom border-dark-subtle">
-                                <td>
-                                    <div class="zzz-text-name mb-1">@item.TenKh</div>
-                                    <span class="badge bg-secondary zzz-badge-id">
-                                        #@item.KhachHangId.Substring(0, Math.Min(8, item.KhachHangId.Length))
-                                    </span>
-                                </td>
-                                <td class="zzz-text-mono small fw-bold">
-                                    @item.DiaChi
-                                </td>
-                                <td class="text-center zzz-text-mono fw-bold">
-                                    @if (item.ThangGanNhat == 0)
-                                    {
-                                        <span class="text-danger small">CHƯA CÓ</span>
-                                    }
-                                    else
-                                    {
-                                        <span>@item.ThangGanNhat/@item.NamGanNhat</span>
-                                    }
-                                </td>
-
-                                <td class="text-end">
-                                    <span class="badge bg-secondary zzz-badge-id fs-6">@item.ChiSoCu</span>
-                                </td>
-
-                                <td class="text-end">
-                                    <span class="badge bg-warning text-dark zzz-badge-id fs-6 shadow-sm border border-dark">@item.ChiSoMoi</span>
-                                </td>
-
-                                <td class="text-center">
-                                    @if (item.ThangGanNhat == 0)
-                                    {
-                                        <span class="text-muted fw-bold">-</span>
-                                    }
-                                    else if (item.ChiSoCu == 0)
-                                    {
-                                        <span class="badge bg-primary zzz-status-badge border border-dark border-2 text-white">
-                                            <i class="fas fa-tools me-1"></i> MỐC LẮP ĐẶT
+                            @foreach (var item in Model)
+                            {
+                                <tr class="border-bottom border-dark-subtle">
+                                    <td data-label="KHÁCH HÀNG">
+                                        <div class="zzz-text-name mb-1 fs-5">@item.TenKh</div>
+                                        <span class="badge bg-secondary border border-dark zzz-text-mono fs-6 shadow-sm">
+                                            #@item.KhachHangId.Substring(0, Math.Min(8, item.KhachHangId.Length))
                                         </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger zzz-status-badge zzz-status-offline border border-dark border-2">
-                                            <i class="zzz-status-x"></i> @item.DienTieuThu kWh
-                                        </span>
-                                    }
-                                </td>
-                                <td class="text-center">
-                                    <div class="dropdown">
-                                        <button class="btn btn-outline-dark border-2 rounded-0 dropdown-toggle zzz-btn-action fw-bold" type="button" id="dropdown_@item.KhachHangId" data-bs-toggle="dropdown" aria-expanded="false">
-                                            CHỌN
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow" aria-labelledby="dropdown_@item.KhachHangId">
-                                            <li>
-                                                <a class="dropdown-item fw-bold zzz-text-mono" asp-action="Details" asp-route-id="@item.KhachHangId">XEM CHI TIẾT</a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item fw-bold zzz-text-mono" asp-controller="ChiSoDien" asp-action="Edit" asp-route-khachHangId="@item.KhachHangId">CẬP NHẬT</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td data-label="ĐỊA CHỈ" class="zzz-text-mono small fw-bold text-wrap">
+                                        @item.DiaChi
+                                    </td>
+                                    <td data-label="KỲ CHỐT" class="text-lg-center zzz-text-mono fw-bold">
+                                        @if (item.ThangGanNhat == 0)
+                                        {
+                                            <span class="badge bg-danger text-white small border border-dark">CHƯA CÓ</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-light text-dark border border-dark fs-6 shadow-sm">T.@item.ThangGanNhat/@item.NamGanNhat</span>
+                                        }
+                                    </td>
+
+                                    <td data-label="CHỈ SỐ CŨ" class="text-lg-end">
+                                        <span class="badge bg-secondary border border-dark text-white zzz-text-mono fs-6 shadow-sm">@item.ChiSoCu</span>
+                                    </td>
+
+                                    <td data-label="CHỈ SỐ MỚI" class="text-lg-end">
+                                        <span class="badge bg-warning text-dark zzz-text-mono fs-6 shadow-sm border border-dark">@item.ChiSoMoi</span>
+                                    </td>
+
+                                    <td data-label="TIÊU THỤ" class="text-lg-center">
+                                        @if (item.ThangGanNhat == 0)
+                                        {
+                                            <span class="text-muted fw-bold">-</span>
+                                        }
+                                        else if (item.ChiSoCu == 0)
+                                        {
+                                            <span class="badge bg-primary zzz-status-badge border border-dark border-2 text-white shadow-sm text-nowrap">
+                                                <i class="fas fa-tools me-1"></i> MỐC LẮP ĐẶT
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger zzz-status-badge zzz-status-offline border border-dark border-2 shadow-sm text-nowrap">
+                                                <i class="fas fa-bolt me-1"></i> @item.DienTieuThu <span class="text-lowercase">kWh</span>
+                                            </span>
+                                        }
+                                    </td>
+                                    <td data-label="LỆNH" class="text-lg-center">
+                                        <div class="dropdown">
+                                            <button class="btn btn-outline-dark border-2 rounded-0 dropdown-toggle zzz-btn-action fw-bold w-100 w-lg-auto" type="button" id="dropdown_@item.KhachHangId" data-bs-toggle="dropdown" aria-expanded="false">
+                                                CHỌN
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow" aria-labelledby="dropdown_@item.KhachHangId">
+                                                <li>
+                                                    <a class="dropdown-item fw-bold zzz-text-mono" asp-action="Details" asp-route-id="@item.KhachHangId"><i class="bi bi-info-square me-2 text-primary"></i>XEM CHI TIẾT</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item fw-bold zzz-text-mono" asp-controller="ChiSoDien" asp-action="Edit" asp-route-khachHangId="@item.KhachHangId"><i class="bi bi-pencil-square me-2 text-success"></i>CẬP NHẬT</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
                         }
-                    }
                         else
                         {
                             <tr>
                                 <td colspan="7" class="text-center py-2 border-0">
                                     <div class="text-center py-5">
                                         <i class="bi bi-search text-muted mb-3" style="font-size: 3rem;"></i>
-                                        <h4 class="fw-bold text-danger zzz-text-mono">KHÔNG TÌM THẤY TỪ KHÓA PHÙ HỢP.</h4>
-                                        <p class="text-muted fw-bold">Vui lòng thử lại với Tên, SĐT hoặc Mã KH khác.</p>
+                                        <h4 class="fw-bold text-danger zzz-text-mono">KHÔNG TÌM THẤY DỮ LIỆU.</h4>
+                                        <p class="text-muted fw-bold">Khu vực này trống hoặc từ khóa tìm kiếm không khớp.</p>
                                     </div>
                                 </td>
                             </tr>
                         }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
-@section Scripts{
+@section Scripts {
     <script src="~/js/auto-alert.js"></script>
     <script>
-        // 1. CODE ẨN PHƯỜNG CỦA SẾP (GIỮ NGUYÊN)
+        // 1. CODE ẨN PHƯỜNG CỦA SẾP (GIỮ NGUYÊN BẢN SẮC)
         const phuongCoData = @Html.Raw(Json.Serialize(ViewBag.DanhSachPhuongCoData ?? new List<string>()));
         const phuongCoDataString = phuongCoData.map(String);
         const wardSelect = document.getElementById('ward');
@@ -183,8 +189,9 @@
             observer.observe(wardSelect, { childList: true });
         }
 
+        // 2. LIVE SEARCH CỰC MƯỢT
         let timeout = null;
-        let currentAbortController = null; // Bùa hộ mệnh chống kẹt xe
+        let currentAbortController = null;
 
         document.getElementById('liveSearchInput').addEventListener('input', function (e) {
             clearTimeout(timeout);
@@ -193,36 +200,31 @@
                 let form = e.target.closest('form');
                 let searchParams = new URLSearchParams(new FormData(form)).toString();
 
-                // TRỊ BỆNH 1: Dùng pathname để dọn sạch URL rác, chỉ giữ lại thư mục gốc
                 let url = window.location.pathname + '?' + searchParams;
 
-                // TRỊ BỆNH 2: Nếu có thằng request cũ đang chạy lề mề, chém đầu nó ngay lập tức!
                 if (currentAbortController) {
                     currentAbortController.abort();
                 }
-                currentAbortController = new AbortController(); // Cấp lệnh bài mới
+                currentAbortController = new AbortController();
 
-                // Phái sát thủ đi, mang theo lệnh bài
                 fetch(url, { signal: currentAbortController.signal })
                     .then(response => response.text())
                     .then(html => {
                         let parser = new DOMParser();
                         let doc = parser.parseFromString(html, 'text/html');
 
-                        // Lấy và đập dữ liệu mới vào
                         let newContent = doc.getElementById('vung-du-lieu-thay-doi').innerHTML;
                         document.getElementById('vung-du-lieu-thay-doi').innerHTML = newContent;
                     })
                     .catch(error => {
-                        // Bỏ qua báo lỗi nếu request bị ta chủ động chém đầu
                         if (error.name === 'AbortError') {
-                            console.log('Đã triệt tiêu request cũ dĩ vãng!');
+                            console.log('Đã hủy request cũ!');
                         } else {
-                            console.error('Lỗi cmnr sếp ơi:', error);
+                            console.error('Lỗi Data:', error);
                         }
                     });
 
-            }, 300); // 300ms là độ trễ vàng, không nên chỉnh sửa
+            }, 300);
         });
     </script>
 }

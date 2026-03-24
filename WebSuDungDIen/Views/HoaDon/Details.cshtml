@@ -9,23 +9,38 @@
     var bangGia = ViewBag.BangGia as List<WebSuDungDIen.Models.DonGiaDien>;
 }
 
-<div class="mb-4 d-flex justify-content-between align-items-center">
-    <div>
-        <h1>Chi tiết Hóa Đơn</h1>
-        <span class="badge bg-secondary fs-6">#@Model.MaHd</span>
+<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel border-dark border-3 bg-white">
+
+    <div class="d-flex align-items-center gap-2">
+        <h1 class="m-0 zzz-page-title fw-bold text-uppercase fs-3 fs-md-2 border-start border-primary border-5 ps-3" style="border-left-color: var(--zzz-primary) !important;">
+            [ BẢN GHI ] CHI TIẾT HÓA ĐƠN
+        </h1>
+        <span class="badge border border-dark zzz-text-mono fs-6 shadow-sm">
+            #@Model.MaHd
+        </span>
     </div>
-    @if (Model.TrangThai == "DaThanhToan")
-    {
-        <h2 class="text-success m-0"><i class="bi bi-check-circle-fill"></i> ĐÃ THANH TOÁN</h2>
-    }
-    else
-    {
-        <h2 class="text-danger m-0"><i class="bi bi-exclamation-circle-fill"></i> CHƯA THANH TOÁN</h2>
-    }
+
+    <div class="d-flex align-items-center justify-content-center">
+        @if (Model.TrangThai == "DaThanhToan")
+        {
+            <span class="zzz-sys-status text-success fw-bold border border-success border-2 px-4 py-2 bg-light text-center shadow-sm fs-5 text-nowrap">
+                <i class="bi bi-check-circle-fill me-1"></i> ĐÃ THANH TOÁN
+            </span>
+        }
+        else
+        {
+            <span class="zzz-sys-status text-danger fw-bold border border-danger border-2 px-4 py-2 bg-light text-center shadow-sm fs-5 text-nowrap">
+                <i class="bi bi-exclamation-circle-fill me-1"></i>
+                <span class="zzz-blink-dot zzz-text-yellow"></span> CHƯA THANH TOÁN
+            </span>
+        }
+    </div>
+
 </div>
 
-<div class="row">
-    <div class="col-md-5">
+<div class="row d-flex flex-column flex-md-row">
+
+    <div class="col-md-5 order-2 order-md-1 mt-4 mt-md-0">
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-light fw-bold">
                 <i class="bi bi-info-square me-2"></i> THÔNG TIN CHUNG
@@ -86,15 +101,26 @@
                 <h5 class="mb-0">Tổng tiêu thụ: <span class="text-danger fs-3 fw-bold">@soDienTieuThu</span> kWh</h5>
             </div>
         </div>
+
+        <div class="d-grid gap-3 d-md-flex flex-md-column flex-xl-row mt-4 pt-4 border-top border-dark border-3">
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary fw-bold rounded-0 px-4 py-3 zzz-btn-action w-100 w-md-auto text-center shadow-sm">
+                <i class="bi bi-pencil-square me-2"></i> CẬP NHẬT BIÊN LAI
+            </a>
+
+            <a asp-action="Index" class="btn btn-dark zzz-btn-cancel fw-bold border-dark border-3 rounded-0 px-4 py-3 zzz-btn-action w-100 w-md-auto text-center ms-xl-auto shadow-sm text-white">
+                <i class="bi bi-arrow-left me-2"></i> QUAY VỀ
+            </a>
+        </div>
     </div>
 
-    <div class="col-md-7">
+    <div class="col-md-7 order-1 order-md-2">
         <div class="card shadow-sm">
             <div class="card-header bg-light fw-bold">
                 <i class="bi bi-receipt me-2"></i> CHI TIẾT TÍNH TIỀN ĐIỆN
             </div>
-            <div class="card-body p-0">
-                <table class="table table-bordered table-striped mb-0">
+
+            <div class="card-body p-0 table-responsive">
+                <table class="table table-bordered table-striped mb-0 text-nowrap">
                     <thead class="table-dark text-center">
                         <tr>
                             <th>Bậc</th>
@@ -164,9 +190,4 @@
             </div>
         </div>
     </div>
-</div>
-
-<div class="mt-4 border-top pt-3">
-    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning"><i class="bi bi-pencil-square"></i> Sửa hóa đơn</a>
-    <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Quay lại danh sách</a>
 </div>

@@ -3,26 +3,15 @@
     string navThemeClass = isStaff ? "" : "corp-wrapper corp-navbar-section";
     bool isStaffLayout = isStaff;
 
-    // Bắt sống Controller và Action, ép về chữ thường 100%
+    // Bắt sống Controller và Action
     var ctrl = ViewContext.RouteData.Values["controller"]?.ToString()?.ToLower() ?? "";
     var act = ViewContext.RouteData.Values["action"]?.ToString()?.ToLower() ?? "";
 
-    bool isDichVuActive =
-        (ctrl == "dichvu") ||
-        (ctrl == "khachhang" && act == "dangkythongtin") ||
-        (ctrl == "chisodien" && act == "lichsucuatoi"); // Chú ý: sửa lại đúng chữ lichsucuatoi của sếp nhé!
-
-    // ==============================================================
-    // 2. LƯỚI BẮT NÚT "TIỀN ĐIỆN"
-    // ==============================================================
+    bool isDichVuActive = (ctrl == "dichvu") || (ctrl == "khachhang" && act == "dangkythongtin") || (ctrl == "chisodien" && act == "lichsucuatoi");
     bool isTienDienActive = (ctrl == "khachhang" && act == "tiendienthangnay");
-
-    // Các lưới của Admin (Giữ nguyên)
     bool isNhanSuActive = (ctrl == "nhanvien");
     bool isHeThongActive = (ctrl == "admin");
-    // Admin Khách Hàng: Phải loại trừ 2 trang của khách để khỏi sáng nhầm
     bool isKhachHangActive = (ctrl == "khachhang") && !isTienDienActive && !(act == "dangkythongtin");
-    // Admin Chỉ Số: Phải loại trừ trang Lịch sử của khách
     bool isChiSoActive = (ctrl == "chisodien") && !(act == "lichsucuatoi");
     bool isHoaDonActive = (ctrl == "hoadon");
 }
@@ -38,33 +27,33 @@
     <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/zzz-notify.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/customer-theme.css" asp-append-version="true" />
-
     <link rel="stylesheet" href="~/WebSuDungDIen.styles.css" asp-append-version="true" />
 </head>
 <body class="@(isStaffLayout ? "" : "corp-theme")">
+
     <header>
         <div class="@navThemeClass">
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 corp-navbar">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow mb-3 corp-navbar">
                 <div class="container-fluid">
                     <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
                         <i class="fas fa-bolt text-warning me-1"></i> CTY ĐIỆN LỰC
                     </a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    <button class="navbar-toggler @(isStaffLayout ? "" : "corp-navbar-toggler")" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                             aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                        <ul class="navbar-nav flex-grow-1 gap-2 ms-xl-4 align-items-center">
 
+                    <div class="navbar-collapse collapse" id="navbarSupportedContent">
+
+                        <ul class="navbar-nav me-auto gap-2 ms-xl-4 align-items-center">
                             @if (User.IsInRole("KhachHang"))
                             {
-                                <li class="nav-item">
+                                <li class="nav-item w-100 w-lg-auto text-center text-lg-start">
                                     <a class="nav-link fw-bold @(isDichVuActive ? "active" : "")" asp-area="" asp-controller="DichVu" asp-action="SuDungDien">
                                         <i class="fas fa-plug me-1"></i> DỊCH VỤ
                                     </a>
                                 </li>
-
-                                <li class="nav-item">
+                                <li class="nav-item w-100 w-lg-auto text-center text-lg-start">
                                     <a class="nav-link fw-bold @(isTienDienActive ? "active" : "")" asp-area="" asp-controller="KhachHang" asp-action="TienDienThangNay">
                                         <i class="fas fa-file-invoice-dollar me-1"></i> TIỀN ĐIỆN
                                     </a>
@@ -73,12 +62,12 @@
 
                             @if (User.IsInRole("Admin"))
                             {
-                                <li class="nav-item">
+                                <li class="nav-item w-100 w-lg-auto text-center text-lg-start">
                                     <a class="nav-link zzz-urban-link @(isNhanSuActive ? "active" : "")" asp-area="" asp-controller="NhanVien" asp-action="Index">
                                         <i class="fas fa-user-shield me-1"></i> NHÂN SỰ
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item w-100 w-lg-auto text-center text-lg-start">
                                     <a class="nav-link zzz-urban-link @(isHeThongActive ? "active" : "")" asp-controller="Admin" asp-action="QuanLyTaiKhoan">
                                         <i class="fas fa-server me-1"></i> HỆ THỐNG
                                     </a>
@@ -87,29 +76,34 @@
 
                             @if (User.IsInRole("NhanVien") || User.IsInRole("Admin"))
                             {
-                                <li class="nav-item">
+                                <li class="nav-item w-100 w-lg-auto text-center text-lg-start">
                                     <a class="nav-link zzz-urban-link @(isKhachHangActive ? "active" : "")" asp-area="" asp-controller="KhachHang" asp-action="Index">
                                         <i class="fas fa-users me-1"></i> KHÁCH HÀNG
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item w-100 w-lg-auto text-center text-lg-start">
                                     <a class="nav-link zzz-urban-link @(isChiSoActive ? "active" : "")" asp-area="" asp-controller="ChiSoDien" asp-action="Index">
                                         <i class="fas fa-tachometer-alt me-1"></i> CHỈ SỐ
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item w-100 w-lg-auto text-center text-lg-start">
                                     <a class="nav-link zzz-urban-link @(isHoaDonActive ? "active" : "")" asp-area="" asp-controller="HoaDon" asp-action="Index">
                                         <i class="fas fa-receipt me-1"></i> HÓA ĐƠN
                                     </a>
                                 </li>
                             }
                         </ul>
-                        <partial name="_LoginPartial" />
+
+                        <div class="d-flex align-items-center mt-3 mt-lg-0 justify-content-center justify-content-lg-end">
+                            <partial name="_LoginPartial" />
+                        </div>
+
                     </div>
                 </div>
             </nav>
         </div>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -121,16 +115,16 @@
         <footer class="zzz-footer">
             <div class="zzz-hazard-strip"></div>
             <div class="container">
-                <div class="d-flex flex-wrap justify-content-between align-items-center position-relative" style="z-index: 2;">
-                    <div class="zzz-footer-brand">
+                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-center position-relative gap-3" style="z-index: 2;">
+                    <div class="zzz-footer-brand text-center">
                         <span class="text-white">© 2026 ĐIỆN LỰC</span>
                         <span class="zzz-tag">CYBER</span>
                     </div>
-                    <div class="zzz-footer-actions">
+                    <div class="zzz-footer-actions d-flex flex-wrap justify-content-center gap-2">
                         <div class="zzz-status-box">
                             <span class="zzz-blink-dot">●</span> SYSTEM: ONLINE
                         </div>
-                        <span class="text-muted mx-2">|</span>
+                        <span class="text-muted d-none d-lg-inline">|</span>
                         <a asp-area="" asp-controller="Home" asp-action="Privacy" class="zzz-link-btn">
                             [ BẢO MẬT ]
                         </a>
@@ -143,29 +137,27 @@
     {
         <footer class="corp-footer">
             <div class="container py-4">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
-
-                    <div class="mb-3 mb-md-0 text-center text-md-start">
+                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3">
+                    <div class="text-center text-lg-start">
                         <h6 class="text-primary fw-bold mb-1">
                             <i class="fas fa-bolt text-warning me-1"></i> TẬP ĐOÀN PROXY POWER
                         </h6>
                         <small class="text-muted fw-normal">© 2026 Bản quyền thuộc Tập đoàn Điện lực Proxy. Đã đăng ký bản quyền.</small>
                     </div>
-
-                    <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
                         <a href="tel:1900100C" class="text-decoration-none text-secondary fw-bold small corp-footer-link">
                             <i class="fas fa-headset me-1"></i> CSKH: 1900 100 Có
                         </a>
-                        <span class="text-muted" style="opacity: 0.3;">|</span>
+                        <span class="text-muted d-none d-sm-inline" style="opacity: 0.3;">|</span>
                         <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-decoration-none text-secondary fw-bold small corp-footer-link">
                             <i class="fas fa-shield-alt me-1"></i> Chính sách bảo mật
                         </a>
                     </div>
-
                 </div>
             </div>
         </footer>
     }
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

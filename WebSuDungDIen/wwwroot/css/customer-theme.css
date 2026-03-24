@@ -898,3 +898,31 @@ body.corp-theme::-webkit-scrollbar-thumb,
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+/* =========================================================
+   NÚT MENU MOBILE DÀNH CHO KHÁCH HÀNG (CORP STYLE)
+========================================================= */
+.corp-navbar-toggler {
+    background-color: #ffffff !important;
+    border: 2px solid #eaedf1 !important;
+    border-radius: 8px !important; /* Bo tròn thanh lịch */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05) !important; /* Bóng mờ hiện đại, không Brutalism */
+    padding: 6px 10px !important;
+    transition: all 0.2s ease !important;
+}
+
+    /* Hiệu ứng khi lướt qua hoặc bấm vào */
+    .corp-navbar-toggler:hover,
+    .corp-navbar-toggler:focus {
+        border-color: #0d6efd !important; /* Đổi viền xanh dương (Blue) */
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15) !important;
+        outline: none !important;
+    }
+
+    .corp-navbar-toggler:active {
+        transform: translateY(2px) !important; /* Lún nhẹ xuống */
+    }
+
+    /* Đổi màu icon 3 gạch bên trong sang màu tối cho hợp nền trắng */
+    .corp-navbar-toggler .navbar-toggler-icon {
+        filter: invert(0.6) sepia(1) hue-rotate(180deg) saturate(200%) !important; /* Tạo màu xám/xanh đen */
+    }

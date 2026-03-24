@@ -1,25 +1,25 @@
 ﻿@model ChiTietTaiKhoanVM
 
 @{
-    ViewData["Title"] = "Trích Xuất Định Danh";
+    ViewData["Title"] = "Thông tin tài khoản";
 }
 
 <div class="container-fluid p-0 zzz-container-dossier">
 
-    <div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel border-dark border-3">
-        <h1 class="m-0 zzz-page-title fw-bold text-uppercase">
-            <i class="fas fa-fingerprint text-danger me-2"></i> TRÍCH XUẤT ĐỊNH DANH
+    <div class="border-dashed p-3 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 zzz-command-panel border-dark border-3 bg-white">
+        <h1 class="m-0 zzz-page-title fw-bold text-uppercase fs-4 fs-md-3 text-center text-md-start w-100 w-md-auto border-start border-danger border-5 ps-3" style="border-left-color: #dc3545 !important;">
+            <i class="fas fa-fingerprint text-danger me-2 d-none d-md-inline"></i> TRÍCH XUẤT ĐỊNH DANH
         </h1>
-        <div class="d-flex align-items-center gap-3">
-            <span class="zzz-sys-status text-primary fw-bold">
-                MÃ HỒ SƠ: <span class="zzz-text-mono text-muted">@Model.User.Id.Substring(0, 8).ToUpper()</span>
+        <div class="d-flex align-items-center justify-content-center w-100 w-md-auto">
+            <span class="zzz-sys-status text-primary fw-bold border border-primary border-2 px-3 py-1 bg-light text-center w-100 w-md-auto shadow-sm">
+                MÃ HỒ SƠ: <span class="zzz-text-mono text-dark">@Model.User.Id.Substring(0, 8).ToUpper()</span>
             </span>
         </div>
     </div>
 
     @if (TempData["ThongBao"] != null)
     {
-        <div id="thongBao" class="zzz-notification border-dark border-3 mb-4">
+        <div id="thongBao" class="zzz-notification border-dark border-3 mb-4 shadow-sm" style="box-shadow: 4px 4px 0px var(--zzz-black);">
             <div class="zzz-content fw-bold zzz-text-mono">
                 <span class="zzz-icon">👾</span> <span class="zzz-text">@TempData["ThongBao"]</span>
             </div>
@@ -34,16 +34,16 @@
 
                 <div class="zzz-hazard-strip"></div>
 
-                <div class="card-body p-4 d-flex flex-column align-items-center text-center mt-3">
+                <div class="card-body p-3 p-md-4 d-flex flex-column align-items-center text-center mt-3">
 
                     <i class="fas fa-user-astronaut mb-3 zzz-avatar-icon"></i>
 
-                    <h2 class="fw-bolder zzz-text-mono text-dark mb-0 border-bottom border-dark border-3 pb-2 w-100 zzz-avatar-name">
+                    <h2 class="fw-bolder zzz-text-mono text-dark mb-0 border-bottom border-dark border-3 pb-2 w-100 zzz-avatar-name text-break fs-3 fs-md-2">
                         @Model.User.UserName
                     </h2>
                     <div class="small fw-bold zzz-text-mono mb-4 mt-2 zzz-sub-label">TÊN ĐĂNG NHẬP</div>
 
-                    <span class="badge zzz-badge-verified fs-5 px-4 py-3 w-100 zzz-text-mono rounded-0 border-3">
+                    <span class="badge zzz-badge-verified fs-6 fs-md-5 px-3 py-2 px-md-4 py-md-3 w-100 zzz-text-mono rounded-0 border-dark border-3 text-white bg-success shadow-sm">
                         <i class="fas fa-check-circle me-1"></i> ID HỢP LỆ
                     </span>
 
@@ -59,21 +59,21 @@
         <div class="col-lg-8 col-md-7">
             <div class="card border-dark border-3 rounded-0 bg-white shadow-lg h-100 d-flex flex-column">
 
-                <div class="card-body p-4 p-md-5 d-flex flex-column h-100">
+                <div class="card-body p-3 p-md-5 d-flex flex-column h-100">
 
-                    <div class="mb-5">
+                    <div class="mb-4 mb-md-5">
                         @if (Model.NhanVien != null)
                         {
                             <div class="zzz-fieldset zzz-fieldset-highlight border-dark border-2 mb-0">
-                                <div class="zzz-fieldset-title zzz-fieldset-title-highlight border-dark border-2">INF.01 // HỒ SƠ NHÂN SỰ ĐẶC VỤ</div>
+                                <div class="zzz-fieldset-title zzz-fieldset-title-highlight border-dark border-2 px-2 py-1 small">INF.01 // NHÂN SỰ</div>
                                 <div class="row g-3 mt-1">
-                                    <div class="col-md-4">
-                                        <label class="form-label zzz-cmd-label text-muted small">MÃ ĐỊNH DANH</label>
-                                        <div class="form-control zzz-terminal-input zzz-locked-input fw-bold fs-5">#@Model.NhanVien.MaNV</div>
+                                    <div class="col-12 col-xl-4">
+                                        <label class="form-label zzz-cmd-label text-muted small">MÃ NHÂN VIÊN</label>
+                                        <div class="form-control zzz-terminal-input zzz-locked-input fw-bold fs-6 fs-md-5">#@Model.NhanVien.MaNV</div>
                                     </div>
-                                    <div class="col-md-8">
-                                        <label class="form-label zzz-cmd-label text-muted small">TÊN ĐẶC VỤ</label>
-                                        <div class="form-control zzz-terminal-input zzz-locked-input text-danger fw-bold fs-5 text-uppercase">@Model.NhanVien.TenNV</div>
+                                    <div class="col-12 col-xl-8">
+                                        <label class="form-label zzz-cmd-label text-muted small">TÊN NHÂN VIÊN</label>
+                                        <div class="form-control zzz-terminal-input zzz-locked-input text-danger fw-bold fs-6 fs-md-5 text-uppercase text-break">@Model.NhanVien.TenNV</div>
                                     </div>
                                 </div>
                             </div>
@@ -81,46 +81,48 @@
                         else if (Model.KhachHang != null)
                         {
                             <div class="zzz-fieldset border-danger border-2 bg-light mb-0">
-                                <div class="zzz-fieldset-title bg-danger text-white border-danger border-2">INF.01 // HỒ SƠ KHÁCH HÀNG (ĐỐI TƯỢNG)</div>
+                                <div class="zzz-fieldset-title bg-danger text-white border-danger border-2 px-2 py-1 small">INF.01 // KHÁCH HÀNG</div>
                                 <div class="row g-3 mt-1">
-                                    <div class="col-md-4">
-                                        <label class="form-label zzz-cmd-label text-muted small">MÃ ĐỊNH DANH</label>
-                                        <div class="form-control zzz-terminal-input zzz-locked-input fw-bold fs-5 text-danger">#@Model.KhachHang.MaKh</div>
+                                    <div class="col-12 col-xl-4">
+                                        <label class="form-label zzz-cmd-label text-muted small">MÃ KHÁCH HÀNG</label>
+                                        <div class="form-control zzz-terminal-input zzz-locked-input fw-bold fs-6 fs-md-5 text-danger">#@Model.KhachHang.MaKh</div>
                                     </div>
-                                    <div class="col-md-8">
+                                    <div class="col-12 col-xl-8">
                                         <label class="form-label zzz-cmd-label text-muted small">TÊN KHÁCH HÀNG</label>
-                                        <div class="form-control zzz-terminal-input zzz-locked-input fw-bold fs-5 text-uppercase">@Model.KhachHang.TenKh</div>
+                                        <div class="form-control zzz-terminal-input zzz-locked-input fw-bold fs-6 fs-md-5 text-uppercase text-break">@Model.KhachHang.TenKh</div>
                                     </div>
                                 </div>
                             </div>
                         }
                         else
                         {
-                            <div class="p-4 border border-dark border-2 bg-light text-center">
+                            <div class="p-4 border border-dark border-2 bg-light text-center shadow-sm">
                                 <i class="fas fa-ghost fs-1 text-muted mb-3"></i>
-                                <h5 class="fw-bold zzz-text-mono text-muted mb-0">TÀI KHOẢN TRỐNG - CHƯA LIÊN KẾT HỒ SƠ</h5>
+                                <h5 class="fw-bold zzz-text-mono text-muted mb-0 fs-6 fs-md-5">TÀI KHOẢN TRỐNG - CHƯA LIÊN KẾT HỒ SƠ</h5>
                             </div>
                         }
                     </div>
 
-                    <div class="mb-5 row g-4">
-                        <div class="col-md-12">
-                            <label class="zzz-text-mono text-muted fw-bold small">ĐỊA CHỈ EMAIL LIÊN KẾT</label>
-                            <div class="fs-4 fw-bold text-dark border-bottom border-dark border-2 pb-1 zzz-text-mono zzz-email-value">@Model.User.Email</div>
+                    <div class="mb-4 mb-md-5 row g-3 g-md-4">
+                        <div class="col-12">
+                            <label class="zzz-text-mono text-muted fw-bold small">ĐỊA CHỈ EMAIL</label>
+                            <div class="fs-5 fs-md-4 fw-bold text-dark border-bottom border-dark border-2 pb-1 zzz-text-mono zzz-email-value text-break">
+                                @Model.User.Email
+                            </div>
                         </div>
 
-                        <div class="col-md-12">
-                            <label class="zzz-text-mono text-muted fw-bold small">TRẠNG THÁI SECURITY</label>
+                        <div class="col-12">
+                            <label class="zzz-text-mono text-muted fw-bold small mb-2 d-block">TRẠNG THÁI SECURITY</label>
                             <div>
                                 @if (Model.User.LockoutEnd != null && Model.User.LockoutEnd > DateTimeOffset.Now)
                                 {
-                                    <span class="badge bg-danger zzz-status-badge border border-dark border-2 fs-5 py-2 px-3 fw-bold">
+                                    <span class="badge bg-danger zzz-status-badge border border-dark border-2 fs-6 fs-md-5 py-2 px-3 fw-bold w-100 w-sm-auto text-center shadow-sm">
                                         <i class="zzz-status-x">×</i> TÀI KHOẢN BỊ KHÓA
                                     </span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-success zzz-status-badge border border-dark border-2 text-dark fs-5 py-2 px-3 fw-bold">
+                                    <span class="badge bg-success zzz-status-badge border border-dark border-2 text-white fs-6 fs-md-5 py-2 px-3 fw-bold w-100 w-sm-auto text-center shadow-sm">
                                         <span class="zzz-status-dot">●</span> ĐANG HOẠT ĐỘNG
                                     </span>
                                 }
@@ -128,38 +130,38 @@
                         </div>
                     </div>
 
-                    <div class="mt-auto">
-                        <h5 class="fw-bold zzz-text-mono border-bottom border-dark border-3 pb-2 mb-3">
+                    <div class="mt-auto pt-4 pt-md-0">
+                        <h5 class="fw-bold zzz-text-mono border-bottom border-dark border-3 pb-2 mb-3 fs-5 fs-md-4">
                             <i class="fas fa-terminal me-2"></i> BẢNG LỆNH THỰC THI
                         </h5>
 
-                        <div class="d-flex flex-wrap gap-3">
+                        <div class="d-grid gap-3 d-md-flex flex-md-wrap">
 
-                            <a asp-action="EditTaiKhoan" asp-route-id="@Model.User.Id" class="btn btn-primary fw-bold border-dark border-3 rounded-0 px-4 py-2 zzz-btn-action">
+                            <a asp-action="EditTaiKhoan" asp-route-id="@Model.User.Id" class="btn btn-primary fw-bold border-dark border-3 rounded-0 px-4 py-3 zzz-btn-action w-100 w-md-auto text-center shadow-sm">
                                 <i class="fas fa-pen me-2"></i> SỬA THÔNG TIN
                             </a>
 
                             @if (Model.User.LockoutEnd != null && Model.User.LockoutEnd > DateTimeOffset.Now)
                             {
-                                <form asp-action="MoKhoaTaiKhoan" method="post" class="m-0">
+                                <form asp-action="MoKhoaTaiKhoan" method="post" class="m-0 w-100 w-md-auto">
                                     <input type="hidden" name="userId" value="@Model.User.Id" />
-                                    <button type="submit" class="btn zzz-btn-tech text-dark fw-bold border-dark border-3 rounded-0 px-4 py-2 zzz-btn-action">
+                                    <button type="submit" class="btn zzz-btn-tech text-dark fw-bold border-dark border-3 rounded-0 px-4 py-3 zzz-btn-action w-100 text-center shadow-sm">
                                         <i class="fas fa-unlock me-2"></i> MỞ KHÓA
                                     </button>
                                 </form>
                             }
                             else
                             {
-                                <form asp-action="KhoaTaiKhoan" method="post" class="m-0">
+                                <form asp-action="KhoaTaiKhoan" method="post" class="m-0 w-100 w-md-auto">
                                     <input type="hidden" name="userId" value="@Model.User.Id" />
-                                    <button type="submit" class="btn zzz-btn-tech fw-bold border-dark border-3 rounded-0 px-4 py-2">
+                                    <button type="submit" class="btn zzz-btn-tech fw-bold border-dark border-3 rounded-0 px-4 py-3 w-100 text-center shadow-sm">
                                         <i class="fas fa-lock me-2"></i> KHÓA TÀI KHOẢN
                                     </button>
                                 </form>
                             }
 
-                            <a asp-action="XoaTaiKhoan" asp-route-userId="@Model.User.Id" class="btn zzz-btn-danger fw-bold border-dark border-3 rounded-0 px-4 py-2 ms-auto zzz-btn-action" onclick="return confirm('CẢNH BÁO: Bạn có chắc chắn muốn XÓA VĨNH VIỄN tài khoản này?')">
-                                <i class="fas fa-skull me-2"></i> XÓA BỎ
+                            <a asp-action="XoaTaiKhoan" asp-route-userId="@Model.User.Id" class="btn btn-danger zzz-btn-danger fw-bold border-dark border-3 rounded-0 px-4 py-3 zzz-btn-action w-100 w-md-auto text-center ms-md-auto shadow-sm" onclick="return confirm('CẢNH BÁO: Bạn có chắc chắn muốn XÓA VĨNH VIỄN tài khoản này?')">
+                                <i class="fas fa-skull me-2 text-warning"></i> XÓA BỎ
                             </a>
 
                         </div>
@@ -171,7 +173,7 @@
     </div>
 
     <div class="col-12 mt-4">
-        <a asp-action="QuanLyTaiKhoan" class="btn zzz-btn-cancel fw-bold fs-5 px-5 py-3 border-dark border-3 rounded-0 w-100 text-center">
+        <a asp-action="QuanLyTaiKhoan" class="btn zzz-btn-cancel fw-bold fs-6 fs-md-5 px-3 py-3 border-dark border-3 rounded-0 w-100 text-center shadow-sm">
             <i class="fas fa-undo me-2"></i> QUAY LẠI TRUNG TÂM QUẢN LÝ
         </a>
     </div>

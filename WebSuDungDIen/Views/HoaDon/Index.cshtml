@@ -4,6 +4,7 @@
     ViewData["Title"] = "Quản lý Hóa Đơn";
     var now = DateTime.Now;
 }
+
 @if (TempData["ThongBao"] != null)
 {
     <div id="thongBao" class="zzz-notification">
@@ -22,38 +23,43 @@
         <div class="zzz-decor-line"></div>
     </div>
 }
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Danh sách Hóa đơn</h1>
-    <div>
-        <a asp-action="Create" class="btn btn-primary">
-            <i class="bi bi-plus-square-fill"></i> PHÁT HÀNH HÓA ĐƠN
+
+<div class="border-dashed p-3 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 zzz-command-panel border-dark border-3 bg-white">
+
+    <h1 class="m-0 zzz-page-title fw-bold text-uppercase text-center text-md-start w-100 w-md-auto border-start border-primary border-5 ps-3" style="border-left-color: var(--zzz-primary) !important;">
+        [ TỆP DỮ LIỆU ] HÓA ĐƠN
+    </h1>
+
+    <div class="d-flex align-items-center gap-3 w-100 w-md-auto ms-md-auto justify-content-center justify-content-md-end">
+        <a asp-action="Create" class="btn btn-primary w-100 w-md-auto flex-md-grow-0 align-self-md-center fw-bold zzz-text-mono py-2 py-md-1 shadow-sm border-dark border-2 rounded-0" style="max-width: max-content;">
+            <i class="bi bi-plus-square-fill me-1"></i> PHÁT HÀNH HÓA ĐƠN
         </a>
     </div>
+
 </div>
 
-<div class="card mb-5">
-    <div class="card-header">
-        <i class="bi bi-sliders me-2"></i>BỘ LỌC TÌM KIẾM
+<div class="card mb-4 border-dark border-2 rounded-0 shadow-sm">
+    <div class="card-header bg-dark text-white border-dark border-bottom border-2 rounded-0 zzz-text-mono fw-bold">
+        <i class="bi bi-sliders me-2 text-warning"></i>BỘ LỌC TÌM KIẾM
     </div>
-    <div class="card-body p-4">
+    <div class="card-body p-3 p-md-4">
         <form asp-action="Index" method="get" class="row g-3 align-items-end">
 
             <div class="col-md-4">
                 <label class="form-label fw-bold" style="font-size: 0.85rem;">Khu vực (Đã có Hóa đơn)</label>
-
                 <select name="maPhuongApi" class="form-select fw-bold border-dark border-2 text-truncate" style="padding-right: 2.5rem;" asp-items="ViewBag.PhuongList">
                     <option value="">-- Tất cả khu vực --</option>
                 </select>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-sm-6 col-md-2">
                 <label class="form-label fw-bold" style="font-size: 0.85rem;">Tháng</label>
                 <select name="thang" class="form-select fw-bold border-dark border-2" asp-items="ViewBag.ThangList">
                     <option value="">-- ALL --</option>
                 </select>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-sm-6 col-md-2">
                 <label class="form-label fw-bold" style="font-size: 0.85rem;">Năm</label>
                 <select name="nam" class="form-select fw-bold border-dark border-2" asp-items="ViewBag.NamList">
                     <option value="">-- ALL --</option>
@@ -61,18 +67,18 @@
             </div>
 
             <div class="col-md-2">
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary w-100">
+                <div class="d-flex gap-2 h-100">
+                    <button type="submit" class="btn btn-primary flex-fill fw-bold border-dark border-2 rounded-0 shadow-sm">
                         <i class="bi bi-search"></i> LỌC
                     </button>
-                    <a asp-action="Index" class="btn btn-outline-secondary" title="Reset">
+                    <a asp-action="Index" class="btn btn-outline-secondary fw-bold border-dark border-2 rounded-0 shadow-sm" title="Reset">
                         <i class="bi bi-arrow-counterclockwise"></i>
                     </a>
                 </div>
             </div>
 
-            <div class="col-md-2">
-                <div class="border-dashed p-2 text-center bg-white rounded">
+            <div class="col-md-2 mt-3 mt-md-0">
+                <div class="border-dashed p-2 text-center bg-light border-dark border-2 h-100 d-flex flex-column justify-content-center">
                     <small class="text-muted text-uppercase fw-bold d-block" style="font-size: 0.7rem;">Tổng số lượng</small>
                     <strong class="fs-4 text-primary">@((Model != null) ? Model.Count().ToString("00") : "00")</strong>
                 </div>
@@ -81,35 +87,35 @@
     </div>
 </div>
 
-<div class="zzz-data-toolbar d-flex flex-column flex-xl-row justify-content-between align-items-center flex-wrap gap-3 p-3 bg-white border-dark border-2 mb-4" style="box-shadow: 4px 4px 0px rgba(0,0,0,0.1);">
+<div class="zzz-data-toolbar d-flex flex-wrap justify-content-between align-items-center gap-3 p-3 bg-white border-dark border-2 mb-4" style="box-shadow: 4px 4px 0px rgba(0,0,0,0.1);">
 
-    <div class="d-flex align-items-center gap-3 flex-wrap">
-        <div class="bg-dark text-white px-3 py-2 fw-bold zzz-text-mono border-dark border-2 d-flex align-items-center shadow-sm">
+    <div class="d-flex flex-wrap align-items-center gap-3 flex-grow-1 flex-lg-grow-0">
+        <div class="bg-dark text-white px-3 py-2 fw-bold zzz-text-mono border-dark border-2 shadow-sm text-nowrap">
             <i class="bi bi-database-fill text-success me-2"></i> [ DATA_SYNC ]
         </div>
 
-        <form asp-action="ResetAllTrangThai" method="post" class="m-0" onsubmit="return confirm('⚠️ CẢNH BÁO: Đưa TOÀN BỘ hóa đơn về trạng thái CHƯA THANH TOÁN. Xác nhận?');">
-            <button type="submit" class="btn btn-outline-secondary fw-bold zzz-text-mono px-3 border-dark border-2 rounded-0" title="Reset toàn bộ trạng thái thanh toán">
+        <form asp-action="ResetAllTrangThai" method="post" class="m-0 flex-grow-1 flex-sm-grow-0" onsubmit="return confirm('⚠️ CẢNH BÁO: Đưa TOÀN BỘ hóa đơn về trạng thái CHƯA THANH TOÁN. Xác nhận?');">
+            <button type="submit" class="btn btn-outline-secondary w-100 fw-bold zzz-text-mono px-3 border-dark border-2 rounded-0 shadow-sm text-nowrap" title="Reset toàn bộ trạng thái thanh toán">
                 <i class="bi bi-rewind-fill me-1"></i> [DEBUG] RESET
             </button>
         </form>
     </div>
 
-    <div class="d-flex align-items-center gap-3 flex-wrap">
+    <div class="d-flex flex-wrap align-items-center gap-3 flex-grow-1 flex-lg-grow-0 justify-content-lg-end">
 
-        <form asp-action="ImportFromExcel" method="post" enctype="multipart/form-data" class="d-flex align-items-center m-0 gap-2">
+        <form asp-action="ImportFromExcel" method="post" enctype="multipart/form-data" class="m-0 flex-grow-1 flex-sm-grow-0">
             <div class="input-group shadow-sm">
-                <input type="file" name="file" class="form-control border-dark border-2 rounded-0 fw-bold text-muted" style="max-width: 250px;" accept=".xlsx, .xls" required />
-                <button type="submit" class="btn btn-outline-secondary fw-bold zzz-text-mono px-3 border-dark border-2 rounded-0">
-                    <i class="bi bi-cloud-arrow-up-fill me-1"></i> NẠP DATA
+                <input type="file" name="file" class="form-control border-dark border-2 rounded-0 fw-bold text-muted" style="min-width: 230px;" accept=".xlsx, .xls" required />
+                <button type="submit" class="btn btn-success fw-bold zzz-text-mono px-3 border-dark border-2 rounded-0">
+                    <i class="bi bi-cloud-arrow-up-fill me-1"></i> NẠP
                 </button>
             </div>
         </form>
 
-        <div class="vr bg-dark opacity-50 d-none d-md-block" style="width: 2px;"></div>
+        <div class="vr bg-dark opacity-50 d-none d-md-block" style="width: 2px; min-height: 38px;"></div>
 
-        <a asp-action="ExportMongoFormatToExcel" class="btn btn-primary fw-bold zzz-text-mono px-3 py-2 border-dark border-2 rounded-0 shadow-sm">
-            <i class="bi bi-file-earmark-excel-fill me-1"></i> XUẤT TỔNG HỢP [XLSX]
+        <a asp-action="ExportMongoFormatToExcel" class="btn btn-primary fw-bold zzz-text-mono px-3 py-2 border-dark border-2 rounded-0 shadow-sm text-center text-nowrap flex-grow-1 flex-sm-grow-0">
+            <i class="bi bi-file-earmark-excel-fill me-1"></i> XUẤT [XLSX]
         </a>
 
     </div>
@@ -122,61 +128,61 @@
             @foreach (var item in Model)
             {
                 <div class="col">
-                    <div class="card h-100 position-relative">
+                    <div class="card h-100 position-relative border-dark border-2 rounded-0" style="box-shadow: 4px 4px 0px rgba(0,0,0,0.05);">
 
                         @if (item.Thang == now.Month && item.Nam == now.Year)
                         {
-                            <span class="position-absolute top-0 start-100 translate-middle badge bg-warning text-dark border border-dark" style="z-index: 10; transform: rotate(15deg) !important;">
+                            <span class="position-absolute top-0 start-100 translate-middle badge bg-warning text-dark border border-dark border-2 shadow-sm" style="z-index: 10; transform: rotate(15deg) !important;">
                                 NEW
                             </span>
                         }
 
                         <div class="card-header d-flex justify-content-between align-items-center bg-white border-bottom-0 pt-3">
-                            <span class="badge bg-secondary">#@item.MaHd</span>
+                            <span class="badge bg-secondary border border-dark">#@item.MaHd</span>
 
                             @if (item.TrangThai)
                             {
-                                <span class="badge bg-success">
+                                <span class="badge bg-success border border-dark shadow-sm">
                                     <i class="bi bi-check-lg me-1"></i>ĐÃ THU
                                 </span>
                             }
                             else
                             {
-                                <span class="badge bg-danger animate__animated animate__flash animate__slow animate__infinite">
+                                <span class="badge bg-danger animate__animated animate__flash animate__slow animate__infinite border border-dark shadow-sm">
                                     <i class="bi bi-exclamation-triangle-fill me-1"></i>CHƯA THU
                                 </span>
                             }
                         </div>
 
                         <div class="card-body">
-                            <h5 class="card-title fw-bold mb-3 text-truncate text-uppercase" style="font-family: 'Orbitron', sans-serif;">
+                            <h5 class="card-title fw-bold mb-3 text-uppercase text-truncate" style="font-family: 'Orbitron', sans-serif;" title="@item.TenKhachHang">
                                 @item.TenKhachHang
                             </h5>
 
                             <div class="row g-2 mb-3">
                                 <div class="col-6">
-                                    <div class="p-2 border-dashed">
+                                    <div class="p-2 border-dashed bg-light h-100">
                                         <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Kỳ hóa đơn</small>
                                         <span class="fw-bold">T.@item.Thang / @item.Nam</span>
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="p-2 border-dashed">
+                                    <div class="p-2 border-dashed bg-light h-100">
                                         <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Tiêu thụ</small>
-                                        <span class="fw-bold">@item.SoDienTieuThu <small>kWh</small></span>
+                                        <span class="fw-bold text-danger">@item.SoDienTieuThu <small class="text-muted">kWh</small></span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="text-center mt-3 pt-3 border-top border-2 border-dark">
                                 <small class="text-uppercase fw-bolder text-muted" style="letter-spacing: 1px;">Thanh toán</small>
-                                <h2 class="text-danger fw-black mb-0" style="font-family: 'Orbitron', sans-serif;">
+                                <h2 class="text-danger fw-black mb-0 text-truncate" style="font-family: 'Orbitron', sans-serif;">
                                     @item.TongThanhToan.ToString("N0")<span class="fs-6 text-dark ms-1">đ</span>
                                 </h2>
                             </div>
                         </div>
 
-                        <div class="card-footer d-flex justify-content-between align-items-center">
+                        <div class="card-footer bg-white border-top-0 d-flex justify-content-between align-items-center pb-3">
                             <small class="fw-bold" style="font-size: 0.75rem;">
                                 @if (item.TrangThai)
                                 {
@@ -184,23 +190,23 @@
                                 }
                                 else
                                 {
-                                    <span class="text-warning"><i class="bi bi-hourglass-split"></i> CHỜ XỬ LÝ</span>
+                                    <span class="text-warning text-dark"><i class="bi bi-hourglass-split"></i> CHỜ XỬ LÝ</span>
                                 }
                             </small>
 
                             <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown">
+                                <button class="btn btn-sm btn-dark dropdown-toggle fw-bold rounded-0" type="button" data-bs-toggle="dropdown">
                                     MENU
                                 </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-info-square me-2"></i>Chi tiết</a></li>
+                                <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow">
+                                    <li><a class="dropdown-item fw-bold" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-info-square me-2 text-primary"></i>Chi tiết</a></li>
                                     <li>
                                         <a class="dropdown-item fw-bold zzz-text-mono text-success" asp-action="PrintInvoice" asp-route-maHd="@item.MaHd" target="_blank">
                                             <i class="bi bi-printer-fill me-2"></i> IN BẢN SAO
                                         </a>
                                     </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item text-danger" asp-action="Delete" asp-route-id="@item.Id"><i class="bi bi-trash3 me-2"></i>Xóa hóa đơn</a></li>
+                                    <li><hr class="dropdown-divider border-dark"></li>
+                                    <li><a class="dropdown-item fw-bold text-danger" asp-action="Delete" asp-route-id="@item.Id"><i class="bi bi-trash3 me-2"></i>Xóa hóa đơn</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -211,12 +217,14 @@
     }
     else
     {
-        <div class="text-center py-5 border-dashed m-5">
+        <div class="text-center py-5 border-dashed m-3 m-md-5 bg-white border-dark border-2" style="box-shadow: 4px 4px 0px rgba(0,0,0,0.1);">
             <i class="bi bi-inbox text-muted mb-3" style="font-size: 3rem;"></i>
             <h4 class="fw-bold text-danger zzz-text-mono">KHÔNG CÓ DỮ LIỆU</h4>
-            <p class="text-muted fw-bold">Hệ thống chưa ghi nhận hóa đơn nào khớp với bộ lọc.</p>
+            <p class="text-muted fw-bold mb-0">Hệ thống chưa ghi nhận hóa đơn nào khớp với bộ lọc.</p>
         </div>
     }
 </div>
-<script src="~/js/auto-alert.js"></script>
-<script src="~/js/PhuongAPI.js"></script>
+
+@section Scripts {
+    <script src="~/js/auto-alert.js"></script>
+}

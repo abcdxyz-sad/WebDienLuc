@@ -320,3 +320,86 @@
     .zzz-switch input:checked + .zzz-slider:before {
         transform: translateX(22px);
     }
+
+/* =========================================================
+   6. MOBILE OPTIMIZATION & TOUCH DEVICES (MAX-WIDTH: 767.98px)
+========================================================= */
+
+@media (max-width: 767.98px) {
+    /* 1. BUFF KÍCH THƯỚC NÚT (Fat-finger friendly) */
+    .btn-primary,
+    .btn-outline-secondary,
+    .btn-danger,
+    .zzz-btn-danger,
+    .zzz-btn-tech,
+    .zzz-btn-cancel {
+        padding: 12px 16px; /* Bơm thêm đệm trên dưới cho dễ bấm */
+        font-size: 1rem;
+    }
+
+    /* 2. GIẢM BÓNG ĐỔ ĐỂ KHÔNG BỊ TRÀN VIỀN (Overflow-x) */
+    .btn-primary {
+        box-shadow: 3px 3px 0px var(--zzz-primary) !important;
+    }
+
+        .btn-primary:hover {
+            box-shadow: 3px 3px 0px #000 !important;
+        }
+
+    .zzz-btn-danger {
+        box-shadow: 3px 3px 0px var(--zzz-black, #111111);
+    }
+
+        .zzz-btn-danger:hover {
+            box-shadow: 3px 3px 0px #FF3366;
+        }
+
+    .zzz-btn-tech {
+        box-shadow: 3px 3px 0px var(--zzz-black, #111111) !important;
+    }
+
+        .zzz-btn-tech:hover {
+            box-shadow: 3px 3px 0px var(--zzz-blue, #00E5FF) !important;
+        }
+
+    .zzz-btn-cancel {
+        box-shadow: 3px 3px 0px #111111 !important;
+    }
+
+        .zzz-btn-cancel:hover {
+            box-shadow: 3px 3px 0px 0px #FFFFFF, 3px 3px 0px 2px #111111 !important;
+        }
+
+        /* 3. TRỊ BỆNH "DÍNH HOVER" KHI CHẠM TRÊN MÀN HÌNH CẢM ỨNG */
+        /* Khi người dùng bấm thả ra, ép nó nảy về vị trí cũ nhanh hơn */
+        .btn-primary:active,
+        .zzz-btn-danger:active,
+        .zzz-btn-tech:active,
+        .zzz-btn-cancel:active {
+            transform: translate(2px, 2px) !important;
+            box-shadow: 1px 1px 0px transparent !important;
+        }
+
+    /* 4. CHỈNH HÌNH DROPDOWN (Chống tràn viền) */
+    .dropdown-menu {
+        box-shadow: 4px 4px 0px rgba(0,0,0,1); /* Rút bớt bóng đen lại */
+    }
+
+    /* 5. PHÓNG TO SWITCH (Công tắc) */
+    .zzz-switch {
+        width: 52px; /* Dài ra một tí */
+        height: 28px; /* Cao lên một tí */
+    }
+
+    .zzz-slider:before {
+        height: 18px; /* Viên bi bên trong to lên */
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+    }
+
+    /* Ép viên bi chạy xa hơn tương ứng với chiều dài mới */
+    .zzz-switch input:checked + .zzz-slider:before {
+        transform: translateX(26px);
+    }
+}
