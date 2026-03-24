@@ -4,15 +4,15 @@
     ViewData["Title"] = "Quản lý nhân viên";
 }
 
-<div class="border-dashed p-3 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 zzz-command-panel border-dark border-3 bg-white text-center text-md-start">
+<div class="border-dashed p-3 mb-4 d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3 zzz-command-panel border-dark border-3 bg-white">
 
-    <h1 class="m-0 zzz-page-title fw-bold text-uppercase fs-4 fs-md-3 border-start border-primary border-5 ps-3" style="border-left-color: var(--zzz-primary) !important;">
+    <h1 class="m-0 zzz-page-title fw-bold text-uppercase fs-3 fs-lg-2 border-start border-5 ps-3 text-nowrap" style="border-left-color: var(--zzz-primary) !important;">
         [ TỆP HỒ SƠ ] NHÂN SỰ
     </h1>
 
-    <div class="d-flex align-items-center gap-3 w-100 w-md-auto ms-md-auto justify-content-center justify-content-md-end">
-        <a asp-action="Create" class="btn btn-primary w-100 w-md-auto flex-md-grow-0 align-self-md-center fw-bold border-dark border-2 rounded-0 shadow-sm py-2 py-md-1 zzz-text-mono text-center" style="max-width: max-content;">
-            <i class="bi bi-plus-square-fill me-1"></i> THÊM VÀO NHÂN SỰ MỚI
+    <div>
+        <a asp-action="Create" class="btn btn-primary fw-bold border-dark border-2 rounded-0 shadow-sm px-4 py-2 zzz-text-mono text-nowrap">
+            <i class="bi bi-plus-square-fill me-2"></i> THÊM NHÂN SỰ
         </a>
     </div>
 
@@ -42,7 +42,7 @@
                                     #@Html.DisplayFor(modelItem => item.MaNV)
                                 </span>
                             </td>
-                            <td data-label="HỌ VÀ TÊN" class="zzz-text-name text-danger fw-bold fs-5 text-wrap">
+                            <td data-label="HỌ VÀ TÊN" class="zzz-text-name text-danger fw-bold fs-6 text-wrap">
                                 @Html.DisplayFor(modelItem => item.TenNV)
                             </td>
                             <td data-label="EMAIL" class="zzz-text-mono fw-bold">
@@ -52,9 +52,24 @@
                                 @Html.DisplayFor(modelItem => item.DienThoai)
                             </td>
                             <td data-label="CHỨC VỤ">
-                                <span class="zzz-tag badge bg-light text-dark border border-dark shadow-sm fs-6">
-                                    @Html.DisplayFor(modelItem => item.ChucVu)
-                                </span>
+                                @if (item.ChucVu == "Admin")
+                                {
+                                    <span class="zzz-tag badge bg-warning text-dark border border-dark shadow-sm fs-6 fw-bold">
+                                        <i class="fas fa-crown me-1"></i> ADMIN
+                                    </span>
+                                }
+                                else if (item.ChucVu == "NhanVien")
+                                {
+                                    <span class="zzz-tag badge bg-light text-dark border border-dark shadow-sm fs-6 fw-bold">
+                                        <i class="fas fa-user-tie me-1"></i> NHÂN VIÊN
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="zzz-tag badge bg-secondary text-white border border-dark shadow-sm fs-6 fw-bold">
+                                        @item.ChucVu
+                                    </span>
+                                }
                             </td>
                             <td data-label="TÌNH TRẠNG" class="text-md-center">
                                 @if (item.TrangThai)
