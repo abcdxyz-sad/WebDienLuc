@@ -430,6 +430,10 @@ a {
     background-color: rgba(0, 229, 255, 0.1); /* Màu Cyan nhạt khi hover */
 }
 
+.table-responsive {
+    overflow: visible !important;
+}
+
 /* =========================================================
    5. FOOTER (ZZZ x MANGA x PIXEL)
 ========================================================= */

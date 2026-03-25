@@ -84,7 +84,6 @@ namespace WebSuDungDIen.Controllers
             }
 
             var khachHang = await _context.KhachHang
-                .Include(k => k.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (khachHang == null)
             {

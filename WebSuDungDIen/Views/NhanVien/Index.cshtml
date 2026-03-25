@@ -87,10 +87,19 @@
                             </td>
                             <td data-label="CHỨC NĂNG" class="text-md-center">
                                 <div class="dropdown">
-                                    <button class="btn btn-dark border-2 rounded-0 dropdown-toggle zzz-btn-action fw-bold w-100 w-md-auto text-end text-md-center px-4" type="button" id="dropdownMenuButton_@item.Id" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <button class="btn btn-dark border-2 rounded-0 dropdown-toggle zzz-btn-action fw-bold w-100 w-md-auto text-end text-md-center px-4"
+                                            type="button"
+                                            id="dropdownMenuButton_@item.Id"
+                                            data-bs-toggle="dropdown"
+                                            aria-expanded="false"
+                                            data-bs-boundary="window"
+                                            data-bs-strategy="fixed">
                                         CHỌN
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow" aria-labelledby="dropdownMenuButton_@item.Id">
+
+                                    <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow"
+                                        aria-labelledby="dropdownMenuButton_@item.Id"
+                                        style="z-index: 9999;">
                                         <li>
                                             <a class="dropdown-item fw-bold zzz-text-mono" asp-action="Details" asp-route-id="@item.Id">
                                                 <i class="bi bi-person-lines-fill me-2"></i>XEM HỒ SƠ

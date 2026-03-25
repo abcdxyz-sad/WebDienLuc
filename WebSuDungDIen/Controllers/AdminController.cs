@@ -278,11 +278,34 @@ namespace WebSuDungDIen.Controllers
             if (user == null)
                 return NotFound();
 
-            user.LockoutEnd = DateTimeOffset.Now.AddYears(100); // khóa 100 năm 😌
+            // 💥 1. LUẬT CHỐNG TỰ HỦY: Không được phép tự khóa chính mình
+            var currentUserId = _userManager.GetUserId(User);
+            if (userId == currentUserId)
+            {
+                TempData["ThongBao"] = "CẢNH BÁO: Định tự sát à? Không được tự khóa tài khoản đang đăng nhập!";
+                return RedirectToAction("ChiTietTaiKhoan", new { userId });
+            }
 
+            // 💥 2. LUẬT CHỐNG PHẢN QUỐC: Cấm đụng vào quyền lực tối cao (Admin)
+            // Sếp có thể check theo Role "Admin" hoặc check thẳng cái UserName "admin"
+            var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+            if (isAdmin || user.UserName.ToLower() == "admin")
+            {
+                TempData["ThongBao"] = "TỪ CHỐI TỬ HÌNH: Kẻ phản nghịch, quyền hạn đâu mà dám khóa Admin?";
+                return RedirectToAction("ChiTietTaiKhoan", new { userId });
+            }
+
+            // Tiến hành giam vào Hắc ngục 100 năm 😌
+            user.LockoutEnd = DateTimeOffset.Now.AddYears(100);
+
+            // 💥 3. TÀ THUẬT ĐÁ VĂNG KHỎI HỆ THỐNG: Đổi SecurityStamp
+            // Lệnh này ép tất cả các phiên đăng nhập (Cookie) của thằng này trên mọi máy tính/điện thoại lập tức vô giá trị!
+            await _userManager.UpdateSecurityStampAsync(user);
+
+            // Lưu lại án tử
             await _userManager.UpdateAsync(user);
 
-            TempData["ThongBao"] = "Tài khoản đã bị khóa";
+            TempData["ThongBao"] = $"THÀNH CÔNG: Đã tống cổ [{user.UserName}] vào ngục 100 năm và đá văng khỏi hệ thống!";
             return RedirectToAction("ChiTietTaiKhoan", new { userId });
         }
 

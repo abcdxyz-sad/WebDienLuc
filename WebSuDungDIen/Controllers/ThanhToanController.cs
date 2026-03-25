@@ -5,7 +5,7 @@ using MongoDB.Driver;
 using WebSuDungDIen.Data;
 using WebSuDungDIen.Hubs;
 using WebSuDungDIen.Models;
-
+[AllowAnonymous]
 public class ThanhToanController : Controller
 {
     private readonly IMongoCollection<KhachHang> _khachHangCollection;

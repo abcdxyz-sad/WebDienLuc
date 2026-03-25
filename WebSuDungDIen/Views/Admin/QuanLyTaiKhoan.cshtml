@@ -147,6 +147,10 @@
                                             {
                                                 <span class="badge bg-secondary zzz-status-badge border border-dark border-2 text-white fw-bold"><i class="zzz-status-x">!</i> THIẾU HỒ SƠ</span>
                                             }
+                                            else if (user.LockoutEnd != null && user.LockoutEnd > DateTimeOffset.Now)
+                                            {
+                                                <span class="badge bg-danger zzz-status-badge border border-dark border-2 fw-bold shadow-sm"><i class="fas fa-lock me-1"></i> BỊ KHÓA</span>
+                                            }
                                             else if (!hoSo.TrangThai)
                                             {
                                                 <span class="badge bg-warning zzz-status-badge border border-dark border-2 text-dark fw-bold shadow-sm"><i class="fas fa-hourglass-half me-1"></i> CHỜ DUYỆT</span>

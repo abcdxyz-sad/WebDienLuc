@@ -69,6 +69,7 @@
                 <table class="table table-hover mb-0 zzz-table align-middle">
                     <thead class="table-dark zzz-text-mono">
                         <tr class="text-nowrap" style="font-size: 0.9rem;">
+                            <th style="min-width: 140px;">MÃ KHÁCH</th>
                             <th style="min-width: 200px;">KHÁCH HÀNG</th>
                             <th style="min-width: 250px;">ĐỊA CHỈ</th>
                             <th class="text-center" style="min-width: 110px;">KỲ CHỐT</th>
@@ -84,12 +85,19 @@
                             @foreach (var item in Model)
                             {
                                 <tr class="border-bottom border-dark-subtle">
-                                    <td data-label="KHÁCH HÀNG">
-                                        <div class="zzz-text-name mb-1 fs-5">@item.TenKh</div>
-                                        <span class="badge bg-secondary border border-dark zzz-text-mono fs-6 shadow-sm">
+
+                                    <td data-label="MÃ KHÁCH">
+                                        <span class="badge bg-secondary border border-dark text-white zzz-text-mono fs-6 shadow-sm">
                                             #@item.KhachHangId.Substring(0, Math.Min(8, item.KhachHangId.Length))
                                         </span>
                                     </td>
+
+                                    <td data-label="KHÁCH HÀNG">
+                                        <div class="zzz-text-name fs-6 fw-bolder text-uppercase text-wrap" style="color: var(--zzz-black); line-height: 1.2;">
+                                            @item.TenKh
+                                        </div>
+                                    </td>
+
                                     <td data-label="ĐỊA CHỈ" class="zzz-text-mono small fw-bold text-wrap">
                                         @item.DiaChi
                                     </td>
@@ -119,8 +127,8 @@
                                         }
                                         else if (item.ChiSoCu == 0)
                                         {
-                                            <span class="badge bg-primary zzz-status-badge border border-dark border-2 text-white shadow-sm text-nowrap">
-                                                <i class="fas fa-tools me-1"></i> MỐC LẮP ĐẶT
+                                            <span class="badge zzz-status-badge border border-dark border-2 shadow-sm text-nowrap fw-bold" style="background-color: var(--zzz-blue); color: var(--zzz-black);">
+                                                <i class="fas fa-wrench me-1"></i> CHỈ SỐ MỚI LẮP ĐẶT
                                             </span>
                                         }
                                         else
@@ -151,7 +159,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="7" class="text-center py-2 border-0">
+                                <td colspan="8" class="text-center py-2 border-0">
                                     <div class="text-center py-5">
                                         <i class="bi bi-search text-muted mb-3" style="font-size: 3rem;"></i>
                                         <h4 class="fw-bold text-danger zzz-text-mono">KHÔNG TÌM THẤY DỮ LIỆU.</h4>

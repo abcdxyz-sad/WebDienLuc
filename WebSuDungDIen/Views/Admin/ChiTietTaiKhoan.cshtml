@@ -10,11 +10,6 @@
         <h1 class="m-0 zzz-page-title fw-bold text-uppercase fs-4 fs-md-3 text-center text-md-start w-100 w-md-auto border-start border-danger border-5 ps-3" style="border-left-color: #dc3545 !important;">
             <i class="fas fa-fingerprint text-danger me-2 d-none d-md-inline"></i> TRÍCH XUẤT ĐỊNH DANH
         </h1>
-        <div class="d-flex align-items-center justify-content-center w-100 w-md-auto">
-            <span class="zzz-sys-status text-primary fw-bold border border-primary border-2 px-3 py-1 bg-light text-center w-100 w-md-auto shadow-sm">
-                MÃ HỒ SƠ: <span class="zzz-text-mono text-dark">@Model.User.Id.Substring(0, 8).ToUpper()</span>
-            </span>
-        </div>
     </div>
 
     @if (TempData["ThongBao"] != null)
@@ -65,7 +60,11 @@
                         @if (Model.NhanVien != null)
                         {
                             <div class="zzz-fieldset zzz-fieldset-highlight border-dark border-2 mb-0">
-                                <div class="zzz-fieldset-title zzz-fieldset-title-highlight border-dark border-2 px-2 py-1 small">INF.01 // NHÂN SỰ</div>
+                                <div class="d-flex align-items-center justify-content-center w-100 w-md-auto">
+                                    <span class="zzz-sys-status text-primary fw-bold border border-primary border-2 px-3 py-1 bg-light text-center w-100 w-md-auto shadow-sm">
+                                        MÃ HỒ SƠ: <span class="zzz-text-mono text-dark">@Model.User.Id.Substring(0, 8).ToUpper()</span>
+                                    </span>
+                                </div>
                                 <div class="row g-3 mt-1">
                                     <div class="col-12 col-xl-4">
                                         <label class="form-label zzz-cmd-label text-muted small">MÃ NHÂN VIÊN</label>
