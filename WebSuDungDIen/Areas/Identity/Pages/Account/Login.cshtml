@@ -17,6 +17,15 @@
     <link rel="stylesheet" href="~/css/Login.css" asp-append-version="true" />
 </head>
 <body>
+    @if (TempData["ThongBao"] != null)
+    {
+        <div id="thongBao" class="zzz-notification">
+            <div class="zzz-content">
+                <span class="zzz-icon">👾</span> <span class="zzz-text">@TempData["ThongBao"]</span>
+            </div>
+            <div class="zzz-decor-line"></div>
+        </div>
+    }
 
     <div class="zzz-login-wrapper">
         <div class="zzz-login-card">

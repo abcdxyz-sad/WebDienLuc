@@ -10,41 +10,45 @@
 
 @if (isStaff)
 {
-    @* =========================================================================
-       GIAO DIỆN ĐẶC VỤ (ZZZ STYLE) - LẠNH LÙNG, CAY NGHIỆT, BỌC THÉP CHỐNG ĐẠN
-       ========================================================================= *@
-    <h3 class="zzz-text-mono fw-bold mb-4 text-uppercase" style="color: var(--zzz-primary); text-shadow: 2px 2px 0 #000;">
-        <i class="bi bi-person-bounding-box"></i> HỒ SƠ ĐỊNH DANH [CORE_PROFILE]
+    <h3 class="zzz-text-mono fw-bold mb-4 text-uppercase border-start border-5 border-dark ps-3" style="color: var(--zzz-black);">
+        <i class="fas fa-user-shield text-primary"></i> HỒ SƠ QUẢN TRỊ [ADMIN_CORE]
     </h3>
 
-    <div class="alert alert-danger zzz-urban-card rounded-0 border-3 border-dark mb-4" style="box-shadow: 4px 4px 0 var(--zzz-accent, #FF3366);">
-        <i class="bi bi-shield-lock-fill fs-3 me-2" style="transform: skewX(-10deg); display: inline-block;"></i>
-        <strong style="font-family: 'Orbitron', sans-serif;">[ KHÓA BẢO MẬT CẤP CAO ]</strong>
-        Dữ liệu nhân sự đã bị đóng băng. Muốn sửa đổi? Lết xác lên phòng Hành Chính hoặc nã điện thoại cho System Admin!
-    </div>
+    <form id="profile-form" method="post">
 
-    <div class="row g-4 zzz-manage-content">
-        <div class="col-md-8">
-            <label class="zzz-label">HỌ VÀ TÊN [ID_NAME]</label>
-            <input asp-for="Input.FullName" class="form-control zzz-input-readonly" readonly />
+        <div class="row g-4 zzz-manage-content">
+            <div class="col-md-8">
+                <label class="zzz-label fw-bold">HỌ VÀ TÊN</label>
+                <input asp-for="Input.FullName" class="form-control border-dark border-2 rounded-0 shadow-sm fw-bold text-danger" placeholder="Nhập tên hiển thị..." />
+                <span asp-validation-for="Input.FullName" class="text-danger small fw-bold"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label class="zzz-label fw-bold">SỐ ĐIỆN THOẠI</label>
+                <input asp-for="Input.PhoneNumber" class="form-control border-dark border-2 rounded-0 shadow-sm fw-bold" placeholder="Nhập số điện thoại..." />
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger small fw-bold"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label class="zzz-label fw-bold">HỘP THƯ [EMAIL]</label>
+                <input asp-for="Input.Email" type="email" class="form-control border-dark border-2 rounded-0 shadow-sm fw-bold" placeholder="Nhập địa chỉ email liên lạc..." />
+                <span asp-validation-for="Input.Email" class="text-danger small fw-bold"></span>
+            </div>
+
+            <div class="col-12">
+                <label class="zzz-label fw-bold">ĐỊA CHỈ</label>
+                <textarea asp-for="Input.Address" class="form-control border-dark border-2 rounded-0 shadow-sm fw-bold" rows="3" placeholder="Xác định tọa độ căn cứ..."></textarea>
+                <span asp-validation-for="Input.Address" class="text-danger small fw-bold"></span>
+            </div>
+
+            <div class="col-12 mt-4 text-end">
+                <button type="submit" class="btn btn-primary fw-bolder border-dark border-2 rounded-0 shadow-sm px-5 py-3 zzz-text-mono fs-5 text-uppercase">
+                    <i class="fas fa-save me-2"></i> LƯU THAY ĐỔI
+                </button>
+            </div>
         </div>
-        <div class="col-md-4">
-            <label class="zzz-label">MÃ SỐ [CORE_ID]</label>
-            <input asp-for="Input.UserCode" class="form-control zzz-input-readonly" readonly />
-        </div>
-        <div class="col-md-6">
-            <label class="zzz-label">TẦN SỐ LIÊN LẠC [PHONE]</label>
-            <input asp-for="Input.PhoneNumber" class="form-control zzz-input-readonly" readonly />
-        </div>
-        <div class="col-md-6">
-            <label class="zzz-label">PHÂN HẠNG QUYỀN [ROLE]</label>
-            <input asp-for="Input.AccountType" class="form-control zzz-input-readonly" readonly />
-        </div>
-        <div class="col-12">
-            <label class="zzz-label">TỌA ĐỘ HIỆN TẠI [LOCATION]</label>
-            <textarea asp-for="Input.Address" class="form-control zzz-input-readonly" rows="2" readonly></textarea>
-        </div>
-    </div>
+
+    </form>
 }
 else
 {

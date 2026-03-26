@@ -1,8 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
-
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -29,98 +25,114 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account.Manage
             _logger = logger;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required]
-            [DataType(DataType.Password)]
-            [Display(Name = "Current password")]
-            public string OldPassword { get; set; }
+            [Required(ErrorMessage = "Tên đăng nhập không được để trống.")]
+            public string Username { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-            [DataType(DataType.Password)]
-            [Display(Name = "New password")]
-            public string NewPassword { get; set; }
+            [Required(ErrorMessage = "Email không được để trống.")]
+            [EmailAddress(ErrorMessage = "Định dạng Email không hợp lệ.")]
+            public string Email { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
+            // 💥 TÀ THUẬT: Thêm dấu ? để biến nó thành Nullable, vô hiệu hóa Required ngầm định của C#
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm new password")]
-            [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; }
+            public string? OldPassword { get; set; }
+
+            [StringLength(100, ErrorMessage = "Mật khẩu mới phải từ {2} đến {1} ký tự.", MinimumLength = 6)]
+            [DataType(DataType.Password)]
+            public string? NewPassword { get; set; }
+
+            [DataType(DataType.Password)]
+            [Compare("NewPassword", ErrorMessage = "Mật khẩu xác nhận không trùng khớp!")]
+            public string? ConfirmPassword { get; set; }
+        }
+
+        // 💥 HÀM CỨU MẠNG: Tải lại data để không bị trắng bóc màn hình
+        private async Task LoadAsync(ApplicationUser user)
+        {
+            Input = new InputModel
+            {
+                Username = user.UserName,
+                Email = user.Email
+            };
         }
 
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
+            if (user == null) return NotFound($"Không tìm thấy user.");
 
-            var hasPassword = await _userManager.HasPasswordAsync(user);
-            if (!hasPassword)
-            {
-                return RedirectToPage("./SetPassword");
-            }
-
+            await LoadAsync(user); // Nạp đạn cho giao diện
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
+            // 💥 XÓA ÁN TỬ: Lờ đi lỗi Password nếu khách không thèm nhập
+            if (string.IsNullOrEmpty(Input.NewPassword))
+            {
+                ModelState.Remove("Input.OldPassword");
+                ModelState.Remove("Input.NewPassword");
+                ModelState.Remove("Input.ConfirmPassword");
+            }
+
+            // Nếu vẫn còn lỗi (ví dụ bỏ trống Email), thì phải nạp lại Data rồi mới văng lỗi!
             if (!ModelState.IsValid)
             {
+                await LoadAsync(user);
                 return Page();
             }
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            bool isModified = false;
+
+            // 1. LƯU USERNAME & EMAIL
+            if (Input.Username != user.UserName)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                await _userManager.SetUserNameAsync(user, Input.Username);
+                isModified = true;
+            }
+            if (Input.Email != user.Email)
+            {
+                await _userManager.SetEmailAsync(user, Input.Email);
+                user.EmailConfirmed = true;
+                isModified = true;
             }
 
-            var changePasswordResult = await _userManager.ChangePasswordAsync(user, Input.OldPassword, Input.NewPassword);
-            if (!changePasswordResult.Succeeded)
+            // 2. LƯU PASS (Chỉ khi nào ngứa tay gõ Pass mới)
+            if (!string.IsNullOrEmpty(Input.NewPassword))
             {
-                foreach (var error in changePasswordResult.Errors)
+                if (string.IsNullOrEmpty(Input.OldPassword))
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError("Input.OldPassword", "Vui lòng nhập Mật khẩu hiện tại!");
+                    await LoadAsync(user); // Lỗi cũng phải nạp lại data!
+                    return Page();
                 }
-                return Page();
+
+                var result = await _userManager.ChangePasswordAsync(user, Input.OldPassword, Input.NewPassword);
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
+                    await LoadAsync(user);
+                    return Page();
+                }
+                isModified = true;
             }
 
-            await _signInManager.RefreshSignInAsync(user);
-            _logger.LogInformation("User changed their password successfully.");
-            StatusMessage = "Your password has been changed.";
+            if (isModified)
+            {
+                await _userManager.UpdateAsync(user);
+                await _signInManager.RefreshSignInAsync(user);
+                StatusMessage = "Cập nhật thông tin thành công!";
+            }
 
             return RedirectToPage();
         }

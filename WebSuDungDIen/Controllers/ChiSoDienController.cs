@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -519,7 +520,7 @@ namespace WebSuDungDIen.Controllers
         }
 
         [Authorize(Roles = "KhachHang")]
-        public async Task<IActionResult> LichSuCuaToi()
+        public async Task<IActionResult> LichSuCuaToi(string userId)
         {
             // 1. Lấy thông tin user hiện tại
             var user = await _userManager.GetUserAsync(User);
@@ -538,9 +539,13 @@ namespace WebSuDungDIen.Controllers
                 .ThenByDescending(c => c.Thang)  // Cùng năm thì sắp xếp theo Tháng mới nhất
                 .ToListAsync();
 
-            // Truyền thêm tên khách hàng qua ViewBag để lỡ ngoài View muốn dùng để hiển thị "Xin chào, Nguyễn Văn A"
-            ViewBag.TenKhachHang = khachHang.TenKh; // Thay bằng thuộc tính tên thật trong Model KhachHang của bạn
-
+            var kh = _context.KhachHang.FirstOrDefault(x => x.IdentityUserId == userId);
+            if (kh != null)
+            {
+                ViewBag.TenKhachHang = kh.TenKh;
+                ViewBag.MaKhachHang = kh.MaKh;
+                ViewBag.DiaChi = kh.DiaChi; // Hoặc kh.DiaChiDayDu
+            }
             // 4. Trả về View dành riêng cho khách
             return View(lichSuDien);
         }

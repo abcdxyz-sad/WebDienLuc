@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +7,7 @@ using WebSuDungDien.Services;
 using WebSuDungDIen.Data;
 using WebSuDungDIen.Hubs;
 using WebSuDungDIen.Models;
+using WebSuDungDIen.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -34,7 +35,7 @@ builder.Services.Configure<SecurityStampValidatorOptions>(options =>
 });
 
 builder.Services.AddScoped<TaoMaService>();
-
+builder.Services.AddTransient<EmailSender>();
 builder.Services.AddSingleton<IMongoClient>(sp =>
     new MongoClient("mongodb+srv://kira:kira@cluster0.9j2bsjo.mongodb.net/?appName=Cluster0"));
 

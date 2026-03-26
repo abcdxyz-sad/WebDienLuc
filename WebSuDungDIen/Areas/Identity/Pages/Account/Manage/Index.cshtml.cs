@@ -68,6 +68,7 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account.Manage
             public string UserCode { get; set; }
             public string Address { get; set; }
             public string AccountType { get; set; }
+            public string Email { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -85,15 +86,14 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account.Manage
                 if (nhanVien != null)
                 {
                     Input.FullName = nhanVien.TenNV;
-                    Input.UserCode = nhanVien.MaNV;
                     Input.PhoneNumber = nhanVien.DienThoai;
                     Input.Address = nhanVien.DiaChi;
                     Input.AccountType = $"Nhân viên nội bộ - {nhanVien.ChucVu}";
+                    Input.Email = await _userManager.GetEmailAsync(user);
                 }
                 else
                 {
                     Input.FullName = "LỖI: CHƯA CÓ DATA NHÂN VIÊN TRONG DB";
-                    Input.UserCode = "Null";
                     Input.AccountType = $"Identity ID: {user.Id}";
                 }
             }
@@ -147,19 +147,83 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
+            bool isChanged = false; // Cắm cái cờ để biết có cần lưu Database không
+
+            // ==========================================
+            // 1. CẬP NHẬT PHẦN IDENTITY (SĐT & EMAIL)
+            // ==========================================
+
+            // Xử lý Số điện thoại
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
             {
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
+                    StatusMessage = "Lỗi hệ thống: Không thể ghi đè Số điện thoại!";
                     return RedirectToPage();
                 }
             }
 
+            // Xử lý Email (Tà thuật đổi Email trực tiếp không cần gửi mail xác nhận)
+            var email = await _userManager.GetEmailAsync(user);
+            if (Input.Email != email)
+            {
+                // Ghi đè Email và Username (Thường Username = Email)
+                await _userManager.SetEmailAsync(user, Input.Email);
+                await _userManager.SetUserNameAsync(user, Input.Email);
+
+                // Vì sửa Email là sửa định danh, nên ép hệ thống xác nhận luôn để khỏi lằng nhằng
+                user.EmailConfirmed = true;
+                await _userManager.UpdateAsync(user);
+            }
+
+            // ==========================================
+            // 2. CẬP NHẬT BẢNG NHÂN VIÊN TRONG SQL SERVER (TÊN & ĐỊA CHỈ)
+            // ==========================================
+
+            // Soi xem nó có quyền Nhân Viên/Admin không
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains("Admin") || roles.Contains("NhanVien") || roles.Contains("Employee"))
+            {
+                // Móc hồ sơ dưới CSDL lên
+                var nhanVien = await _context.NhanVien.FirstOrDefaultAsync(nv => nv.IdentityUserId == user.Id);
+                if (nhanVien != null)
+                {
+                    // Kiểm tra xem có đổi Tên không
+                    if (nhanVien.TenNV != Input.FullName)
+                    {
+                        nhanVien.TenNV = Input.FullName;
+                        isChanged = true;
+                    }
+
+                    // 💥 TÀ THUẬT VÁ LỖ HỔNG: Ép bảng NhanVien cũng phải nhận số điện thoại mới!
+                    if (nhanVien.DienThoai != Input.PhoneNumber)
+                    {
+                        nhanVien.DienThoai = Input.PhoneNumber;
+                        isChanged = true;
+                    }
+
+                    // Kiểm tra xem có đổi Địa chỉ không
+                    if (nhanVien.DiaChi != Input.Address)
+                    {
+                        nhanVien.DiaChi = Input.Address;
+                        isChanged = true;
+                    }
+
+                    // Có thay đổi thì bóp cò lưu xuống CSDL
+                    if (isChanged)
+                    {
+                        _context.NhanVien.Update(nhanVien);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+            }
+
+            // F5 lại phiên đăng nhập để thông tin mới ăn vào hệ thống ngay lập tức
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+
+            StatusMessage = "GHI ĐÈ DỮ LIỆU THÀNH CÔNG! Bản thể đã được định hình lại.";
             return RedirectToPage();
         }
     }

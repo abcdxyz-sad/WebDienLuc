@@ -16,7 +16,6 @@
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 9999;
     max-width: 400px;
     /* Phong cách Zenless Zone Zero: Hình khối cắt vát */
     background-color: var(--zzz-secondary);
@@ -31,6 +30,7 @@
     /* Animation xuất hiện */
     animation: slideInGlitch 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     opacity: 1; /* Mặc định hiện */
+    z-index: 9999;
 }
 
 /* Phần nội dung bên trong */
@@ -87,15 +87,15 @@
     }
 }
 
-/* Responsive: Trên mobile thì bớt nghiêng cho đỡ tốn chỗ */
+/* Responsive: Trên mobile thì bớt nghiêng cho đỡ tốn chỗ, NHƯNG VẪN PHẢI NẰM TRÊN ĐẦU! */
 @media (max-width: 576px) {
     #thongBao.zzz-notification {
-        top: auto;
-        bottom: 20px;
+        top: 20px !important; /* 💥 Bắt nó treo cổ trên nóc nhà! */
+        bottom: auto !important; /* 💥 Chặt đứt cái mỏ neo ở dưới đáy đi! */
         right: 10px;
         left: 10px;
         width: auto;
-        transform: skewX(0);
+        transform: skewX(0); /* Trả về form thẳng thớm, không nghiêng ngả */
         box-shadow: 4px 4px 0px var(--zzz-accent);
     }
 
