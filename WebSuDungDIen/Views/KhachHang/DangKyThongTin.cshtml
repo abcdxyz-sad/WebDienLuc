@@ -5,65 +5,67 @@
 }
 <link rel="stylesheet" href="~/css/zzz-notify.css" asp-append-version="true" />
 
-<div class="container mt-5">
-    <div class="card shadow-lg border-0 rounded-4">
-        <div class="card-body p-5">
+<div class="corp-wrapper">
+    <div class="container mt-5">
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-5">
 
-            <h3 class="mb-4 text-center fw-bold text-primary">
-                Đăng ký sử dụng dịch vụ điện
-            </h3>
+                <h3 class="mb-4 text-center fw-bold text-primary">
+                    Đăng ký sử dụng dịch vụ điện
+                </h3>
 
-            <form asp-action="DangKyThongTin" method="post">
+                <form asp-action="DangKyThongTin" method="post">
 
-                <div class="mb-3">
-                    <label asp-for="TenKh" class="form-label font-weight-bold">
-                        Họ và tên <span class="text-danger">*</span>
-                    </label>
-                    <input asp-for="TenKh" class="form-control rounded-3 text-uppercase" id="tenKhBox" required />
-                    <span asp-validation-for="TenKh" class="text-danger d-block mt-1"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="DienThoai" class="form-label font-weight-bold">
-                        Số điện thoại <span class="text-danger">*</span>
-                    </label>
-                    <input asp-for="DienThoai" class="form-control rounded-3" required />
-                    <span asp-validation-for="DienThoai" class="text-danger d-block mt-1"></span>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label font-weight-bold">Tỉnh/Thành phố</label>
-                        <select id="province" class="form-select rounded-3">
-                            <option value="">-- Chọn Tỉnh/Thành --</option>
-                        </select>
+                    <div class="mb-3">
+                        <label asp-for="TenKh" class="form-label font-weight-bold">
+                            Họ và tên <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="TenKh" class="form-control rounded-3" id="tenKhBox" required />
+                        <span asp-validation-for="TenKh" class="text-danger d-block mt-1"></span>
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label font-weight-bold">Phường/Xã (Bắt buộc)</label>
-                        <select id="ward" name="MaPhuongApi" class="form-select rounded-3">
-                            <option value="">-- Chọn Phường/Xã --</option>
-                        </select>
+                    <div class="mb-3">
+                        <label asp-for="DienThoai" class="form-label font-weight-bold">
+                            Số điện thoại <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="DienThoai" class="form-control rounded-3" required />
+                        <span asp-validation-for="DienThoai" class="text-danger d-block mt-1"></span>
                     </div>
 
-                    <div class="col-md-12 mb-3">
-                        <label asp-for="DiaChi" class="form-label font-weight-bold">Số nhà, Tên đường</label>
-                        <input asp-for="DiaChi" id="inputDiaChi" class="form-control rounded-3 text-uppercase" placeholder="Ví dụ: 123 Đường Lê Lợi..." required />
-                        <span asp-validation-for="DiaChi" class="text-danger d-block mt-1"></span>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold">Tỉnh/Thành phố</label>
+                            <select id="province" class="form-select rounded-3">
+                                <option value="">-- Chọn Tỉnh/Thành --</option>
+                            </select>
+                        </div>
 
-                        <input type="hidden" asp-for="DiaChiDayDu" id="DiaChiDayDu" />
-                        <input type="hidden" name="MaMien" id="maMien" />
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold">Phường/Xã (Bắt buộc)</label>
+                            <select id="ward" name="MaPhuongApi" class="form-select rounded-3">
+                                <option value="">-- Chọn Phường/Xã --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label asp-for="DiaChi" class="form-label font-weight-bold">Số nhà, Tên đường</label>
+                            <input asp-for="DiaChi" id="inputDiaChi" class="form-control rounded-3" placeholder="Ví dụ: 123 Đường Lê Lợi..." required />
+                            <span asp-validation-for="DiaChi" class="text-danger d-block mt-1"></span>
+
+                            <input type="hidden" asp-for="DiaChiDayDu" id="DiaChiDayDu" />
+                            <input type="hidden" name="MaMien" id="maMien" />
+                        </div>
                     </div>
-                </div>
 
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-primary px-5 py-2 rounded-3 fw-bold">
-                        Gửi yêu cầu đăng ký
-                    </button>
-                </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn corp-btn-primary px-5 py-2 rounded-3 fw-bold">
+                            Gửi yêu cầu đăng ký
+                        </button>
+                    </div>
 
-            </form>
+                </form>
 
+            </div>
         </div>
     </div>
 </div>

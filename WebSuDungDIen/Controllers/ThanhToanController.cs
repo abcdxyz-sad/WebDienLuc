@@ -44,6 +44,9 @@ public class ThanhToanController : Controller
             hoaDon.TrangThai = "DaThanhToan";
             hoaDon.NgayThanhToan = DateTime.Now;
 
+            // 👉 TIÊM VÀO ĐÂY: Đánh dấu thanh toán bằng QR Code
+            hoaDon.HinhThucThanhToan = "QR";
+
             // 3. Lưu vào Database
             _context.HoaDon.Update(hoaDon);
             await _context.SaveChangesAsync();
@@ -71,15 +74,8 @@ public class ThanhToanController : Controller
             await _hubContext.Clients.All.SendAsync("ReceivePaymentSuccess", maKhach, hoaDon.MaHd);
 
             // 6. 💥 RÚT SÚNG VÀ NÃ ĐẠN EMAIL!
-            // Lưu ý: Tôi đang giả định bảng HoaDon của sếp có cột "TongTien" (Tổng tiền).
-            // Nếu sếp đặt tên khác (ví dụ ThanhTien, SoTien) thì tự sửa lại chữ TongTien cho đúng nhé!
             decimal soTienDaThu = hoaDon.TongThanhToan;
-
-            // Bóp cò! Lỗi hay không lỗi thì cái Try-Catch bên trong hàm này nó cũng nuốt hết!
-            // Móc thông tin số điện thoại của khách ra
             string sdtKhach = khach != null ? khach.DienThoai : "";
-
-            // Móc chỉ số điện từ Hóa Đơn ra (giả sử cột tên là DienTieuThu)
             int dienDaDung = hoaDon.SoDienTieuThu;
 
             // 💥 Kéo nòng súng, nhét đủ 7 viên đạn vào!

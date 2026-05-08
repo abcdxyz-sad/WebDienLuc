@@ -1,16 +1,23 @@
 ﻿@model WebSuDungDIen.Models.NhanVien
 
 @{
-    ViewData["Title"] = "Thêm nhân viên";
+    ViewData["Title"] = "Thêm Nhân Viên";
+    var users = ViewBag.Users;
 }
 
+<div id="zzz-welcome-msg"
+     data-msg="Trang này dùng để tạo hồ sơ nhân viên. Bạn có thể chọn tài khoản để hệ thống tự điền thông tin, HOẶC bỏ qua và tự nhập tay nếu nhân viên chưa có tài khoản."
+     style="display: none;">
+</div>
+
 <div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel">
-    <h1 class="m-0 zzz-page-title">
-        [ TỆP HỒ SƠ ] THÊM VÀO NHÂN SỰ 
+    <h1 class="m-0 zzz-page-title border-start border-5 ps-3" style="border-left-color: var(--zzz-primary) !important;">
+        [ TỆP HỒ SƠ ] THÊM VÀO NHÂN SỰ
     </h1>
     <div class="d-flex align-items-center gap-3">
-        <span class="zzz-sys-status">
-            HỆ THỐNG: <span class="zzz-blink-dot zzz-text-yellow">●</span> ĐANG CHỜ NHẬP LIỆU
+        <span class="badge text-dark rounded-0 border border-dark border-2 fs-6 zzz-text-mono px-3 py-2 shadow-sm d-none d-md-block"
+              style="background-color: var(--zzz-primary); box-shadow: 2px 2px 0px #000 !important;">
+            <span class="text-dark zzz-blink-dot">●</span> TRẠNG THÁI: ĐANG CHỜ NHẬP LIỆU
         </span>
     </div>
 </div>
@@ -24,75 +31,87 @@
                 <form asp-action="Create" method="post">
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
 
-                    <div class="zzz-fieldset">
-                        <div class="zzz-fieldset-title">SYS.01 // ĐỊNH DANH TÀI KHOẢN</div>
+                    <div class="zzz-fieldset" data-intro="Bạn có thể chọn tài khoản hệ thống, hoặc BỎ QUA bước này nếu chưa có" data-step="1">
+                        <div class="zzz-fieldset-title">SYS.01 // ĐỊNH DANH TÀI KHOẢN (CÓ THỂ BỎ QUA)</div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-12 mb-3" data-intro="Chọn tài khoản để tự điền, hoặc để nguyên 'BỎ QUA' để tự gõ tay" data-step="2">
                                 <label class="form-label zzz-cmd-label">
                                     <span>CHỌN UID (USER)</span>
-                                    <span class="zzz-text-req zzz-text-danger-req">* REQ</span>
+                                    <span class="text-muted ms-2 fw-normal" style="text-transform: none;">*Tùy chọn</span>
                                 </label>
-                                <select asp-for="IdentityUserId" id="userSelect" class="form-select zzz-terminal-input" asp-items="ViewBag.IdentityUserId">
-                                    <option value="">-- TÀI KHOẢN --</option>
+                                <select asp-for="IdentityUserId" id="userSelect" class="form-select zzz-terminal-input fw-bold">
+                                    <option value="">-- [ BỎ QUA NẾU CHƯA CÓ TÀI KHOẢN ] --</option>
+                                    @if (users != null)
+                                    {
+                                        foreach (var u in users)
+                                        {
+                                            <option value="@u.Id"
+                                                    data-email="@u.Email"
+                                                    data-username="@u.UserName"
+                                                    data-hoten="@u.HoTen">
+                                                @u.Email
+                                            </option>
+                                        }
+                                    }
                                 </select>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label zzz-cmd-label">TÊN NHÂN VIÊN</label>
-                                <input asp-for="TenNV" id="tenNVInput" class="form-control zzz-terminal-input zzz-locked-input" readonly placeholder="Hệ thống tự động đồng bộ..." />
+                                <label class="form-label zzz-cmd-label text-muted small">EMAIL LIÊN KẾT</label>
+                                <input type="text" id="emailBox" class="form-control zzz-terminal-input zzz-locked-input text-danger fw-bold" readonly placeholder="[ TRỐNG ]" />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label zzz-cmd-label text-muted small">USERNAME</label>
+                                <input type="text" id="usernameBox" class="form-control zzz-terminal-input zzz-locked-input fw-bold" readonly placeholder="[ TRỐNG ]" />
                             </div>
                         </div>
                     </div>
 
-                    <div class="zzz-fieldset">
-                        <div class="zzz-fieldset-title">SYS.02 // HỒ SƠ CHI TIẾT</div>
+                    <div class="zzz-fieldset" data-intro="Nhập thông tin cá nhân của nhân viên vào đây" data-step="3">
+                        <div class="zzz-fieldset-title text-warning border-dark">SYS.02 // HỒ SƠ CHI TIẾT</div>
 
                         <div class="row">
+                            <div class="col-md-12 mb-3" data-intro="Nếu không chọn tài khoản ở trên, bạn tự gõ tên nhân viên vào đây" data-step="4">
+                                <label asp-for="TenNV" class="form-label zzz-cmd-label">
+                                    <span>TÊN NHÂN VIÊN</span>
+                                    <span class="zzz-text-req zzz-text-danger-req">* REQ</span>
+                                </label>
+                                <input asp-for="TenNV" id="tenNVInput" class="form-control zzz-terminal-input fw-bold text-danger" placeholder="Tự gõ tên hoặc chọn tài khoản để đồng bộ..." />
+                                <span asp-validation-for="TenNV" class="text-danger fw-bold mt-1 d-block"></span>
+                            </div>
+
                             <div class="col-md-12 mb-3">
                                 <label asp-for="DiaChi" class="form-label zzz-cmd-label">ĐỊA CHỈ</label>
-                                <input asp-for="DiaChi" class="form-control zzz-terminal-input" placeholder="Nhập tọa độ khu vực..." />
+                                <input asp-for="DiaChi" class="form-control zzz-terminal-input" placeholder="Nhập vào địa chỉ..." />
+                                <span asp-validation-for="DiaChi" class="text-danger fw-bold mt-1 d-block"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label asp-for="DienThoai" class="form-label zzz-cmd-label">SỐ ĐIỆN THOẠI</label>
                                 <input asp-for="DienThoai" class="form-control zzz-terminal-input" placeholder="Ví dụ: 0987..." />
+                                <span asp-validation-for="DienThoai" class="text-danger fw-bold mt-1 d-block"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label zzz-cmd-label">
                                     <span>PHÂN QUYỀN (CHỨC VỤ)</span>
                                 </label>
-                                <select asp-for="ChucVu" class="form-select zzz-terminal-input" asp-items="ViewBag.ChucVuList">
+                                <select asp-for="ChucVu" class="form-select zzz-terminal-input fw-bold" style="background-color: #fffbdd;" asp-items="ViewBag.ChucVuList">
                                     <option value="">-- CHỈ ĐỊNH QUYỀN --</option>
                                 </select>
+                                <span asp-validation-for="ChucVu" class="text-danger fw-bold mt-1 d-block"></span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="zzz-fieldset zzz-fieldset-highlight">
-                        <div class="zzz-fieldset-title zzz-fieldset-title-highlight">SYS.03 // PHÊ DUYỆT</div>
-
-                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-                            <div class="d-flex align-items-center gap-3">
-                                <label class="zzz-switch">
-                                    <input asp-for="TrangThai" type="checkbox" />
-                                    <span class="zzz-slider zzz-slider-clickable"></span>
-                                </label>
-                                <div>
-                                    <div class="zzz-switch-title">KÍCH HOẠT HỒ SƠ</div>
-                                    <div class="zzz-switch-desc">Bật công tắc để cấp phép hoạt động ngay lập tức.</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex gap-3 mt-4">
-                        <button type="submit" class="btn btn-primary zzz-btn-large flex-grow-1">
-                            <i>⚡</i> LƯU VÀO CƠ SỞ DỮ LIỆU
+                    <div class="d-flex flex-column flex-md-row gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary fw-bold fs-5 flex-grow-1 py-3 border-dark border-3 rounded-0 shadow-sm" style="transition: all 0.1s;">
+                            LƯU VÀO CƠ SỞ DỮ LIỆU
                         </button>
-                        <a asp-action="Index" class="btn btn-outline-secondary zzz-btn-large">
-                            <i>◄</i> HỦY BỎ
+                        <a asp-action="Index" class="btn zzz-btn-cancel fw-bold fs-5 px-md-5 py-3 border-dark border-3 rounded-0 d-flex align-items-center justify-content-center" style="transition: all 0.1s;">
+                            HỦY BỎ
                         </a>
                     </div>
                 </form>
@@ -108,18 +127,45 @@
 
     <script>
         document.getElementById("userSelect").addEventListener("change", function () {
-            var userId = this.value;
+            var selectedOption = this.options[this.selectedIndex];
+            var userId = selectedOption.value;
 
+            var inputTenNV = document.getElementById("tenNVInput");
+            var inputEmail = document.getElementById("emailBox");
+            var inputUsername = document.getElementById("usernameBox");
+
+            // NẾU CHƯA CHỌN (BỎ QUA TÀI KHOẢN)
             if (!userId) {
-                document.getElementById("tenNVInput").value = "";
+                inputTenNV.value = "";
+
+                // Trả focus về ô nhập tên cho người dùng tiện gõ luôn
+                inputTenNV.focus();
+
+                if(inputEmail) inputEmail.value = "";
+                if(inputUsername) inputUsername.value = "";
                 return;
             }
 
-            fetch('/NhanVien/GetHoTen?userId=' + userId)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("tenNVInput").value = data;
-                });
+            // NẾU CÓ CHỌN THÌ TỰ ĐỘNG ĐIỀN
+            var email = selectedOption.getAttribute("data-email");
+            var username = selectedOption.getAttribute("data-username");
+            var hoten = selectedOption.getAttribute("data-hoten");
+
+            if(inputEmail) inputEmail.value = email || "";
+            if(inputUsername) inputUsername.value = username || "";
+
+            inputTenNV.value = hoten || "";
+            inputTenNV.placeholder = "Hệ thống tự động đồng bộ...";
+
+            // === HIỆU ỨNG NHÁY MÀU CUSTOM CỦA SẾP ===
+            inputTenNV.style.backgroundColor = "var(--zzz-primary)";
+            inputTenNV.style.transition = "background-color 0.1s ease";
+            inputTenNV.classList.add("text-dark"); // Đảm bảo chữ màu đen cho dễ đọc
+
+            setTimeout(() => {
+                inputTenNV.style.backgroundColor = ""; // Trả về màu nền mặc định
+                inputTenNV.classList.remove("text-dark");
+            }, 500);
         });
     </script>
 }

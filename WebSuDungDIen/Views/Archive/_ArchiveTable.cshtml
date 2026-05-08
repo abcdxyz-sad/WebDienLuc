@@ -1,0 +1,329 @@
+﻿@using MongoDB.Bson
+@model IEnumerable<dynamic>
+@{
+    string controllerName = ViewData["Controller"]?.ToString() ?? "";
+}
+
+<div class="zzz-table-container">
+    <table class="zzz-table w-100">
+        <colgroup>
+            <col style="width: 20%;">
+            <col style="width: 15%;">
+            <col style="width: 15%;">
+            <col style="width: 35%;">
+            <col style="width: 15%;">
+        </colgroup>
+
+        <thead>
+            <tr>
+                <th>THỰC THỂ</th>
+                <th>THỜI GIAN LOG</th>
+                <th>NHÂN SỰ</th>
+                <th>GHI CHÚ HỆ THỐNG</th>
+                <th class="text-end">THAO TÁC</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    var doc = (BsonDocument)item;
+                    var data = doc["Data"].AsBsonDocument;
+
+                    // BỔ SUNG XỬ LÝ CHO TÀI KHOẢN (USERNAME)
+                    string tenHienThi = data.Contains("TenKh") ? data["TenKh"].ToString()
+                    : data.Contains("TenNV") ? data["TenNV"].ToString()
+                    : data.Contains("MaHd") ? "HÓA ĐƠN " + data["MaHd"].ToString()
+                    : data.Contains("UserName") ? "USER: " + data["UserName"].ToString()
+                    : "KHÔNG XÁC ĐỊNH";
+
+                    // ID Thực thể (IdentityUser mặc định có cột "Id")
+                    string idThucThe = data.Contains("Id") ? data["Id"].ToString()
+                    : data.Contains("MaHd") ? data["MaHd"].ToString()
+                    : "N/A";
+
+                    // Bắt lỗi ghi chú trống (chỉ có dấu "")
+                    string reason = doc["Reason"].ToString().Replace("\"", "").Trim();
+                    if (string.IsNullOrWhiteSpace(reason))
+                    {
+                        reason = "[ Không có ghi chú ]";
+                    }
+
+                    <tr class="zzz-row">
+                        <td>
+                            <div class="zzz-entity-name">@tenHienThi</div>
+                            <div class="zzz-entity-id">UID: @idThucThe</div>
+                        </td>
+                        <td>
+                            <div class="zzz-date">@doc["DeletedAt"].ToUniversalTime().ToString("yyyy/MM/dd")</div>
+                            <div class="zzz-time">@doc["DeletedAt"].ToUniversalTime().ToString("HH:mm:ss")</div>
+                        </td>
+                        <td>
+                            <span class="zzz-badge-operator">
+                                <i class="bi bi-person-fill me-1"></i> @doc["DeletedBy"].ToString()
+                            </span>
+                        </td>
+                        <td>
+                            <div class="zzz-reason-text">
+                                @reason
+                            </div>
+                        </td>
+                        <td class="text-end">
+                            <form asp-action="Restore" asp-controller="@controllerName" method="post" onsubmit="return confirm('Xác nhận phục hồi dữ liệu này?')">
+                                <input type="hidden" name="archiveId" value="@doc["ArchiveId"].ToString()" />
+                                <button type="submit" class="btn btn-primary zzz-btn-sm">
+                                    RESTORE
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center py-4 zzz-empty-row">
+                        <i class="bi bi-database-x text-muted mb-3 d-block" style="font-size: 4.5rem; opacity: 0.1;"></i>
+                        <h4 class="fw-black text-muted m-0" style="letter-spacing: 2px;">[ KHÔNG CÓ DỮ LIỆU ]</h4>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    /* BỐ CỤC CHUNG */
+    .zzz-table-container {
+        width: 100%;
+        overflow-x: auto;
+        padding-top: 5px;
+    }
+
+    .zzz-table {
+        border-collapse: separate;
+        border-spacing: 0 10px; /* Khoảng cách giữa các dòng rút gọn lại xíu cho gọn gàng */
+        min-width: 900px;
+    }
+
+        /* HEADER */
+        .zzz-table thead th {
+            background-color: #111;
+            color: #fff;
+            padding: 12px 16px;
+            font-weight: 900;
+            font-size: 0.85rem; /* Thu nhỏ header lại một chút */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 3px solid #111;
+            vertical-align: middle;
+        }
+
+        /* BODY DÒNG */
+        .zzz-table tbody tr.zzz-row {
+            background-color: #fff;
+            box-shadow: 3px 3px 0px #111; /* Giảm bóng đổ xuống xíu cho tinh tế */
+            transition: all 0.1s ease-in-out;
+        }
+
+        .zzz-table tbody td {
+            padding: 14px 16px;
+            border-top: 3px solid #111;
+            border-bottom: 3px solid #111;
+            vertical-align: middle; /* CỰC QUAN TRỌNG: Ép mọi thứ căn giữa theo chiều dọc */
+        }
+
+            .zzz-table tbody td:first-child {
+                border-left: 3px solid #111;
+            }
+
+            .zzz-table tbody td:last-child {
+                border-right: 3px solid #111;
+            }
+
+    .zzz-empty-row {
+        border: 3px solid #111;
+        background-color: #f8f9fa;
+    }
+
+    /* TYPOGRAPHY - TINH CHỈNH KÍCH THƯỚC */
+    .zzz-entity-name {
+        font-weight: 900;
+        font-size: 1rem; /* Size vừa phải, không bị thô */
+        color: #111;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+        line-height: 1.2;
+    }
+
+    .zzz-entity-id {
+        display: inline-block;
+        background-color: #111;
+        color: #fff;
+        padding: 2px 6px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        font-family: monospace; /* Font kiểu code cho ID */
+    }
+
+    .zzz-date {
+        font-weight: 900;
+        color: #111;
+        font-size: 0.95rem;
+    }
+
+    .zzz-time {
+        font-weight: 700;
+        color: #777;
+        font-size: 0.8rem;
+        margin-top: 2px;
+    }
+
+    .zzz-badge-operator {
+        display: inline-flex;
+        align-items: center;
+        border: 2px solid #111;
+        padding: 4px 8px;
+        font-weight: 800;
+        background-color: #fff;
+        color: #111;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        white-space: nowrap; /* Tránh rớt dòng */
+    }
+
+    .zzz-reason-text {
+        font-weight: 600;
+        color: #444;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        /* Giới hạn text dài quá thì hiển thị dấu ... (Max 2 dòng) */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* NÚT THAO TÁC CÂN ĐỐI LẠI */
+    .zzz-btn-sm {
+        padding: 8px 16px !important;
+        font-size: 0.85rem !important;
+        white-space: nowrap;
+    }
+
+    /* HIỆU ỨNG HOVER */
+    .zzz-table tbody tr.zzz-row:hover {
+        transform: translate(-3px, -3px);
+        box-shadow: 6px 6px 0px #111;
+    }
+
+        .zzz-table tbody tr.zzz-row:hover td {
+            background-color: var(--zzz-primary, #FACC15);
+        }
+
+    /* =========================================
+           📱 TỐI ƯU GIAO DIỆN MOBILE (CARD-BASED)
+           ========================================= */
+    @@media (max-width: 991px) { /* Kích hoạt trên màn hình Tablet & Mobile */
+        .zzz-table-container
+
+    {
+        padding-top: 0;
+    }
+
+    .zzz-table {
+        min-width: 100%; /* Ép bung full màn hình, bỏ cái 900px đi */
+        border-spacing: 0;
+    }
+
+        /* 1. Ẩn Header ngang đi vì không còn tác dụng */
+        .zzz-table thead {
+            display: none;
+        }
+
+        /* 2. Ép tất cả các phần tử của bảng thành dạng khối (Block) để xếp dọc */
+        .zzz-table, .zzz-table tbody, .zzz-table tr, .zzz-table td {
+            display: block;
+            width: 100%;
+        }
+
+            /* 3. Phù phép dòng (Row) thành cái thẻ (Card) */
+            .zzz-table tbody tr.zzz-row {
+                margin-bottom: 1.2rem;
+                border: 3px solid #111;
+                box-shadow: 4px 4px 0px #111;
+                padding: 10px 15px;
+                transition: none; /* Tắt hiệu ứng hover bay nhảy trên mobile cho đỡ lag */
+            }
+
+                .zzz-table tbody tr.zzz-row:hover {
+                    transform: none; /* Giữ nguyên vị trí khi chạm trên mobile */
+                }
+
+            /* 4. Định dạng lại nội dung các ô (td) */
+            .zzz-table tbody td {
+                border: none !important; /* Phá bỏ viền dọc của Desktop */
+                padding: 10px 0;
+                text-align: left !important;
+            }
+
+                /* Kẻ vạch đứt phân cách giữa các thông tin bên trong Card */
+                .zzz-table tbody td:not(:last-child) {
+                    border-bottom: 2px dashed #ddd !important;
+                }
+
+                /* 5. Dùng CSS chèn nhãn (Label) ảo thay thế cho Header bị ẩn */
+                .zzz-table tbody td:nth-child(2)::before {
+                    content: ">_ THỜI GIAN LOG:";
+                    display: block;
+                    font-size: 0.75rem;
+                    font-weight: 900;
+                    color: #888;
+                    margin-bottom: 5px;
+                }
+
+                .zzz-table tbody td:nth-child(3)::before {
+                    content: ">_ NHÂN SỰ:";
+                    display: block;
+                    font-size: 0.75rem;
+                    font-weight: 900;
+                    color: #888;
+                    margin-bottom: 5px;
+                }
+
+                .zzz-table tbody td:nth-child(4)::before {
+                    content: ">_ GHI CHÚ:";
+                    display: block;
+                    font-size: 0.75rem;
+                    font-weight: 900;
+                    color: #888;
+                    margin-bottom: 5px;
+                }
+
+    /* Ép giờ và ngày nằm ngang nhau thay vì xếp dọc như desktop */
+    .zzz-date, .zzz-time {
+        display: inline-block;
+        margin-right: 8px;
+    }
+
+    /* 6. Phóng to nút bấm ra 100% để ngón tay dễ chạm */
+    .zzz-table tbody td:last-child {
+        padding-top: 15px;
+        padding-bottom: 5px;
+    }
+
+        .zzz-table tbody td:last-child button {
+            width: 100%;
+            padding: 12px !important;
+            font-size: 1rem !important;
+        }
+
+    /* Chỉnh lại Row khi không có dữ liệu */
+    .zzz-empty-row {
+        border: 3px solid #111 !important;
+        padding: 40px 10px !important;
+    }
+
+    }
+</style>

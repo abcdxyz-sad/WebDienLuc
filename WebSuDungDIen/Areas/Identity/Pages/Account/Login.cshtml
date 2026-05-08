@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/Login.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/zzz-notify.css" asp-append-version="true" />
 </head>
 <body>
     @if (TempData["ThongBao"] != null)
@@ -26,7 +27,6 @@
             <div class="zzz-decor-line"></div>
         </div>
     }
-
     <div class="zzz-login-wrapper">
         <div class="zzz-login-card">
             <div class="zzz-login-header">
@@ -40,13 +40,13 @@
                 <div class="zzz-input-group mb-4">
                     <input asp-for="Input.UserName" class="zzz-input" autocomplete="username" spellcheck="false" required placeholder="nhap" />
                     <label asp-for="Input.UserName" class="zzz-label label-user">Tên đăng nhập</label>
-                    <span asp-validation-for="Input.UserName" class="text-danger small mt-1 d-block font-weight-bold font-monospace"></span>
+                    <span asp-validation-for="Input.UserName" class="text-danger fw-bold small mt-1 d-block font-weight-bold font-monospace"></span>
                 </div>
 
                 <div class="zzz-input-group mb-4">
                     <input asp-for="Input.Password" class="zzz-input" autocomplete="current-password" required placeholder="nhap" />
                     <label asp-for="Input.Password" class="zzz-label label-pass">Mật khẩu</label>
-                    <span asp-validation-for="Input.Password" class="text-danger small mt-1 d-block font-weight-bold font-monospace"></span>
+                    <span asp-validation-for="Input.Password" class="text-danger fw-bold small mt-1 d-block font-weight-bold font-monospace"></span>
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -104,5 +104,6 @@
             }
         });
     </script>
+    <script src="~/js/auto-alert.js"></script>
 </body>
 </html>

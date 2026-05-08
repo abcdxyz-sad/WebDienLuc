@@ -4,23 +4,28 @@
     ViewData["Title"] = "Cấp Tài Khoản Mới";
 }
 
+<div id="zzz-welcome-msg"
+     data-msg="Tiếp tục với việc chỉnh sửa thông tin tài khoản của khách / nhân viên"
+     style="display: none;">
+</div>
+
 <div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel border-dark border-3">
-    <h1 class="m-0 zzz-page-title d-flex align-items-center gap-2">
-        <i class="fas fa-terminal"></i> [ HỆ THỐNG ] CẤP TÀI KHOẢN MỚI
+    <h1 class="m-0 zzz-page-title border-start border-5 ps-3" style="border-left-color: var(--zzz-primary) !important;">
+        [ HỆ THỐNG ] CẤP TÀI KHOẢN MỚI
     </h1>
     <div class="d-flex align-items-center gap-3">
-        <span class="zzz-sys-status">
-            TRẠNG THÁI: <span class="zzz-blink-dot zzz-text-yellow">●</span> ĐANG KHỞI TẠO
+        <span class="badge text-dark rounded-0 border border-dark border-2 fs-6 zzz-text-mono px-3 py-2 shadow-sm d-none d-md-block"
+              style="background-color: var(--zzz-primary); box-shadow: 2px 2px 0px #000 !important;">
+            <span class="text-dark zzz-blink-dot">●</span> TRẠNG THÁI: ĐANG KHỞI TẠO
         </span>
     </div>
+
 </div>
 
 <div class="row justify-content-center">
     <div class="col-lg-9">
         <div class="card position-relative zzz-card-thick">
-
             <div class="zzz-hazard-line"></div>
-
             <div class="card-body p-4 p-md-5 mt-2">
                 <form asp-action="TaoTaiKhoan" method="post">
 
@@ -35,20 +40,22 @@
                         <div class="zzz-fieldset-title">SYS.01 // THÔNG TIN ĐĂNG NHẬP</div>
 
                         <div class="row g-3">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6 mb-3" data-intro="Bắt đầu bằng việc đặt một Username thật ngầu và duy nhất nhé!" data-step="1">
                                 <label class="form-label zzz-cmd-label">
                                     <span>USERNAME (TÊN ĐĂNG NHẬP)</span>
                                     <span class="zzz-text-req zzz-text-danger-req">* REQ</span>
                                 </label>
                                 <input asp-for="UserName" class="form-control zzz-terminal-input fw-bold text-danger fs-5" autocomplete="off" placeholder="VD: nguyenvan_a" />
+                                <span asp-validation-for="UserName" class="text-danger fw-bold zzz-text-mono small mt-1 d-block"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label zzz-cmd-label">
-                                    <span>EMAIL ĐỊNH DANH</span>
+                                    <span>EMAIL</span>
                                     <span class="zzz-text-req zzz-text-danger-req">* REQ</span>
                                 </label>
                                 <input asp-for="Email" type="email" class="form-control zzz-terminal-input fw-bold zzz-text-mono fs-5 text-primary" placeholder="user@domain.com" />
+                                <span asp-validation-for="Email" class="text-danger fw-bold zzz-text-mono small mt-1 d-block"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
@@ -57,6 +64,7 @@
                                     <span class="zzz-text-req zzz-text-danger-req">* REQ</span>
                                 </label>
                                 <input asp-for="Password" type="password" class="form-control zzz-terminal-input fw-bold" placeholder="••••••••" />
+                                <span asp-validation-for="Password" class="text-danger fw-bold zzz-text-mono small mt-1 d-block"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
@@ -70,9 +78,8 @@
                         </div>
                     </div>
 
-                    <div class="zzz-fieldset mt-4">
+                    <div class="zzz-fieldset mt-4" data-intro="Chỗ này quan trọng nhất: Quyết định người này là nhân viên hay khách hàng!" data-step="2">
                         <div class="zzz-fieldset-title">SYS.02 // PHÂN QUYỀN HỆ THỐNG</div>
-
                         <div class="row g-3">
                             <div class="col-md-12 mb-3">
                                 <label class="form-label zzz-cmd-label text-danger">
@@ -81,28 +88,43 @@
                                 </label>
                                 <select asp-for="LoaiTaiKhoan" id="loaiSelect" class="form-select zzz-terminal-input fw-bold text-uppercase fs-5" style="box-shadow: 4px 4px 0px var(--zzz-black); cursor: pointer;">
                                     <option value="">-- CHỈ ĐỊNH QUYỀN TRUY CẬP --</option>
-                                    <option value="NhanVien">ĐẶC VỤ (NHÂN VIÊN ĐIỆN LỰC)</option>
-                                    <option value="KhachHang">ĐỐI TƯỢNG (KHÁCH HÀNG SỬ DỤNG ĐIỆN)</option>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <option value="NhanVien">NHÂN VIÊN ĐIỆN LỰC</option>
+                                    }
+                                    <option value="KhachHang">KHÁCH HÀNG SỬ DỤNG ĐIỆN</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
                     <div id="nhanVienFields" class="zzz-fieldset zzz-fieldset-highlight mt-4" style="display:none;">
-                        <div class="zzz-fieldset-title zzz-fieldset-title-highlight">INF.03A // HỒ SƠ ĐẶC VỤ</div>
+                        <div class="zzz-fieldset-title zzz-fieldset-title-highlight">INF.03A // HỒ SƠ NHÂN SỰ</div>
                         <div class="row g-3">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label zzz-cmd-label text-primary">
+                                    <span>LIÊN KẾT HỒ SƠ NHÂN VIÊN CÓ SẴN (NẾU CÓ)</span>
+                                </label>
+                                <select asp-for="NhanVienId" class="form-select zzz-terminal-input fw-bold" style="border-color: var(--zzz-primary);" asp-items="ViewBag.DanhSachNhanVienCu">
+                                    <option value="">-- TẠO MỚI HOÀN TOÀN (KHÔNG LIÊN KẾT) --</option>
+                                </select>
+                            </div>
                             <div class="col-md-12 mb-3">
                                 <label class="form-label zzz-cmd-label">
                                     <span>TÊN NHÂN SỰ</span>
                                 </label>
-                                <input asp-for="TenNV" class="form-control zzz-terminal-input fw-bold text-uppercase fs-5" placeholder="Nhập tên nhân viên..." />
+                                <input asp-for="TenNV" class="form-control zzz-terminal-input fw-bold fs-5" placeholder="Nhập tên nhân viên..." />
                             </div>
                         </div>
                     </div>
 
-                    <div id="khachHangFields" class="zzz-fieldset mt-4" style="display:none; border-color: #28a745; background-color: #f2fdf5;">
+                    <div id="khachHangFields" class="zzz-fieldset mt-4" style="display:none; border-color: #28a745; background-color: #f2fdf5;"
+                         data-intro="Dừng lại tí sếp! Nếu khách này sếp đã tạo hồ sơ ở mục Quản lý khách hàng rồi, thì chỉ cần chọn ở đây. Hệ thống sẽ tự 'bốc' tên vào, sếp khỏi phải nhập lại phía dưới!"
+                         data-step="3"
+                         data-position="top">
+
                         <div class="zzz-fieldset-title" style="background-color: #28a745; color: white; border-color: #28a745;">
-                            INF.03B // HỒ SƠ ĐỐI TƯỢNG (KHÁCH HÀNG)
+                            INF.03B // HỒ SƠ KHÁCH HÀNG
                         </div>
 
                         <div class="row g-3">
@@ -117,23 +139,29 @@
 
                             <div class="col-md-12 mb-3">
                                 <label class="form-label zzz-cmd-label text-success">
-                                    <span>TÊN KHÁCH HÀNG / ĐẠI DIỆN</span>
+                                    <span>TÊN KHÁCH HÀNG</span>
                                 </label>
-                                <input asp-for="TenKh" id="inputTenKh" class="form-control zzz-terminal-input fw-bold text-uppercase fs-5" style="border-color: #28a745;" placeholder="Nhập tên khách hàng..." />
+                                <input asp-for="TenKh" id="inputTenKh" class="form-control zzz-terminal-input fw-bold fs-5" style="border-color: #28a745;" placeholder="Nhập tên khách hàng..." />
                             </div>
                         </div>
                     </div>
 
-                    <div class="d-flex flex-column flex-md-row gap-3 mt-5">
-                        <button type="submit" class="btn btn-primary zzz-btn-large flex-grow-1" style="transition: all 0.1s;">
-                            <i>⚡</i> KHỞI TẠO TÀI KHOẢN
-                        </button>
+                    <div class="row g-3 mt-4">
+                        <div class="col-12 col-md-8"
+                             data-intro="Kiểm tra kỹ thông tin rồi nhấn nút này để tạo tài khoản vào cơ sở dữ liệu nhé!"
+                             data-step="4">
 
-                        <a asp-controller="Admin" asp-action="QuanLyTaiKhoan" class="btn btn-outline-secondary zzz-btn-large d-flex align-items-center justify-content-center" style="transition: all 0.1s;">
-                            <i>◄</i> RÚT LUI
-                        </a>
+                            <button type="submit" class="btn btn-primary fw-bold fs-5 w-100 h-100 py-3 border-dark border-3 rounded-0 shadow-sm">
+                                <i class="fas fa-bolt me-2"></i> KHỞI TẠO TÀI KHOẢN
+                            </button>
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <a asp-controller="Admin" asp-action="QuanLyTaiKhoan" class="btn zzz-btn-cancel fw-bold fs-5 w-100 h-100 py-3 border-dark border-3 rounded-0 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-undo me-2"></i> RÚT LUI
+                            </a>
+                        </div>
                     </div>
-
                 </form>
             </div>
         </div>

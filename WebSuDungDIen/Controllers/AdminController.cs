@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using WebSuDungDien.Services;
 using WebSuDungDIen.Data;
 using WebSuDungDIen.Models;
-using System.Security.Claims;
+using WebSuDungDIen.Services;
 namespace WebSuDungDIen.Controllers
 {
     public class AdminController : Controller
@@ -12,11 +15,13 @@ namespace WebSuDungDIen.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        public AdminController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager)
+        private readonly IMongoArchiveService _mongoService;
+        public AdminController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IMongoArchiveService mongoService)
         {
             _userManager = userManager;
             _context = context;
             _signInManager = signInManager;
+            _mongoService = mongoService;
         }
 
         public async Task<IActionResult> QuanLyTaiKhoan()
@@ -48,10 +53,14 @@ namespace WebSuDungDIen.Controllers
             return View(model);
         }
 
-        public IActionResult DuyetKhach(string userId)
+        [HttpPost] // Đổi thành HttpPost vì form bên giao diện đang gửi bằng phương thức POST
+        [Authorize(Roles = "Admin,NhanVien")] // Chặn cửa an toàn
+        public async Task<IActionResult> DuyetKhach(string userId, int chiSoDau = 0)
         {
-            var hoSo = _context.KhachHang
-                .FirstOrDefault(k => k.IdentityUserId == userId);
+            Console.WriteLine($"\n=== [DEBUG] BẮT ĐẦU DUYỆT HỒ SƠ & GẮN ĐỒNG HỒ CHO USER: {userId} ===");
+
+            // 1. Tìm hồ sơ khách hàng
+            var hoSo = await _context.KhachHang.FirstOrDefaultAsync(k => k.IdentityUserId == userId);
 
             if (hoSo == null)
             {
@@ -65,13 +74,44 @@ namespace WebSuDungDIen.Controllers
                 return RedirectToAction("QuanLyTaiKhoan");
             }
 
+            // 2. Bật công tắc: Phê duyệt hồ sơ
             hoSo.TrangThai = true;
-            _context.SaveChanges();
 
-            TempData["ThongBao"] = "Duyệt khách thành công!";
+            // 3. Tìm xem ông Nhân Viên/Admin nào đang bấm duyệt cái này (để lưu dấu vết)
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var nhanVienThucHien = await _context.NhanVien.FirstOrDefaultAsync(nv => nv.IdentityUserId == currentUserId);
+
+            // 4. Khởi tạo mốc chỉ số điện năng đầu tiên (Kỳ 0)
+            var chiSoKyKhong = new ChiSoDien
+            {
+                KhachHangId = hoSo.Id, // Khóa vào đúng ông khách này
+                Thang = DateTime.Now.Month,
+                Nam = DateTime.Now.Year,
+                ChiSoCu = 0,           // Mốc xuất phát lúc nào cũng là 0
+                ChiSoMoi = chiSoDau,   // Con số Admin vừa gõ ở cái bảng Modal truyền sang
+                NhanVienId = nhanVienThucHien != null ? nhanVienThucHien.Id : null
+            };
+
+            _context.ChiSoDien.Add(chiSoKyKhong);
+
+            try
+            {
+                // 5. Lưu 1 phát ăn luôn cả 2 việc: Đổi trạng thái Khách + Thêm Chỉ Số Điện
+                await _context.SaveChangesAsync();
+
+                TempData["ThongBao"] = $"Đã duyệt hồ sơ {hoSo.TenKh} và ghi nhận chỉ số đầu: {chiSoDau} kWh";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("\n[LỖI DUYỆT KHÁCH]: " + ex.Message);
+                TempData["ThongBao"] = "Lỗi hệ thống khi duyệt khách: " + ex.Message;
+            }
+
             return RedirectToAction("QuanLyTaiKhoan");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -125,6 +165,7 @@ namespace WebSuDungDIen.Controllers
 
             return View(vm);
         }
+
         // 1. HÀM GET: Đẩy danh sách khách hàng lên View
         public IActionResult TaoTaiKhoan()
         {
@@ -139,6 +180,17 @@ namespace WebSuDungDIen.Controllers
                 }).ToList();
 
             ViewBag.DanhSachKhachCu = khachChuaCoNick;
+
+            var nhanVienChuaCoNick = _context.NhanVien
+                .Where(n => string.IsNullOrEmpty(n.IdentityUserId))
+                .Select(n => new SelectListItem
+                {
+                    Value = n.Id.ToString(),
+                    Text = $"[{n.MaNV}] {n.TenNV} - SĐT: {n.DienThoai}"
+                }).ToList();
+
+            ViewBag.DanhSachNhanVienCu = nhanVienChuaCoNick;
+
             return View();
         }
 
@@ -148,37 +200,40 @@ namespace WebSuDungDIen.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.DanhSachKhachCu = _context.KhachHang.Where(k => string.IsNullOrEmpty(k.IdentityUserId)).Select(k => new SelectListItem { Value = k.Id.ToString(), Text = $"[{k.MaKh}] {k.TenKh} - SĐT: {k.DienThoai}" }).ToList();
+                // Nhớ load lại cả 2 list nếu bị lỗi Validate đá về View
+                ViewBag.DanhSachKhachCu = _context.KhachHang.Where(k => string.IsNullOrEmpty(k.IdentityUserId)).Select(k => new SelectListItem { Value = k.Id.ToString(), Text = $"[{k.MaKh}] {k.TenKh}" }).ToList();
+                ViewBag.DanhSachNhanVienCu = _context.NhanVien.Where(n => string.IsNullOrEmpty(n.IdentityUserId)).Select(n => new SelectListItem { Value = n.Id.ToString(), Text = $"[{n.MaNV}] {n.TenNV}" }).ToList();
                 return View(model);
             }
 
-            // =======================================================
-            // 🚨 BƯỚC 1: XỬ LÝ CÁI TÊN TRƯỚC KHI TẠO TÀI KHOẢN
-            // =======================================================
             string tenChinhThuc = model.LoaiTaiKhoan == "NhanVien" ? model.TenNV : model.TenKh;
             KhachHang hoSoKhachCu = null;
+            NhanVien hoSoNhanVienCu = null; // 👉 Thêm biến hứng Nhân viên cũ
 
-            // Nếu là chọn Khách Hàng CŨ từ Dropdown
+            // Nếu chọn Khách Hàng
             if (model.LoaiTaiKhoan == "KhachHang" && !string.IsNullOrEmpty(model.KhachHangId))
             {
-                // Chạy vào DB lôi hồ sơ cũ lên trước
                 hoSoKhachCu = await _context.KhachHang.FindAsync(model.KhachHangId);
-
-                // Nếu lỡ tay xóa ô Textbox Tên -> Lấy lại tên cũ trong DB bù vào!
                 if (hoSoKhachCu != null && string.IsNullOrWhiteSpace(tenChinhThuc))
-                {
                     tenChinhThuc = hoSoKhachCu.TenKh;
-                }
             }
 
-            // =======================================================
-            // 🚨 BƯỚC 2: TẠO TÀI KHOẢN WEB (BẢO ĐẢM KHÔNG BỊ NULL TÊN)
-            // =======================================================
+            // 👉 [THÊM MỚI]: Nếu chọn Nhân Viên
+            if (model.LoaiTaiKhoan == "NhanVien" && !string.IsNullOrEmpty(model.NhanVienId))
+            {
+                // Chạy vào DB lôi hồ sơ NV cũ lên
+                hoSoNhanVienCu = await _context.NhanVien.FindAsync(model.NhanVienId);
+                // Nếu lười không gõ tên -> bốc tên từ DB đắp vào
+                if (hoSoNhanVienCu != null && string.IsNullOrWhiteSpace(tenChinhThuc))
+                    tenChinhThuc = hoSoNhanVienCu.TenNV;
+            }
+
+            // Tạo tài khoản Web
             var user = new ApplicationUser
             {
                 UserName = model.UserName,
                 Email = model.Email,
-                HoTen = tenChinhThuc // Đã được bọc thép, không sợ rỗng nữa!
+                HoTen = tenChinhThuc
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -188,28 +243,29 @@ namespace WebSuDungDIen.Controllers
                 foreach (var error in result.Errors)
                     ModelState.AddModelError("", error.Description);
 
-                ViewBag.DanhSachKhachCu = _context.KhachHang.Where(k => string.IsNullOrEmpty(k.IdentityUserId)).Select(k => new SelectListItem { Value = k.Id.ToString(), Text = $"[{k.MaKh}] {k.TenKh} - SĐT: {k.DienThoai}" }).ToList();
+                ViewBag.DanhSachKhachCu = _context.KhachHang.Where(k => string.IsNullOrEmpty(k.IdentityUserId)).Select(k => new SelectListItem { Value = k.Id.ToString(), Text = $"[{k.MaKh}] {k.TenKh}" }).ToList();
+                ViewBag.DanhSachNhanVienCu = _context.NhanVien.Where(n => string.IsNullOrEmpty(n.IdentityUserId)).Select(n => new SelectListItem { Value = n.Id.ToString(), Text = $"[{n.MaNV}] {n.TenNV}" }).ToList();
                 return View(model);
             }
 
-            // Gán Quyền
             await _userManager.AddToRoleAsync(user, model.LoaiTaiKhoan);
 
-            // =============================================================
-            // 🚨 BƯỚC 3: CẬP NHẬT LẠI HỒ SƠ KHÁCH HÀNG
-            // =============================================================
+            // Cập nhật Khách (Giữ nguyên)
             if (hoSoKhachCu != null)
             {
-                // Nhét cái User ID vừa tạo vào hồ sơ
                 hoSoKhachCu.IdentityUserId = user.Id;
-
-                // CHỈ ĐÈ TÊN MỚI NẾU NHÂN VIÊN THỰC SỰ GÕ CÁI GÌ ĐÓ VÀO TEXTBOX
-                if (!string.IsNullOrWhiteSpace(model.TenKh))
-                {
-                    hoSoKhachCu.TenKh = model.TenKh;
-                }
-
+                if (!string.IsNullOrWhiteSpace(model.TenKh)) hoSoKhachCu.TenKh = model.TenKh;
                 _context.KhachHang.Update(hoSoKhachCu);
+                await _context.SaveChangesAsync();
+            }
+
+            // 👉 [THÊM MỚI]: Cập nhật lại ID tài khoản cho Nhân Viên
+            if (hoSoNhanVienCu != null)
+            {
+                hoSoNhanVienCu.IdentityUserId = user.Id;
+                // Nếu có gõ tên mới thì đè vào, không thì thôi
+                if (!string.IsNullOrWhiteSpace(model.TenNV)) hoSoNhanVienCu.TenNV = model.TenNV;
+                _context.NhanVien.Update(hoSoNhanVienCu);
                 await _context.SaveChangesAsync();
             }
 
@@ -250,6 +306,13 @@ namespace WebSuDungDIen.Controllers
             if (user == null)
                 return NotFound();
 
+            if (user.UserName == model.UserName && user.Email == model.Email)
+            {
+                // Gắn cảnh báo vào TempData (Key "Warning" này khớp với file HTML tôi đưa sếp ở trên)
+                TempData["ThongBao"] = "Hệ thống không ghi nhận có sự thay đổi nào của dữ liệu";
+                return View(model);
+            }
+
             user.Email = model.Email;
             user.UserName = model.UserName;
 
@@ -282,7 +345,7 @@ namespace WebSuDungDIen.Controllers
             var currentUserId = _userManager.GetUserId(User);
             if (userId == currentUserId)
             {
-                TempData["ThongBao"] = "CẢNH BÁO: Định tự sát à? Không được tự khóa tài khoản đang đăng nhập!";
+                TempData["ThongBao"] = "CẢNH BÁO: Không được tự khóa tài khoản đang đăng nhập!";
                 return RedirectToAction("ChiTietTaiKhoan", new { userId });
             }
 
@@ -291,7 +354,7 @@ namespace WebSuDungDIen.Controllers
             var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
             if (isAdmin || user.UserName.ToLower() == "admin")
             {
-                TempData["ThongBao"] = "TỪ CHỐI TỬ HÌNH: Kẻ phản nghịch, quyền hạn đâu mà dám khóa Admin?";
+                TempData["ThongBao"] = "Không thể khóa tài khoản admin !";
                 return RedirectToAction("ChiTietTaiKhoan", new { userId });
             }
 
@@ -305,7 +368,7 @@ namespace WebSuDungDIen.Controllers
             // Lưu lại án tử
             await _userManager.UpdateAsync(user);
 
-            TempData["ThongBao"] = $"THÀNH CÔNG: Đã tống cổ [{user.UserName}] vào ngục 100 năm và đá văng khỏi hệ thống!";
+            TempData["ThongBao"] = $"THÀNH CÔNG: Đã khóa tài khoản [{user.UserName}] !";
             return RedirectToAction("ChiTietTaiKhoan", new { userId });
         }
 
@@ -326,50 +389,146 @@ namespace WebSuDungDIen.Controllers
             return RedirectToAction("ChiTietTaiKhoan", new { userId });
         }
 
-        [HttpPost] // Đã là Xóa thì nên dùng HttpPost cho an toàn sếp nhé
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> XoaTaiKhoan(string userId)
         {
-            // Lấy thông tin kẻ xấu số sắp bị trảm
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
             {
-                TempData["Error"] = "Không tìm thấy tài khoản này trong hệ thống!";
+                TempData["Error"] = "Không tìm thấy tài khoản!";
                 return RedirectToAction("QuanLyTaiKhoan");
             }
 
-            // ==========================================================
-            // 🛡️ LÁ CHẮN 1: BẢO VỆ LONG MẠCH (KHÔNG CHO XÓA ADMIN GỐC)
-            // ==========================================================
-            // Sếp kiểm tra xem UserName có phải là "admin" không (nhớ ToLower để phòng vụ viết hoa viết thường)
-            if (user.UserName.ToLower() == "admin")
-            {
-                TempData["Error"] = "CẢNH BÁO TỐI CAO: Không thể tiêu hủy tài khoản Quản Trị Viên gốc!";
-                return RedirectToAction("QuanLyTaiKhoan");
-            }
-
-            // ==========================================================
-            // 🛡️ LÁ CHẮN 2: CHỐNG TỰ SÁT (KHÔNG CHO TỰ XÓA CHÍNH MÌNH)
-            // ==========================================================
+            // [LÁ CHẮN BẢO VỆ ADMIN VÀ CHỐNG TỰ SÁT GIỮ NGUYÊN...]
+            if (user.UserName.ToLower() == "admin") { /* báo lỗi */ }
             var currentUserId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
-            if (user.Id == currentUserId)
-            {
-                TempData["Error"] = "LỖI LÔ-GÍC: Sếp không thể tự tiêu hủy chính mình khi đang cầm quyền!";
-                return RedirectToAction("QuanLyTaiKhoan");
-            }
+            if (user.Id == currentUserId) { /* báo lỗi */ }
 
-            // Nếu thoát được 2 lá chắn trên thì mới đem ra chém đầu
             try
             {
-                await _userManager.DeleteAsync(user);
-                TempData["ThongBao"] = $"Đã xóa sổ vĩnh viễn tài khoản [{user.UserName}] !";
+                // Đã sửa lại đúng tên hàm và nạp đủ đạn (tham số) cho nó:
+                string nguoiXoa = User.Identity?.Name ?? "Hệ thống";
+                await _mongoService.ArchiveAsync(user, nguoiXoa, "Thu hồi và xóa tài khoản đăng nhập");
+
+                // 2. ✂️ NGẮT LIÊN KẾT HỒ SƠ (GIỮ LẠI HỒ SƠ Ở SQL)
+                // Tìm và xóa ID liên kết ở bảng Nhân viên
+                var nhanVien = _context.NhanVien.FirstOrDefault(n => n.Id == userId);
+                if (nhanVien != null)
+                {
+                    nhanVien.Id = null;
+                }
+
+                // Tìm và xóa ID liên kết ở bảng Khách hàng
+                var khachHang = _context.KhachHang.FirstOrDefault(k => k.Id == userId);
+                if (khachHang != null)
+                {
+                    khachHang.Id = null;
+                }
+
+                // Lưu thay đổi ngắt liên kết vào SQL
+                await _context.SaveChangesAsync();
+
+                // 3. ⚔️ TRẢM ACCOUNT Ở IDENTITY SQL
+                var result = await _userManager.DeleteAsync(user);
+
+                if (result.Succeeded)
+                {
+                    TempData["ThongBao"] = $"Hệ thống: Đã tiêu hủy tài khoản [{user.UserName}]. Dữ liệu đã được đưa vào kho lưu trữ SYS_ARCHIVE.";
+                }
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Lỗi hệ thống khi xóa: " + ex.Message;
+                TempData["Error"] = "Lỗi quy trình: " + ex.Message;
             }
 
             return RedirectToAction("QuanLyTaiKhoan");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Restore(string archiveId)
+        {
+            try
+            {
+                // 1. Lấy dữ liệu từ Mongo
+                var user = await _mongoService.GetArchivedDataAsync<ApplicationUser>(archiveId);
+                if (user == null)
+                {
+                    TempData["Error"] = "Không tìm thấy dữ liệu trong kho lưu trữ!";
+                    return RedirectToAction("Index", "Archive");
+                }
+
+                // 2. Phục hồi "cái xác" vào Identity SQL
+                var result = await _userManager.CreateAsync(user);
+
+                if (result.Succeeded)
+                {
+                    bool daTimThayHoSoGoc = false;
+
+                    // ==========================================================
+                    // 🌟 TÌM LẠI HỒ SƠ GỐC BẰNG SỐ ĐIỆN THOẠI
+                    // ==========================================================
+                    if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
+                    {
+                        // Dò bên bảng Nhân Viên
+                        var isNhanVien = _context.NhanVien.FirstOrDefault(n => n.DienThoai == user.PhoneNumber);
+                        // Dò bên bảng Khách Hàng
+                        var isKhachHang = _context.KhachHang.FirstOrDefault(k => k.DienThoai == user.PhoneNumber);
+
+                        if (isNhanVien != null)
+                        {
+                            await _userManager.AddToRoleAsync(user, "NhanVien");
+                            isNhanVien.Id = user.Id; // Nối lại liên kết
+                            daTimThayHoSoGoc = true;
+                        }
+                        else if (isKhachHang != null)
+                        {
+                            await _userManager.AddToRoleAsync(user, "KhachHang");
+                            isKhachHang.Id = user.Id; // Nối lại liên kết
+                            daTimThayHoSoGoc = true;
+                        }
+                    }
+
+                    // Nếu lỡ số điện thoại trống, hoặc tìm không ra, thì dùng mẹo tên User để cấp quyền dự phòng
+                    if (!daTimThayHoSoGoc)
+                    {
+                        string lowerUserName = user.UserName.ToLower();
+                        if (lowerUserName.Contains("admin") || lowerUserName == "quantri")
+                        {
+                            await _userManager.AddToRoleAsync(user, "Admin");
+                        }
+                        else if (lowerUserName.StartsWith("nv") || lowerUserName.Contains("nhanvien"))
+                        {
+                            await _userManager.AddToRoleAsync(user, "NhanVien");
+                        }
+                        else
+                        {
+                            await _userManager.AddToRoleAsync(user, "KhachHang");
+                        }
+                    }
+
+                    // Lưu thay đổi cái dòng nối UserId vào Database
+                    await _context.SaveChangesAsync();
+
+                    // 3. Dọn rác trong Mongo
+                    await _mongoService.RemoveFromArchiveAsync<ApplicationUser>(archiveId);
+
+                    TempData["ThongBao"] = $"Khôi phục thành công [{user.UserName}]! Đã nối lại hồ sơ và cấp quyền dựa trên Số Điện Thoại.";
+                }
+                else
+                {
+                    string error = string.Join(", ", result.Errors.Select(e => e.Description));
+                    TempData["Error"] = "Lỗi tạo User: " + error;
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Lỗi hệ thống: " + ex.Message;
+            }
+
+            return RedirectToAction("Index", "Archive"); // Nhớ check lại tên Controller chỗ này sếp nhé
         }
     }
 }

@@ -7,30 +7,29 @@
 
 @if (User.Identity?.IsAuthenticated == true && (User.IsInRole("Admin") || User.IsInRole("NhanVien")))
 {
-    @if (TempData["ThongBao"] != null)
-    {
-        <div id="thongBao" class="zzz-notification">
-            <div class="zzz-content">
-                <span class="zzz-icon">👾</span> <span class="zzz-text">@TempData["ThongBao"]</span>
-            </div>
-            <div class="zzz-decor-line"></div>
-        </div>
-    }
-
     <div class="erp-hero-section" style="padding: 4rem 0 6rem 0;">
         <div class="container erp-hero-content">
             <div class="row align-items-center">
                 <div class="col-lg-7">
                     <div class="erp-badge mb-3 bg-danger text-white border-0" style="box-shadow: 2px 2px 0 #000;">KHU VỰC NỘI BỘ</div>
                     <h1 class="erp-title">Nền tảng số hóa<br /><span class="text-highlight">Nghiệp vụ Phân phối</span></h1>
-                    <p class="erp-subtitle text-white">Xin chào<strong>@User.Identity.Name</strong>. Chọn phân hệ bên dưới để bắt đầu phiên làm việc.</p>
+                    <p class="erp-subtitle text-white">Xin chào <strong>@User.Identity.Name</strong>. Chọn phân hệ bên dưới để bắt đầu phiên làm việc.</p>
                 </div>
                 <div class="col-lg-5 d-none d-lg-block text-end">
-                    <div class="erp-hero-visual" style="min-height: 200px;">
-                        <div class="visual-card">
-                            <i class="fas fa-server text-primary mb-2" style="font-size: 2rem;"></i>
-                            <h6 class="mb-0 text-white">Máy chủ lõi</h6>
-                            <span class="text-success small">● Đang hoạt động</span>
+                    <div class="erp-hero-visual d-flex justify-content-end align-items-center" style="min-height: 200px;">
+                        <div class="visual-card p-3 text-start rounded-0"
+                             style="background-color: transparent; border: 3px solid var(--zzz-primary); min-width: 250px;">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="fas fa-server" style="color: var(--zzz-primary); font-size: 2.5rem; text-shadow: 2px 2px 0px #000;"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-white zzz-text-mono fw-black text-uppercase" style="text-shadow: 2px 2px 0px #000;">Máy chủ lõi</h5>
+                                    <span class="text-success small zzz-text-mono fw-bold d-flex align-items-center" style="text-shadow: 1px 1px 0px #000;">
+                                        <span class="zzz-blink-dot me-2">●</span> ONLINE_ACTIVE
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -41,19 +40,19 @@
     <div class="container erp-stats-container">
         <div class="row g-0 erp-stats-wrapper">
             <div class="col-md-3 col-6 erp-stat-box">
-                <h4><i class="fas fa-users text-primary"></i></h4>
+                <h4><i class="fas fa-users text-dark"></i></h4>
                 <p>Khách hàng</p>
             </div>
             <div class="col-md-3 col-6 erp-stat-box">
-                <h4><i class="fas fa-bolt text-primary"></i></h4>
+                <h4><i class="fas fa-bolt text-dark"></i></h4>
                 <p>Chỉ số điện</p>
             </div>
             <div class="col-md-3 col-6 erp-stat-box">
-                <h4><i class="fas fa-file-invoice text-primary"></i></h4>
+                <h4><i class="fas fa-file-invoice text-dark"></i></h4>
                 <p>Hóa đơn xuất</p>
             </div>
             <div class="col-md-3 col-6 erp-stat-box border-0">
-                <h4><i class="fas fa-shield-alt text-primary"></i></h4>
+                <h4><i class="fas fa-shield-alt text-dark"></i></h4>
                 <p>Bảo mật Cấp 4</p>
             </div>
         </div>
@@ -70,7 +69,7 @@
                         <a href="/KhachHang" class="erp-module-card text-decoration-none">
                             <div class="module-icon"><i class="fas fa-users"></i></div>
                             <div class="module-info">
-                                <h5>Hồ Sơ Khách Hàng</h5>
+                                <h5>Hồ sơ khách hàng</h5>
                                 <p>Quản lý định danh, hợp đồng và địa bàn tiêu thụ điện.</p>
                             </div>
                         </a>
@@ -79,7 +78,7 @@
                         <a href="/ChiSoDien" class="erp-module-card text-decoration-none">
                             <div class="module-icon bg-dark text-white"><i class="fas fa-tachometer-alt"></i></div>
                             <div class="module-info">
-                                <h5>Cập Nhật Chỉ Số</h5>
+                                <h5>Cập nhật chỉ số</h5>
                                 <p>Nhập liệu và đối soát chỉ số công tơ định kỳ hàng tháng.</p>
                             </div>
                         </a>
@@ -88,16 +87,16 @@
                         <a href="/HoaDon" class="erp-module-card text-decoration-none highlight-card">
                             <div class="module-icon" style="background-color: var(--zzz-black); color: var(--zzz-primary);"><i class="fas fa-file-invoice-dollar"></i></div>
                             <div class="module-info">
-                                <h5>Quản Trị Hóa Đơn</h5>
+                                <h5>Quản lý hóa đơn</h5>
                                 <p>Tính toán tiền điện tự động, áp thuế và xuất biên lai.</p>
                             </div>
                         </a>
                     </div>
                     <div class="col-md-6">
-                        <a href="/DonGiaDien" class="erp-module-card text-decoration-none">
+                        <a href="/DonGia" class="erp-module-card text-decoration-none">
                             <div class="module-icon text-dark" style="background-color: #eee;"><i class="fas fa-sliders-h"></i></div>
                             <div class="module-info">
-                                <h5>Chính Sách Giá</h5>
+                                <h5>Chính sách giá</h5>
                                 <p>Cấu hình tham số 6 bậc điện sinh hoạt theo chuẩn nhà nước.</p>
                             </div>
                         </a>
@@ -134,16 +133,6 @@ else
        ========================================================================= *@
 
     <div class="corp-wrapper">
-        @if (TempData["ThongBao"] != null)
-        {
-            <div id="thongBao" class="corp-notification">
-                <div class="corp-content">
-                    <span class="corp-icon">✅</span>
-                    <span class="corp-text">@TempData["ThongBao"]</span>
-                </div>
-                <div class="corp-progress-bar"></div>
-            </div>
-        }
         <div class="corp-customer-home">
 
             <div class="position-relative overflow-hidden rounded-bottom-5 hero-section">
@@ -314,4 +303,3 @@ else
         </div>
     </div>
 }
-<script src="~/js/auto-alert.js"></script>

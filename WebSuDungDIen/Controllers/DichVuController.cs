@@ -6,6 +6,7 @@ using WebSuDungDIen.Models;
 
 namespace WebSuDungDIen.Controllers
 {
+    [Authorize(Roles = "KhachHang")]
     public class DichVuController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -45,7 +46,7 @@ namespace WebSuDungDIen.Controllers
                 // ⏳ Có hồ sơ nhưng chưa duyệt
                 if (!hoSo.TrangThai)
                 {
-                    TempData["ThongBao"] ="Thông tin của bạn đang chờ duyệt. Vui lòng chờ xác nhận.";
+                    TempData["Error"] ="Thông tin của bạn đang chờ duyệt. Vui lòng chờ xác nhận.";
 
                     return RedirectToAction("Index", "Home");
                 }

@@ -9,11 +9,11 @@ using WebSuDungDIen.Data;
 
 #nullable disable
 
-namespace WebSuDungDIen.Data.Migrations
+namespace WebSuDungDIen.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260320032438_CapNhatEFCoreChoPhepIdentityNull")]
-    partial class CapNhatEFCoreChoPhepIdentityNull
+    [Migration("20260507123539_bugFixed")]
+    partial class bugFixed
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -251,9 +251,6 @@ namespace WebSuDungDIen.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("KhachHangId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("Nam")
                         .HasColumnType("int");
 
@@ -266,8 +263,6 @@ namespace WebSuDungDIen.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("KhachHangId");
-
-                    b.HasIndex("KhachHangId1");
 
                     b.HasIndex("NhanVienId");
 
@@ -307,6 +302,9 @@ namespace WebSuDungDIen.Data.Migrations
 
                     b.Property<int>("DonGiaId")
                         .HasColumnType("int");
+
+                    b.Property<string>("HinhThucThanhToan")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("KhachHangId")
                         .IsRequired()
@@ -387,6 +385,7 @@ namespace WebSuDungDIen.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TenKh")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TrangThai")
@@ -426,6 +425,7 @@ namespace WebSuDungDIen.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TenNV")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TrangThai")
@@ -492,22 +492,20 @@ namespace WebSuDungDIen.Data.Migrations
 
             modelBuilder.Entity("WebSuDungDIen.Models.ChiSoDien", b =>
                 {
-                    b.HasOne("WebSuDungDIen.Models.KhachHang", null)
+                    b.HasOne("WebSuDungDIen.Models.KhachHang", "KhachHang")
                         .WithMany("ChiSoDien")
                         .HasForeignKey("KhachHangId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("WebSuDungDIen.Models.KhachHang", "KhachHang")
-                        .WithMany()
-                        .HasForeignKey("KhachHangId1");
-
-                    b.HasOne("WebSuDungDIen.Models.NhanVien", null)
+                    b.HasOne("WebSuDungDIen.Models.NhanVien", "NhanVien")
                         .WithMany()
                         .HasForeignKey("NhanVienId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("KhachHang");
+
+                    b.Navigation("NhanVien");
                 });
 
             modelBuilder.Entity("WebSuDungDIen.Models.HoaDon", b =>

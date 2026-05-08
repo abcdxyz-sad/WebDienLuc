@@ -16,6 +16,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using WebSuDungDIen.Models;
+using WebSuDungDIen.Services;
 
 namespace WebSuDungDIen.Areas.Identity.Pages.Account
 {
@@ -25,12 +26,14 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly AnomalyLoginService _anomalyService;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ILogger<LoginModel> logger, AnomalyLoginService anomalyService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
+            _anomalyService = anomalyService;
         }
 
         /// <summary>
@@ -69,14 +72,14 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "[ LỖI ] - Vui lòng nhập vào tên tài khoản!")]
             public string UserName { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "[ LỖI ] - Vui lòng nhập vào mật khẩu!")]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
@@ -122,6 +125,7 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account
 
                     var user = await _userManager.FindByNameAsync(Input.UserName);
 
+                    // Log hệ thống cũ của sếp
                     var logCollection = HttpContext.RequestServices
                         .GetRequiredService<IMongoCollection<SystemLog>>();
 
@@ -131,6 +135,15 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account
                         User = user.UserName,
                         CreatedAt = DateTime.Now
                     });
+
+                    // Lấy IP trực tiếp từ HttpContext của PageModel
+                    string currentIp = HttpContext.Connection?.RemoteIpAddress?.ToString() ?? "Unknown IP";
+
+                    // Lấy Thiết bị/Trình duyệt
+                    string currentDevice = HttpContext.Request?.Headers["User-Agent"].ToString() ?? "Unknown Device";
+
+                    // Đẩy qua Service để kiểm tra đối chiếu với Master IP
+                    await _anomalyService.CheckAndLogAnomalyAsync(user.UserName, currentIp, currentDevice);
 
                     return LocalRedirect(returnUrl);
                 }

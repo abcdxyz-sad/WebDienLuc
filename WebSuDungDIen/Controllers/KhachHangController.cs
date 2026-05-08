@@ -3,12 +3,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using WebSuDungDien.Services;
 using WebSuDungDIen.Data;
 using WebSuDungDIen.Models;
+using WebSuDungDIen.Services;
+using WebSuDungDIen.ViewModels;
 
 namespace WebSuDungDIen.Controllers
 {
@@ -17,16 +22,19 @@ namespace WebSuDungDIen.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly TaoMaService _taoMaService;
+        private readonly IMongoArchiveService _mongoService;
 
 
-        public KhachHangController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, TaoMaService taoMaService)
+        public KhachHangController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, TaoMaService taoMaService, IMongoArchiveService mongoService)
         {
             _context = context;
             _userManager = userManager;
             _taoMaService = taoMaService;
+            _mongoService = mongoService;
         }
 
         // GET: KhachHang
+        [Authorize(Roles = "Admin, NhanVien")]
         // Thêm tham số searchKeyword vào hàm Index để hứng chữ người dùng gõ
         public async Task<IActionResult> Index(string? searchKeyword)
         {
@@ -75,7 +83,9 @@ namespace WebSuDungDIen.Controllers
 
             return View(khachHangs);
         }
+
         // GET: KhachHang/Details/5
+        [Authorize(Roles = "Admin, NhanVien")]
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
@@ -84,6 +94,7 @@ namespace WebSuDungDIen.Controllers
             }
 
             var khachHang = await _context.KhachHang
+                .Include(k => k.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (khachHang == null)
             {
@@ -94,6 +105,7 @@ namespace WebSuDungDIen.Controllers
         }
 
         // GET: KhachHang/Create
+        [Authorize(Roles = "Admin, NhanVien")]
         public async Task<IActionResult> Create()
         {
             // Lấy danh sách những cái Nick "Cô đơn" (Có Role Khách Hàng nhưng chưa có Hồ Sơ Điện)
@@ -116,6 +128,7 @@ namespace WebSuDungDIen.Controllers
         // POST: KhachHang/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, NhanVien")]
         public async Task<IActionResult> Create([Bind("TenKh,DiaChi,DienThoai,IdentityUserId,MaPhuongApi,DiaChiDayDu")] KhachHang khachHang, string MaMien = "PB", int chiSoBanDau = 0)
         {
             Console.WriteLine("\n=== [DEBUG] BẮT ĐẦU TẠO KHÁCH HÀNG MỚI ===");
@@ -124,12 +137,6 @@ namespace WebSuDungDIen.Controllers
             {
                 if (khachHang == null) return BadRequest("Dữ liệu gửi lên rỗng.");
 
-                // =====================================================================
-                // 🚨 BÙA GIẢI NGHIỆP: BẮT BUỘC PHẢI THÁO XÍCH CHO THẰNG IDENTITYUSERID
-                // Vì ta cho phép nó NULL, nên nếu người dùng không chọn User trên Form,
-                // C# sẽ báo lỗi ModelState vì mặc định chuỗi rỗng không được phép với FK.
-                // Ta gỡ lỗi này ra để nó đi tiếp.
-                // =====================================================================
                 if (string.IsNullOrEmpty(khachHang.IdentityUserId))
                 {
                     khachHang.IdentityUserId = null; // Gán cứng thành NULL cho an toàn
@@ -178,6 +185,12 @@ namespace WebSuDungDIen.Controllers
                 _context.Add(khachHang);
                 await _context.SaveChangesAsync();
                 Console.WriteLine($"[Tiến trình] Khởi tạo chỉ số công tơ ban đầu: {chiSoBanDau}");
+
+                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // 2. Móc xuống DB tìm xem gã Nhân Viên nào đang giữ cái tài khoản này
+                var nhanVienThucHien = await _context.NhanVien.FirstOrDefaultAsync(nv => nv.IdentityUserId == currentUserId);
+
                 var chiSoKyKhong = new ChiSoDien
                 {
                     KhachHangId = khachHang.Id, // Nối dây xích vào cổ ông khách vừa đẻ
@@ -185,6 +198,7 @@ namespace WebSuDungDIen.Controllers
                     Nam = DateTime.Now.Year,
                     ChiSoCu = 0,               // Chả có cũ đâu, gốc bằng 0
                     ChiSoMoi = chiSoBanDau,    // Số mà sếp gõ ngoài giao diện
+                    NhanVienId = nhanVienThucHien != null ? nhanVienThucHien.Id : null
                 };
                 _context.ChiSoDien.Add(chiSoKyKhong);
                 await _context.SaveChangesAsync();
@@ -210,6 +224,7 @@ namespace WebSuDungDIen.Controllers
         }
 
         // GET: KhachHang/Edit/5
+        [Authorize(Roles = "Admin, NhanVien")]
         public async Task<IActionResult> Edit(string? id)
         {
             if (id == null) return NotFound();
@@ -225,6 +240,7 @@ namespace WebSuDungDIen.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, NhanVien")]
         public async Task<IActionResult> Edit(string id, [Bind("Id,TenKh,DiaChi,DienThoai,MaPhuongApi,DiaChiDayDu")] KhachHang model)
         {
             var kh = await _context.KhachHang.FindAsync(id);
@@ -240,6 +256,18 @@ namespace WebSuDungDIen.Controllers
 
             if (ModelState.IsValid)
             {
+                bool coThayDoi = false;
+
+                if (kh.TenKh != model.TenKh) coThayDoi = true;
+                if (kh.DienThoai != model.DienThoai) coThayDoi = true;
+
+                if (!coThayDoi)
+                {
+                    // Sếp có thể đổi câu chửi này cho nó thanh lịch hơn nếu muốn
+                    TempData["ThongBao"] = "Hệ thống không ghi nhận có sự thay đổi nào của dữ liệu";
+                    return View(model);
+                }
+
                 // 1. Cập nhật những thông tin cơ bản
                 kh.TenKh = model.TenKh;
                 kh.DienThoai = model.DienThoai;
@@ -298,6 +326,7 @@ namespace WebSuDungDIen.Controllers
         }
 
         // GET: KhachHang/Delete/5
+        [Authorize(Roles = "Admin, NhanVien")]
         public async Task<IActionResult> Delete(String? id)
         {
             if (id == null)
@@ -317,47 +346,59 @@ namespace WebSuDungDIen.Controllers
 
         // POST: KhachHang/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin, NhanVien")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(string id, string lyDoXoa = "")
         {
-            // 1. Lôi cổ thằng Khách Hàng lên, nhớ kèm bùa .Include() 
-            // để lôi luôn cả tông ti họ hàng nhà Chỉ Số Điện của nó lên!
+            // 🚨 1. CHỐT CHẶN TỬ THẦN: "NGÓ" SANG BẢNG HÓA ĐƠN XEM CÓ DÍNH DÁNG KHÔNG
+            // Dùng AnyAsync để kiểm tra cực nhanh: Chỉ cần có ít nhất 1 hóa đơn là trả về true ngay
+            bool daCoHoaDon = await _context.HoaDon.AnyAsync(hd => hd.KhachHangId == id);
+
+            if (daCoHoaDon)
+            {
+                TempData["Error"] = "Cảnh báo: KHÔNG THỂ XÓA! Khách hàng này đã phát sinh hóa đơn trên hệ thống. Vui lòng xử lý hóa đơn trước.";
+                return RedirectToAction(nameof(Index)); // Quay xe lập tức!
+            }
+
+            string finalReason = string.IsNullOrWhiteSpace(lyDoXoa) ? "Blank" : lyDoXoa;
+
+            // 2. NẾU AN TOÀN (Chưa có hóa đơn), LÔI KHÁCH HÀNG & CHỈ SỐ ĐIỆN LÊN
             var khachHang = await _context.KhachHang
                 .Include(k => k.ChiSoDien)
                 .FirstOrDefaultAsync(k => k.Id == id);
 
-            if (khachHang != null)
+            if (khachHang == null) return NotFound();
+
+            try
             {
-                // 🚨 2. DIỆT CỎ PHẢI DIỆT TẬN GỐC: Xóa sạch lịch sử Chỉ số điện trước!
-                // (Nếu sếp có bảng HoaDon nữa thì cũng phải lôi lên xóa tương tự)
+                // 3. TRỊ BỆNH VÒNG LẶP CHO CHỈ SỐ ĐIỆN (Cắt dây liên kết ngược)
+                if (khachHang.ChiSoDien != null)
+                {
+                    foreach (var csd in khachHang.ChiSoDien)
+                    {
+                        csd.KhachHang = null;
+                    }
+                }
+
+                // 4. DI CƯ SANG MONGODB AN TOÀN
+                await _mongoService.ArchiveAsync(khachHang, User.Identity.Name ?? "Hệ thống", lyDoXoa);
+
+                // 5. XÓA DỌN DẸP Ở SQL SERVER
+                // Xóa Chỉ số điện trước (nếu có)
                 if (khachHang.ChiSoDien != null && khachHang.ChiSoDien.Any())
                 {
                     _context.ChiSoDien.RemoveRange(khachHang.ChiSoDien);
                 }
 
-                // 3. Ghi nhớ cái ID Tài khoản Web của nó (nếu có) để tí nữa trảm
-                string uidNickWeb = khachHang.IdentityUserId;
-
-                // 4. CHÍNH THỨC TRẢM HỒ SƠ KHÁCH HÀNG
+                // Xóa Khách hàng
                 _context.KhachHang.Remove(khachHang);
-                await _context.SaveChangesAsync(); // Xóa sạch sẽ dữ liệu nghiệp vụ
+                await _context.SaveChangesAsync();
 
-                // 🚨 5. DỌN RÁC IDENTITY: Xóa luôn tài khoản đăng nhập Web!
-                // Phải dùng _userManager để xóa cho đúng chuẩn của Identity
-                if (!string.IsNullOrEmpty(uidNickWeb))
-                {
-                    var userWeb = await _userManager.FindByIdAsync(uidNickWeb);
-                    if (userWeb != null)
-                    {
-                        var result = await _userManager.DeleteAsync(userWeb);
-                        if (!result.Succeeded)
-                        {
-                            Console.WriteLine("[CẢNH BÁO] Xóa hồ sơ xong nhưng không xóa được Nick Web!");
-                        }
-                    }
-                }
-
-                TempData["ThongBao"] = $"Đã tiễn khách hàng {khachHang.TenKh} và toàn bộ dữ liệu liên quan vào dĩ vãng!";
+                TempData["ThongBao"] = $"Đã xóa thành công khách hàng {khachHang.TenKh} nhưng vẫn còn trong hệ thống !";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Lỗi hệ thống trong quá trình xóa: " + ex.Message;
             }
 
             return RedirectToAction(nameof(Index));
@@ -499,7 +540,7 @@ namespace WebSuDungDIen.Controllers
             }
         }
 
-        [Authorize(Roles = "KhachHang")]
+        [Authorize(Roles = "KhachHang,Admin,NhanVien")]
         public async Task<IActionResult> TienDienThangNay()
         {
             // 1. Lấy khách hàng hiện tại đang đăng nhập
@@ -511,14 +552,14 @@ namespace WebSuDungDIen.Controllers
             // 👉 [SỬA LẠI CHỖ NÀY]: Thay NotFound() bằng thông báo cho thân thiện
             if (khachHang == null)
             {
-                TempData["ThongBao"] = "Bạn chưa đăng ký hồ sơ sử dụng điện!";
+                TempData["Error"] = "Bạn chưa đăng ký hồ sơ sử dụng điện!";
                 return RedirectToAction("Index", "Home");
             }
 
             // 👉 [THÊM MỚI CHỖ NÀY]: Chặn luôn mấy ông đã đăng ký nhưng Admin chưa duyệt
             if (khachHang.TrangThai == false)
             {
-                TempData["ThongBao"] = "Hồ sơ của bạn đang chờ duyệt, hệ thống chưa thể cấp hóa đơn.";
+                TempData["Error"] = "Hồ sơ của bạn đang chờ duyệt, hệ thống chưa thể cấp hóa đơn.";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -560,18 +601,95 @@ namespace WebSuDungDIen.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "KhachHang")]
-        public async Task<IActionResult> SimulatePayment(string id) // Lưu ý kiểu string nếu Id hóa đơn của bạn là string
+        public async Task<IActionResult> SimulatePayment(string id)
         {
             var hoaDon = await _context.HoaDon.FindAsync(id);
             if (hoaDon != null)
             {
                 hoaDon.TrangThai = "DaThanhToan";
-                hoaDon.NgayThanhToan = DateTime.Now; // Đóng dấu ngày giờ thanh toán thật
+                hoaDon.NgayThanhToan = DateTime.Now;
+
+                // 👉 TIÊM VÀO ĐÂY: Đánh dấu thanh toán trực tiếp
+                hoaDon.HinhThucThanhToan = "Trực tiếp";
+
                 _context.Update(hoaDon);
                 await _context.SaveChangesAsync();
-                TempData["ThongBaoSuccess"] = "Thanh toán thành công. Cảm ơn quý khách!";
+                TempData["ThongBao"] = "Thanh toán thành công. Cảm ơn quý khách!";
             }
             return RedirectToAction(nameof(TienDienThangNay));
+        }
+
+        [Authorize(Roles = "KhachHang")]
+        public async Task<IActionResult> LichSuGiaoDich()
+        {
+            // 1. Tóm cổ kẻ đang đăng nhập
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // 2. Tìm mã Khách Hàng tương ứng với User này
+            var kh = await _context.KhachHang.FirstOrDefaultAsync(x => x.IdentityUserId == currentUserId);
+            if (kh == null && !User.IsInRole("Admin"))
+                return Forbid(); // Trẻ trâu xài account rác thì cút!
+
+            // 3. Móc dữ liệu
+            var lsGiaoDich = await _context.HoaDon
+                .Where(h => h.KhachHangId == kh.Id &&
+                           (h.TrangThai == "Đã thanh toán" ||
+                            h.TrangThai == "Thành công" ||
+                            h.TrangThai.Contains("thanh toán") ||
+                            h.NgayThanhToan != null))
+                .OrderByDescending(h => h.NgayThanhToan)
+                .Select(h => new LichSuGiaoDichVM
+                {
+                    MaGiaoDich = "TXN-" + h.Id.Substring(0, 8).ToUpper(),
+                    NgayGiaoDich = h.NgayThanhToan ?? DateTime.Now,
+                    TheLoaiGiaoDich = "THANH TOÁN HÓA ĐƠN",
+
+                    ThangNamHoaDon = h.NgayThanhToan.HasValue
+                        ? $"Kỳ {h.NgayThanhToan.Value.Month}/{h.NgayThanhToan.Value.Year}"
+                        : "Kỳ [KHÔNG RÕ]",
+
+                    // LẤY DỮ LIỆU THỰC TẾ THAY VÌ HARDCODE
+                    // (Đổi 'PhuongThucThanhToan' thành tên cột thực tế trong DB của sếp, ví dụ 'KieuThanhToan')
+                    // Nếu cột này null, ta ngầm hiểu là họ bấm nút thanh toán trực tiếp trên web.
+                    PhuongThuc = h.HinhThucThanhToan,
+
+                    SoTien = h.TongThanhToan,
+                    TrangThaiThanhCong = true
+                })
+                .ToListAsync();
+
+            return View(lsGiaoDich);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Restore(string archiveId)
+        {
+            try
+            {
+                // 1. Moi cục dữ liệu từ Mongo lên, tự động ép kiểu về KhachHang
+                var khachHangPhucHoi = await _mongoService.GetArchivedDataAsync<KhachHang>(archiveId);
+
+                if (khachHangPhucHoi == null)
+                {
+                    TempData["Error"] = "Không tìm thấy dữ liệu trong kho lưu trữ!";
+                    return RedirectToAction(nameof(Index)); // Hoặc Redirect về trang Danh sách lưu trữ
+                }
+
+                _context.KhachHang.Add(khachHangPhucHoi);
+                await _context.SaveChangesAsync();
+
+                // 3. XÓA KHỎI KHO MONGO (Vì nó đã được sống lại rồi, không nằm ở cõi âm nữa)
+                await _mongoService.RemoveFromArchiveAsync<KhachHang>(archiveId);
+
+                TempData["ThongBao"] = $"Đã hoàn lại dữ liệu đã xóa của khách [{khachHangPhucHoi.TenKh}]!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Lỗi khi phục hồi: " + ex.Message;
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

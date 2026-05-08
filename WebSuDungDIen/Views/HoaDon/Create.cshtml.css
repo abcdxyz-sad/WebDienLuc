@@ -71,7 +71,7 @@
 
     .zzz-cmd-label::before {
         content: ">_ ";
-        color: var(--zzz-primary);
+        color: #000;
     }
 
 .zzz-text-req {

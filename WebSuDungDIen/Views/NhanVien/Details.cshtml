@@ -1,17 +1,17 @@
 ﻿@model WebSuDungDIen.Models.NhanVien
 
 @{
-    ViewData["Title"] = "Chi tiết nhân viên";
+    ViewData["Title"] = "Chi Tiết Nhân Viên";
 }
 
 <div class="container-fluid p-0 zzz-container-dossier">
 
-    <div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel border-dark border-3">
-        <h1 class="m-0 zzz-page-title fw-bold text-uppercase">
-            <i class="fas fa-fingerprint text-danger me-2"></i> Chi tiết nhân viên
+    <div class="border-dashed p-3 p-lg-4 mb-4 d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3 zzz-command-panel border-dark border-3 bg-white">
+        <h1 class="m-0 zzz-page-title fw-bold text-uppercase fs-3 fs-lg-2 text-center text-lg-start w-100 w-lg-auto border-start border-primary border-5 ps-3 text-nowrap" style="border-left-color: var(--zzz-primary) !important; letter-spacing: 1px;">
+            CHI TIẾT NHÂN VIÊN
         </h1>
-        <div class="d-flex align-items-center gap-3">
-            <span class="zzz-sys-status text-primary fw-bold">
+        <div class="d-flex align-items-center gap-3 w-100 w-lg-auto justify-content-center justify-content-lg-end">
+            <span class="zzz-sys-status text-primary fw-bold fs-5">
                 MÃ NHÂN SỰ: <span class="zzz-text-mono text-muted">@Model.MaNV</span>
             </span>
         </div>
@@ -21,13 +21,9 @@
 
         <div class="col-lg-4 col-md-5">
             <div class="card border-dark border-3 rounded-0 zzz-id-card shadow-lg h-100 position-relative overflow-hidden">
-
                 <div class="zzz-hazard-strip"></div>
-
                 <div class="card-body p-4 d-flex flex-column align-items-center text-center mt-3">
-
                     <i class="fas fa-user-tie mb-3 zzz-avatar-icon"></i>
-
                     <h2 class="fw-bolder zzz-text-mono text-dark mb-0 border-bottom border-dark border-3 pb-2 w-100 text-uppercase zzz-agent-name">
                         @Model.TenNV
                     </h2>
@@ -41,7 +37,7 @@
                     }
                     else
                     {
-                        <span class="badge border border-dark border-3 bg-dark text-danger fs-5 px-4 py-3 w-100 zzz-text-mono rounded-0 zzz-badge-offline">
+                        <span class="badge border border-dark border-3 bg-dark text-danger fs-5 px-4 py-3 w-100 zzz-text-mono rounded-0 zzz-badge-offline mb-3">
                             <i class="fas fa-power-off me-1"></i> OFFLINE (VÔ HIỆU)
                         </span>
                     }
@@ -61,31 +57,25 @@
 
         <div class="col-lg-8 col-md-7">
             <div class="card border-dark border-3 rounded-0 bg-white shadow-lg h-100 d-flex flex-column">
-
                 <div class="card-header bg-white border-bottom border-dark border-3 p-3 d-flex justify-content-between align-items-center">
-                    <h4 class="m-0 zzz-text-mono fw-bold text-dark"><i class="fas fa-folder-open me-2 text-warning"></i>DỮ LIỆU NHÂN VIÊN</h4>
-                    <i class="fas fa-barcode fs-2 text-dark opacity-25"></i>
+                    <h4 class="m-0 zzz-text-mono fw-bold text-dark">DỮ LIỆU NHÂN VIÊN</h4>
                 </div>
-
-                <div class="card-body p-4 p-md-5 d-flex flex-column h-100">
+                <div class="card-body p-4 p-lg-5 d-flex flex-column h-100">
                     <div class="row g-4 mb-5">
-
                         <div class="col-md-6">
                             <label class="zzz-text-mono text-muted fw-bold small">SỐ ĐIỆN THOẠI NHÂN VIÊN</label>
                             <div class="fs-4 fw-bold zzz-badge-id">@Model.DienThoai</div>
                         </div>
-
                         <div class="col-md-6">
                             <label class="zzz-text-mono text-muted fw-bold small">EMAIL</label>
                             <div class="fs-5 fw-bold zzz-text-mono text-dark text-break mt-1 border-bottom border-dark border-2 pb-1">
                                 @(Model.User?.Email ?? "[ CHƯA CÓ EMAIL ]")
                             </div>
                         </div>
-
                         <div class="col-12">
                             <label class="zzz-text-mono text-muted fw-bold small">ĐỊA CHỈ</label>
                             <div class="fs-5 fw-bold bg-light p-3 border border-dark border-2 mt-1">
-                                <i class="fas fa-map-marker-alt text-danger me-2"></i>@Model.DiaChi
+                                @Model.DiaChi
                             </div>
                         </div>
                     </div>
@@ -94,22 +84,18 @@
                         <h5 class="fw-bold zzz-text-mono border-bottom border-dark border-3 pb-2 mb-3">
                             <i class="fas fa-terminal me-2"></i> LỆNH THỰC THI
                         </h5>
-
                         <div class="d-flex flex-wrap gap-3">
-                            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary fw-bold border-dark border-3 rounded-0 px-4 py-2 flex-grow-1">
+                            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary fw-bold border-dark border-3 rounded-0 px-4 py-3 flex-grow-1 d-flex justify-content-center align-items-center">
                                 <i class="fas fa-pen me-2"></i> CẬP NHẬT DỮ LIỆU
                             </a>
-
-                            <a asp-action="Index" class="btn zzz-btn-cancel fw-bold border-dark border-3 rounded-0 px-4 py-2 flex-grow-1 text-center zzz-btn-action">
+                            <a asp-action="Index" class="btn zzz-btn-cancel fw-bold border-dark border-3 rounded-0 px-4 py-3 flex-grow-1 text-center d-flex justify-content-center align-items-center zzz-btn-action">
                                 <i class="fas fa-undo me-2"></i> DANH SÁCH NHÂN SỰ
                             </a>
                         </div>
                     </div>
 
                 </div>
-
             </div>
         </div>
     </div>
-
 </div>

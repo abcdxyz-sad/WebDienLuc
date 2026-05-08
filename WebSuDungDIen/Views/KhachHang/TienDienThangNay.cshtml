@@ -182,13 +182,20 @@
         </div>
 
         <div class="mt-4 pt-4 d-flex flex-wrap justify-content-between align-items-center gap-3" style="border-top: 1px solid #eaedf1;">
-            <div class="d-flex gap-2">
-                <a asp-controller="Home" asp-action="Index" class="btn corp-btn-outline">
-                    <i class="bi bi-arrow-left me-1"></i> Trở Về
+            <div class="d-flex flex-wrap align-items-center gap-3 corp-wrapper">
+
+                <a asp-controller="KhachHang" asp-action="LichSuGiaoDich" class="btn corp-btn-primary d-inline-flex align-items-center">
+                    <i class="bi bi-clock-history me-2 fs-5"></i> Lịch Sử Giao Dịch
                 </a>
-                <a asp-controller="HoaDon" asp-action="PrintInvoice" asp-route-maHd="@Model.MaHd" target="_blank" class="btn corp-btn-outline">
-                    <i class="bi bi-printer me-1"></i> Xem Bản In
+
+                <a asp-controller="HoaDon" asp-action="PrintInvoice" asp-route-maHd="@Model.MaHd" target="_blank" class="btn corp-btn-outline d-inline-flex align-items-center">
+                    <i class="bi bi-printer me-2 fs-5"></i> Xem Bản In
                 </a>
+
+                <a asp-controller="Home" asp-action="Index" class="btn corp-btn-outline d-inline-flex align-items-center">
+                    <i class="bi bi-arrow-left me-2 fs-5"></i> Trở Về
+                </a>
+
             </div>
 
             @if (Model.TrangThai != "DaThanhToan" && Model.TrangThai != "Đã Thanh Toán")

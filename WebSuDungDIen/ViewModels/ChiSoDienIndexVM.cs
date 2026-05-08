@@ -4,6 +4,7 @@
     {
         public string Id { get; set; }
         public string KhachHangId { get; set; }
+        public string MaKh { get; set; }
         public string TenKh { get; set; } = null!;
         public string DiaChi { get; set; } = null!;
         public int ThangGanNhat { get; set; }

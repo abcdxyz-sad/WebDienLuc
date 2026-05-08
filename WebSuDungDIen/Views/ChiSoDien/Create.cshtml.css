@@ -1,0 +1,100 @@
+﻿/* =========================================================
+   📱 TỐI ƯU BẢNG NHẬP CHỈ SỐ CHO ĐIỆN THOẠI (CARD MODE)
+========================================================= */
+
+@media (max-width: 767.98px) {
+    /* Ép toàn bộ bảng, dòng, cột thành dạng khối block */
+    .zzz-data-table,
+    .zzz-data-table tbody,
+    .zzz-data-table tr,
+    .zzz-data-table td {
+        display: block;
+        width: 100%;
+    }
+
+        /* Giấu tiệt cái hàng tiêu đề đi vì không cần thiết nữa */
+        .zzz-data-table thead {
+            display: none;
+        }
+
+        /* Biến mỗi dòng tr thành một cái Card riêng biệt, cách nhau ra */
+        .zzz-data-table tr {
+            margin-bottom: 20px;
+            border: 3px solid #111111; /* Viền đen dày cho từng card */
+            background-color: #ffffff;
+            box-shadow: 4px 4px 0px #111111; /* Đổ bóng đậm chất ZZZ */
+            position: relative;
+        }
+
+        /* Cột đầu tiên (Mã KH): Biến thành cái dải nhãn dán ở trên cùng */
+        .zzz-data-table td:nth-child(1) {
+            background-color: var(--zzz-primary, #D2FF00) !important;
+            border-bottom: 2px dashed #111111;
+            padding: 10px 15px !important;
+            text-align: left !important;
+        }
+
+        /* Cột thứ 2 (Tên KH): Đẩy to lên làm tiêu đề chính */
+        .zzz-data-table td:nth-child(2) {
+            font-size: 1.2rem !important;
+            padding-top: 15px !important;
+            border: none !important;
+        }
+
+        /* Cột thứ 3 (Địa chỉ): Nhỏ lại một chút */
+        .zzz-data-table td:nth-child(3) {
+            border: none !important;
+            padding-top: 0 !important;
+        }
+
+        /* Cột 4 & 5 (Kỳ gần nhất & Chỉ số cũ): Xếp hàng ngang cạnh nhau */
+        .zzz-data-table td:nth-child(4),
+        .zzz-data-table td:nth-child(5) {
+            display: inline-block;
+            width: 50%;
+            border: none !important;
+            text-align: left !important;
+            padding: 5px 15px !important;
+        }
+
+            /* Thêm Label giả cho Cột 4 và Cột 5 để người dùng biết đó là thông tin gì */
+            .zzz-data-table td:nth-child(4)::before {
+                content: "Kỳ ghi: ";
+                font-size: 0.8rem;
+                color: #6c757d;
+                display: block;
+            }
+
+            .zzz-data-table td:nth-child(5)::before {
+                content: "Chỉ số cũ:";
+                font-size: 0.8rem;
+                color: #6c757d;
+                display: block;
+            }
+
+        /* Cột cuối (Ô Nhập chỉ số mới): Đẩy xuống đáy và bôi viền nổi bật */
+        .zzz-data-table td:nth-child(6) {
+            background-color: #f8f9fa;
+            border-top: 2px solid #111111 !important;
+            padding: 15px !important;
+            text-align: center !important;
+        }
+
+            /* Kéo dài cái ô Input ra cho dễ bấm bằng ngón tay */
+            .zzz-data-table td:nth-child(6) input {
+                max-width: 100% !important;
+                height: 50px;
+                font-size: 1.5rem !important;
+            }
+
+            /* Gắn thêm nhãn hướng dẫn nhấp nháy cho ô nhập */
+            .zzz-data-table td:nth-child(6)::before {
+                content: ">_ NHẬP CHỈ SỐ MỚI VÀO ĐÂY:";
+                display: block;
+                font-family: 'Space Mono', monospace;
+                font-weight: bold;
+                color: var(--zzz-accent, #FF3366);
+                margin-bottom: 10px;
+                text-align: left;
+            }
+}

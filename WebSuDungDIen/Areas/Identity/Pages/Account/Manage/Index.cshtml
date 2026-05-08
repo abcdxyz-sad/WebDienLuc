@@ -5,45 +5,89 @@
     // Máy soi nhân phẩm: Có mác Admin/NhanVien thì lùa vào chuồng ZZZ, còn lại mời sang sảnh VIP
     bool isStaff = User.Identity?.IsAuthenticated == true && (User.IsInRole("Admin") || User.IsInRole("NhanVien"));
 }
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <partial name="_StatusMessage" for="StatusMessage" />
 
 @if (isStaff)
 {
-    <h3 class="zzz-text-mono fw-bold mb-4 text-uppercase border-start border-5 border-dark ps-3" style="color: var(--zzz-black);">
-        <i class="fas fa-user-shield text-primary"></i> HỒ SƠ QUẢN TRỊ [ADMIN_CORE]
-    </h3>
+    @* =========================================================================
+       GIAO DIỆN ĐẶC VỤ (ZZZ STYLE) - TỐI TĂM, BẠO LỰC
+       ========================================================================= *@
+    <div class="d-flex align-items-center justify-content-between border-bottom border-dark border-3 pb-3 mb-4">
 
-    <form id="profile-form" method="post">
+        <h3 class="m-0 zzz-text-mono fw-black text-uppercase border-start border-5 ps-3" style="border-left-color: var(--zzz-primary) !important; letter-spacing: 1px;">
+            THÔNG TIN CÁ NHÂN
+        </h3>
 
-        <div class="row g-4 zzz-manage-content">
+        <span class="badge text-dark rounded-0 border border-dark border-2 fs-6 zzz-text-mono px-3 py-2 shadow-sm d-none d-md-block"
+              style="background-color: var(--zzz-primary); box-shadow: 2px 2px 0px #000 !important;">
+            <span class="text-dark zzz-blink-dot">●</span> ACTIVE
+        </span>
+
+    </div>
+
+    <form id="profile-form" method="post" class="zzz-terminal-form">
+
+        <div class="row g-4 p-4 bg-light border border-dark border-3 position-relative mt-2" style="box-shadow: inset 4px 4px 0px rgba(0,0,0,0.05);">
+
+            <span class="position-absolute text-dark border border-dark border-2 px-3 py-1 fw-bold zzz-text-mono shadow-sm" style="top: -16px; right: 20px; background-color: var(--zzz-primary); width: max-content; z-index: 10;">
+                DATA_INPUT_REQUIRED
+            </span>
+
             <div class="col-md-8">
-                <label class="zzz-label fw-bold">HỌ VÀ TÊN</label>
-                <input asp-for="Input.FullName" class="form-control border-dark border-2 rounded-0 shadow-sm fw-bold text-danger" placeholder="Nhập tên hiển thị..." />
-                <span asp-validation-for="Input.FullName" class="text-danger small fw-bold"></span>
+                <label class="zzz-label fw-bold text-muted small text-uppercase mb-1">>_ HỌ VÀ TÊN <span class="text-danger">*</span></label>
+                <div class="input-group border-dark border-2 shadow-sm">
+                    <span class="input-group-text bg-dark text-white border-0 rounded-0 d-flex justify-content-center" style="width: 45px;"><i class="fas fa-user"></i></span>
+                    <input asp-for="Input.FullName" class="form-control border-0 rounded-0 fw-bold fs-5 text-dark" placeholder="Nhập tên hiển thị..." style="background-color: #fff;" />
+                </div>
+                <span asp-validation-for="Input.FullName" class="text-dark small fw-bold zzz-text-mono mt-1 d-block"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label class="zzz-label fw-bold text-muted small text-uppercase mb-1">>_ MÃ ĐỊNH DANH</label>
+                <div class="input-group border-dark border-2 shadow-sm">
+                    <span class="input-group-text bg-dark text-white border-0 rounded-0 d-flex justify-content-center" style="width: 45px;"><i class="fas fa-id-badge"></i></span>
+                    <input asp-for="Input.UserCode" class="form-control border-0 rounded-0 fw-bold fs-5 text-dark" readonly style="background-color: #e9ecef;" />
+                </div>
             </div>
 
             <div class="col-md-6">
-                <label class="zzz-label fw-bold">SỐ ĐIỆN THOẠI</label>
-                <input asp-for="Input.PhoneNumber" class="form-control border-dark border-2 rounded-0 shadow-sm fw-bold" placeholder="Nhập số điện thoại..." />
-                <span asp-validation-for="Input.PhoneNumber" class="text-danger small fw-bold"></span>
+                <label class="zzz-label fw-bold text-muted small text-uppercase mb-1">>_ SỐ ĐIỆN THOẠI <span class="text-danger">*</span></label>
+                <div class="input-group border-dark border-2 shadow-sm">
+                    <span class="input-group-text bg-dark text-white border-0 rounded-0 d-flex justify-content-center" style="width: 45px;"><i class="fas fa-phone-alt"></i></span>
+                    <input asp-for="Input.PhoneNumber" class="form-control border-0 rounded-0 fw-bold fs-5" placeholder="Nhập số điện thoại..." style="background-color: #fff;" />
+                </div>
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger small fw-bold zzz-text-mono mt-1 d-block"></span>
             </div>
 
             <div class="col-md-6">
-                <label class="zzz-label fw-bold">HỘP THƯ [EMAIL]</label>
-                <input asp-for="Input.Email" type="email" class="form-control border-dark border-2 rounded-0 shadow-sm fw-bold" placeholder="Nhập địa chỉ email liên lạc..." />
-                <span asp-validation-for="Input.Email" class="text-danger small fw-bold"></span>
+                <label class="zzz-label fw-bold text-muted small text-uppercase mb-1">>_ HỘP THƯ [EMAIL] <span class="text-danger">*</span></label>
+                <div class="input-group border-dark border-2 shadow-sm">
+                    <span class="input-group-text bg-dark text-white border-0 rounded-0 d-flex justify-content-center" style="width: 45px;"><i class="fas fa-envelope"></i></span>
+                    <input asp-for="Input.Email" type="email" class="form-control border-0 rounded-0 fw-bold fs-5" placeholder="Nhập địa chỉ email liên lạc..." style="background-color: #fff;" />
+                </div>
+                <span asp-validation-for="Input.Email" class="text-danger small fw-bold zzz-text-mono mt-1 d-block"></span>
+            </div>
+
+            <div class="col-md-12">
+                <label class="zzz-label fw-bold text-muted small text-uppercase mb-1">>_ NHÓM TÀI KHOẢN</label>
+                <div class="input-group border-dark border-2 shadow-sm">
+                    <span class="input-group-text bg-dark text-white border-0 rounded-0 d-flex justify-content-center" style="width: 45px;"><i class="fas fa-users-cog"></i></span>
+                    <input asp-for="Input.AccountType" class="form-control border-0 rounded-0 fw-bold fs-5 text-secondary" readonly style="background-color: #e9ecef;" />
+                </div>
             </div>
 
             <div class="col-12">
-                <label class="zzz-label fw-bold">ĐỊA CHỈ</label>
-                <textarea asp-for="Input.Address" class="form-control border-dark border-2 rounded-0 shadow-sm fw-bold" rows="3" placeholder="Xác định tọa độ căn cứ..."></textarea>
-                <span asp-validation-for="Input.Address" class="text-danger small fw-bold"></span>
+                <label class="zzz-label fw-bold text-muted small text-uppercase mb-1">>_ ĐỊA CHỈ THƯỜNG TRÚ</label>
+                <div class="border border-dark border-2 shadow-sm bg-white">
+                    <textarea asp-for="Input.Address" class="form-control border-0 rounded-0 fw-bold fs-6 p-3" rows="3" placeholder="Xác định tọa độ căn cứ..."></textarea>
+                </div>
+                <span asp-validation-for="Input.Address" class="text-danger small fw-bold zzz-text-mono mt-1 d-block"></span>
             </div>
 
-            <div class="col-12 mt-4 text-end">
-                <button type="submit" class="btn btn-primary fw-bolder border-dark border-2 rounded-0 shadow-sm px-5 py-3 zzz-text-mono fs-5 text-uppercase">
-                    <i class="fas fa-save me-2"></i> LƯU THAY ĐỔI
+            <div class="col-12 mt-4 text-end border-top border-dark border-3 pt-4">
+                <button type="submit" class="btn btn-primary px-5 py-3 zzz-text-mono fs-5 fw-bold d-inline-flex align-items-center justify-content-center">
+                    <i class="fas fa-save me-2" style="margin-top: -2px;"></i> LƯU THAY ĐỔI DỮ LIỆU
                 </button>
             </div>
         </div>
@@ -83,8 +127,17 @@ else
                 </div>
 
                 <div class="col-md-6">
+                    <label class="form-label fw-bold text-muted small text-uppercase mb-2">Hộp thư Email</label>
+                    <input asp-for="Input.Email" class="form-control bg-white border rounded-3 shadow-sm py-2 fw-semibold text-dark" readonly />
+                </div>
+
+                <div class="col-md-12">
                     <label class="form-label fw-bold text-muted small text-uppercase mb-2">Nhóm tài khoản</label>
-                    <input asp-for="Input.AccountType" class="form-control bg-light border rounded-3 py-2 fw-semibold text-secondary" readonly />
+
+                    <input asp-for="Input.AccountType"
+                           class="form-control bg-light border rounded-3 py-2 fw-semibold text-secondary"
+                           readonly
+                           style="box-shadow: none !important; transform: none !important; outline: none !important; border-color: #dee2e6 !important; cursor: default;" />
                 </div>
 
                 <div class="col-12">

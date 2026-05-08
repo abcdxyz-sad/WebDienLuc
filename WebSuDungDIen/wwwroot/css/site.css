@@ -363,7 +363,7 @@ a {
     .card:hover {
         transform: translate(-3px, -3px);
         box-shadow: 7px 7px 0px #000; /* Tăng bóng khi hover */
-        z-index: 5;
+        z-index: 11;
     }
 
 .card-header {
@@ -438,114 +438,356 @@ a {
    5. FOOTER (ZZZ x MANGA x PIXEL)
 ========================================================= */
 
+/* Đảm bảo vẫn giữ lệnh trượt mượt */
+html {
+    scroll-behavior: smooth;
+}
+
+/* =========================================================
+   FOOTER CHUNKY BẠO LỰC
+========================================================= */
 footer.zzz-footer {
     flex-shrink: 0;
     margin-top: auto;
-    background-color: var(--zzz-black);
-    color: var(--zzz-white) !important;
-    padding-bottom: 2rem; /* Chừa chỗ cho nội dung */
-    position: relative;
-    overflow: hidden;
-    /* Viền trên dùng màu xám tech thay vì màu đen (vì nền body có thể trùng màu) */
-    border-top: var(--zzz-tech-border);
-    font-family: 'Courier New', Courier, monospace; /* Font Pixel */
-    letter-spacing: 0.5px;
+    background-color: var(--zzz-black, #111111);
+    color: var(--zzz-white, #ffffff);
+    position: relative; /* Cực kỳ quan trọng để neo cái nút Back To Top */
+    font-family: 'Inter', sans-serif;
+    border-top: 4px solid var(--zzz-black, #111111);
 }
 
-/* Thanh sọc cảnh báo (Hazard Strip) */
+/* Thanh sọc cảnh báo */
 .zzz-hazard-strip {
-    height: 6px;
+    height: 10px;
     width: 100%;
-    margin-bottom: 1.5rem;
-    /* Tạo sọc chéo Vàng - Đen */
-    background: repeating-linear-gradient( 45deg, var(--zzz-primary), var(--zzz-primary) 15px, var(--zzz-black) 15px, var(--zzz-black) 30px );
-    border-bottom: 1px solid var(--zzz-white);
-    opacity: 0.8;
+    background: repeating-linear-gradient(
+        45deg, 
+        var(--zzz-primary, #D2FF00), 
+        var(--zzz-primary, #D2FF00) 15px, 
+        var(--zzz-black, #111111) 15px, 
+        var(--zzz-black, #111111) 30px
+    );
+    border-bottom: 2px solid var(--zzz-white, #ffffff);
 }
 
-/* Cột trái: Brand */
-.zzz-footer-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: bold;
-    text-transform: uppercase;
+/* Lưới tọa độ ngầm */
+.zzz-grid-bg {
+    position: absolute;
+    top: 12px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 12px);
+    background-image: radial-gradient(var(--zzz-gray, #2a2a2a) 2px, transparent 2px);
+    background-size: 15px 15px;
+    opacity: 0.6;
+    pointer-events: none;
+    z-index: 0;
 }
 
-.zzz-pixel-icon {
-    font-size: 1.4rem;
-    color: var(--zzz-primary);
-    /* Tạo bóng đổ cứng bằng text-shadow */
-    text-shadow: 2px 2px 0px var(--zzz-blue);
-}
-
+/* Các style Lore & UI cũ (Giữ nguyên) */
 .zzz-tag {
-    background-color: var(--zzz-primary);
-    color: var(--zzz-black);
-    padding: 2px 6px;
-    font-weight: 900;
-    font-style: italic;
-    transform: skewX(-15deg); /* Nghiêng đặc trưng ZZZ */
-    border: 1px solid var(--zzz-white);
-}
-
-/* Cột phải: Actions */
-.zzz-footer-actions {
-    display: flex;
-    align-items: center;
-    font-size: 0.9rem;
-}
-
-/* Trạng thái hệ thống */
-.zzz-status-box {
-    color: var(--zzz-blue);
-    font-weight: bold;
-    text-transform: uppercase;
-    border: 1px solid var(--zzz-gray);
+    background-color: var(--zzz-primary, #D2FF00);
+    color: var(--zzz-black, #111111);
     padding: 2px 8px;
-    background-color: rgba(0,0,0,0.3);
+    font-weight: 900;
+    font-family: 'Orbitron', sans-serif;
+    transform: skewX(-15deg);
+    border: 2px solid var(--zzz-white, #ffffff);
+    display: inline-block;
+}
+
+.zzz-status-box {
+    color: var(--zzz-blue, #00E5FF);
+    font-weight: 900;
+    font-family: monospace;
+    border: 2px solid var(--zzz-gray, #2a2a2a);
+    padding: 4px 12px;
+    background-color: rgba(0,0,0,0.5);
+    letter-spacing: 1px;
 }
 
 .zzz-blink-dot {
-    color: var(--zzz-primary);
-    animation: zzz-blink 1s infinite steps(2); /* steps(2) tạo cảm giác giật cục kiểu pixel */
+    color: var(--zzz-primary, #D2FF00);
+    animation: zzz-blink 1s step-end infinite;
 }
 
-/* Link Button Style */
-footer a.zzz-link-btn {
-    color: var(--zzz-white) !important;
+@keyframes zzz-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.zzz-footer-nav-link {
+    display: inline-block;
+    color: #b0b0b0;
     text-decoration: none;
-    padding: 5px 10px;
-    border: 1px solid var(--zzz-gray);
-    background-color: transparent;
-    transition: all 0.2s;
-    position: relative;
-    font-weight: bold;
+    transition: all 0.15s ease;
+    border-left: 0px solid var(--zzz-primary, #D2FF00);
 }
 
-    footer a.zzz-link-btn:hover {
-        background-color: var(--zzz-accent); /* Hover ra màu Hồng */
-        border-color: var(--zzz-white);
-        color: var(--zzz-white) !important;
-        text-decoration: none;
-        /* Hiệu ứng nổi lên + Bóng cứng màu Xanh Cyan */
-        transform: translate(-3px, -3px);
-        box-shadow: 3px 3px 0px var(--zzz-blue);
+.zzz-footer-nav-link:hover {
+    color: var(--zzz-primary, #D2FF00) !important;
+    padding-left: 10px;
+    border-left: 4px solid var(--zzz-primary, #D2FF00);
+    background: rgba(255,255,255,0.05);
+}
+
+/* =========================================================
+   📱 TỐI ƯU FOOTER TRÊN MOBILE: GỌN GÀNG, ĐẬM CHẤT CYBER
+========================================================= */
+@media (max-width: 991px) { /* Mở rộng lên 991px để cover cả tablet/iPad dọc */
+
+    /* 1. TẠO KHÔNG GIAN THỞ (Spacing) */
+    .zzz-footer .row.gy-5 {
+        --bs-gutter-y: 2.5rem !important; /* Tăng khoảng cách giữa các khối lớn để không bị ngộp */
     }
 
-/* Nền lưới trang trí (Manga Dot/Grid) */
-.zzz-grid-bg {
+    /* 2. ÉP CANH TRÁI ĐỒNG BỘ */
+    .zzz-footer .col-lg-4,
+    .zzz-footer .col-md-12,
+    .zzz-footer .col-md-6 {
+        text-align: left !important;
+        align-items: flex-start !important;
+    }
+
+    /* =======================================================
+       3. FIX CỨNG BRAND (ĐIỆN LỰC CYBER) - CẤM RỚT DÒNG
+    ======================================================= */
+    .zzz-footer .zzz-footer-brand {
+        display: flex !important;
+        flex-direction: row !important; /* Ép nằm ngang tuyệt đối */
+        flex-wrap: nowrap !important; /* Cấm rớt dòng */
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+        margin-bottom: 1.2rem !important;
+    }
+
+        .zzz-footer .zzz-footer-brand .fs-2 {
+            font-size: 1.5rem !important; /* Size chuẩn cho đt, không bị to quá */
+            white-space: nowrap !important; /* Khóa cứng text */
+            line-height: 1 !important;
+        }
+
+        .zzz-footer .zzz-footer-brand .zzz-tag {
+            font-size: 0.85rem !important;
+            padding: 4px 10px !important;
+            white-space: nowrap !important; /* Khóa cứng tag */
+            align-self: center !important;
+        }
+
+    /* 4. LORE RÁC & HUY HIỆU (Badges) */
+    .zzz-footer p.text-muted {
+        font-size: 0.9rem !important;
+        line-height: 1.6 !important;
+        padding-right: 15px; /* Chừa mép phải lề một xíu */
+    }
+
+    .zzz-footer .badge {
+        font-size: 0.75rem !important;
+        padding: 8px 12px !important;
+        width: fit-content; /* Cho phép huy hiệu tự bám theo nội dung */
+    }
+
+    /* 5. CỘT TRUY CẬP NHANH (Menu Links) */
+    .zzz-nudge-right {
+        margin-left: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    .zzz-footer ul.list-unstyled {
+        gap: 12px !important; /* Giãn các dòng menu ra để ngón tay dễ bấm */
+    }
+
+    .zzz-footer-nav-link {
+        font-size: 0.95rem !important;
+        display: inline-block;
+        padding: 6px 0; /* Tăng diện tích chạm (touch target) */
+    }
+
+    /* =======================================================
+       6. FIX LỖI NÚT SOCIAL BỊ DỌC & TỐI ƯU CỘT LIÊN LẠC
+    ======================================================= */
+    /* Xử lý khung chứa nút Social */
+    .zzz-footer .col-lg-4:last-child .d-flex.flex-wrap {
+        display: flex !important;
+        flex-direction: row !important; /* VŨ KHÍ CHÍNH: Ép các nút nằm ngang */
+        flex-wrap: wrap !important;
+        justify-content: flex-start !important; /* Căn trái cho đồng bộ */
+        align-items: center !important;
+        gap: 12px !important;
+        width: 100% !important; /* Chiếm full chiều ngang để có không gian thở */
+        margin-bottom: 1.5rem !important;
+    }
+
+    /* Tối ưu lại từng nút để đều tăm tắp */
+    .zzz-social-btn {
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 1.2rem !important;
+        display: flex !important; /* Trị dứt điểm icon bị lệch */
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important; /* Cấm nút bị móp méo khi màn hình quá hẹp */
+    }
+
+    /* Nút FAQ: ÉP BUNG FULL MÀN HÌNH NHÌN CỰC NGẦU */
+    .zzz-footer .btn {
+        width: 100% !important; /* Kéo full ngang */
+        margin-top: 0.5rem;
+        padding: 14px !important;
+        font-size: 1rem !important;
+        text-align: center;
+        justify-content: center;
+    }
+
+    /* 7. DÒNG BẢN QUYỀN VÀ TRÁNH NÚT THANG MÁY (TOP) */
+    .zzz-footer .border-top {
+        margin-top: 1rem !important;
+        padding-top: 1.5rem !important;
+        /* CỰC QUAN TRỌNG: Đẩy khoảng không bên dưới lên 80px để nút TOP không đè lên chữ */
+        padding-bottom: 80px !important;
+        flex-direction: column !important;
+        align-items: center !important; /* Cho chữ bản quyền ra giữa trên mobile nhìn sẽ cân đối hơn */
+        text-align: center;
+    }
+
+        .zzz-footer .border-top .text-muted {
+            font-size: 0.8rem !important;
+        }
+}
+
+/* =========================================================
+   🛑 NÚT BACK TO TOP GẮN CHẾT VÀO FOOTER (MÉP TRÁI - ĐẢO MÀU)
+========================================================= */
+.zzz-back-to-top-embedded {
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* Tạo chấm bi mờ mờ từ màu Gray */
-    background-image: radial-gradient(var(--zzz-gray) 1px, transparent 1px);
-    background-size: 10px 10px;
-    opacity: 0.3;
-    pointer-events: none; /* Không che mất link */
-    z-index: 1;
+    left: 30%; /* Đã dời sang sát mép TRÁI (thích dính vách luôn thì sếp để left: 0;) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f4f4; /* Nền trắng/xám sáng */
+    color: #111111; /* Chữ và Icon màu đen */
+    border: none;
+    border-radius: 0 0 25px 25px;
+    padding: 12px 20px 8px 20px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    text-decoration: none;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s ease-in-out;
+    z-index: 10;
+}
+
+    .zzz-back-to-top-embedded .inner-content {
+        transform: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Hiệu ứng Hover - Đảo ngược thành Nền Đen, Chữ/Icon Trắng */
+    .zzz-back-to-top-embedded:hover {
+        background-color: #111111; /* Nền biến thành đen */
+        color: #f4f4f4; /* Chữ và Icon sáng lên thành trắng */
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.8);
+    }
+
+/* Ép nút "Lên đầu trang" trôi lơ lửng và THU NHỎ gọn gàng trên Mobile */
+@media (max-width: 767.98px) {
+    .zzz-back-to-top-embedded {
+        position: fixed !important;
+        top: auto !important;
+        left: auto !important;
+        bottom: 20px !important;
+        right: 15px !important;
+        z-index: 9999 !important;
+        width: max-content !important;
+        min-width: unset !important;
+        height: 38px !important;
+        padding: 0 14px !important;
+        margin: 0 !important;
+        /* 🔥 NỀN TRẮNG, VIỀN ĐEN */
+        background-color: #ffffff !important;
+        border: 2px solid #111111 !important;
+        border-radius: 50px !important;
+        /* Đổi bóng đổ sang màu đen bạo lực cho chuẩn bài */
+        box-shadow: 3px 3px 0px #111111 !important;
+        text-decoration: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+        .zzz-back-to-top-embedded .inner-content {
+            display: flex !important;
+            flex-direction: row !important; /* Ép nằm ngang */
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 6px !important;
+            margin: 0 !important;
+            white-space: nowrap !important; /* Cấm rớt dòng */
+        }
+
+        .zzz-back-to-top-embedded svg {
+            width: 16px !important;
+            height: 16px !important;
+            /* 🔥 ĐỔI ICON SANG MÀU ĐEN */
+            color: #111111 !important;
+            flex-shrink: 0 !important; /* Giữ tỷ lệ icon, không bị bóp méo */
+            margin: 0 !important;
+            display: block !important;
+        }
+
+        .zzz-back-to-top-embedded span {
+            font-size: 14px !important;
+            /* 🔥 ĐỔI CHỮ SANG MÀU ĐEN */
+            color: #111111 !important;
+            font-weight: 700 !important; /* Bonus thêm in đậm cho dễ đọc trên nền trắng */
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: inline-block !important;
+        }
+}
+/* =========================================================
+   MẠNG LƯỚI LIÊN LẠC BẠO LỰC (SIZE XXL)
+========================================================= */
+.zzz-social-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 55px; 
+    height: 55px; 
+    background-color: transparent;
+    color: var(--zzz-white, #ffffff);
+    border: 3px solid var(--zzz-white, #ffffff); 
+    transform: skewX(-15deg); 
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    font-size: 2rem; 
+}
+
+    .zzz-social-btn i {
+        transform: skewX(15deg);
+    }
+
+    /* Hiệu ứng Hover - Sáng rực Vàng Chanh */
+    .zzz-social-btn:hover {
+        background-color: var(--zzz-primary, #D2FF00);
+        color: var(--zzz-black, #111111);
+        border-color: var(--zzz-primary, #D2FF00);
+        box-shadow: 5px 5px 0px var(--zzz-blue, #00E5FF);
+        transform: skewX(-15deg) translate(-4px, -4px); 
+    }
+
+/* Nút bạo lực Đỏ riêng biệt (Email) */
+.zzz-social-danger:hover {
+    background-color: var(--zzz-accent, #FF3366);
+    color: var(--zzz-white, #ffffff);
+    border-color: var(--zzz-accent, #FF3366);
+    box-shadow: 5px 5px 0px var(--zzz-primary, #D2FF00);
 }
 
 /* Animation */
@@ -559,12 +801,9 @@ footer a.zzz-link-btn {
     }
 }
 
-/* Responsive cho Mobile */
-@media (max-width: 576px) {
-    .zzz-footer-brand, .zzz-footer-actions {
-        width: 100%;
-        justify-content: center;
-        margin-bottom: 10px;
+@media (min-width: 992px) {
+    .zzz-nudge-right {
+        padding-left: 7rem !important;
     }
 }
 
@@ -782,4 +1021,179 @@ html, body {
                 text-transform: uppercase;
                 font-size: 0.85rem;
             }
+}
+
+/* =========================================================
+   🔥 DROPDOWN MENU BẠO LỰC (ZZZ STYLE)
+========================================================= */
+
+/* Định dạng cái hộp menu thả xuống */
+.zzz-nav-dropdown .dropdown-menu {
+    background-color: #ffffff;
+    border: 3px solid #111111 !important;
+    border-radius: 0 !important;
+    box-shadow: 6px 6px 0px #111111 !important;
+    padding: 0;
+    margin-top: 12px !important;
+    min-width: 310px; /* Cho to ra một chút để tên không bị gãy */
+    transform-origin: top center;
+    animation: zzz-dropdown-glitch 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+    /* Tạo dải băng keo cảnh báo ở viền trên cùng của menu */
+    .zzz-nav-dropdown .dropdown-menu::before {
+        content: "";
+        display: block;
+        height: 8px;
+        width: 100%;
+        background: repeating-linear-gradient(45deg, #111, #111 10px, var(--zzz-primary, #D2FF00) 10px, var(--zzz-primary, #D2FF00) 20px);
+        border-bottom: 3px solid #111;
+    }
+
+/* Style cho từng dòng Item bên trong */
+.zzz-nav-dropdown .dropdown-item {
+    font-family: 'Space Mono', 'Courier New', monospace;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: #111111;
+    padding: 16px 20px; /* Tăng padding cho nút to và dễ bấm hơn */
+    border-bottom: 2px solid #111111; /* ĐỔI THÀNH NÉT LIỀN ĐỂ NHÌN CỨNG CÁP HƠN */
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    align-items: center;
+    text-transform: uppercase;
+    background-color: #ffffff;
+    white-space: nowrap; /* Ép chữ nằm cứng trên 1 dòng, cấm rớt dòng */
+    overflow: hidden;
+}
+
+/* Ẩn viền ở dòng cuối cùng (Fix luôn cho thẻ button bên trong form) */
+.zzz-nav-dropdown li:last-child .dropdown-item,
+.zzz-nav-dropdown li:last-child form button {
+    border-bottom: none !important;
+}
+
+/* 💥 HIỆU ỨNG HOVER (RÊ CHUỘT) - MỤC THƯỜNG */
+.zzz-nav-dropdown .dropdown-item:hover,
+.zzz-nav-dropdown .dropdown-item:focus {
+    background-color: #111111;
+    color: var(--zzz-primary, #D2FF00);
+    padding-left: 32px; 
+    letter-spacing: 0.5px;
+    box-shadow: inset 8px 0 0 var(--zzz-primary, #D2FF00);
+}
+
+/* Hiệu ứng Icon bay lên mượt mà khi hover */
+.zzz-nav-dropdown .dropdown-item i {
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.zzz-nav-dropdown .dropdown-item:hover i {
+    color: var(--zzz-primary, #D2FF00) !important;
+}
+
+/* 🔥 MỤC DANGER (THOÁT HỆ THỐNG) */
+.zzz-nav-dropdown .zzz-danger-item {
+    color: var(--zzz-accent, #FF3366);
+    background-color: #fcfcfc; /* Nền hơi xám nhạt để tách biệt */
+}
+
+    .zzz-nav-dropdown .zzz-danger-item i {
+        color: var(--zzz-accent, #FF3366) !important;
+    }
+
+/* Hover riêng cho mục Archive / Đăng xuất (Nguy hiểm -> Đỏ) */
+.zzz-nav-dropdown .dropdown-item.zzz-danger-item:hover,
+.zzz-nav-dropdown .dropdown-item.zzz-danger-item:focus {
+    background-color: var(--zzz-accent, #FF3366) !important;
+    color: #ffffff !important;
+    padding-left: 32px;
+    letter-spacing: 0.5px;
+    box-shadow: inset 8px 0 0 var(--zzz-primary, #D2FF00);
+}
+
+    .zzz-nav-dropdown .dropdown-item.zzz-danger-item:hover i {
+        color: #ffffff !important;
+    }
+
+/* =========================================================
+   FIX MŨI TÊN DROPDOWN KHÔNG BỊ MẤT KHI HOVER / ACTIVE
+========================================================= */
+
+/* 1. Tắt vĩnh viễn cái mũi tên bằng CSS cùi bắp của Bootstrap */
+.zzz-nav-dropdown .dropdown-toggle::after {
+    display: none !important;
+}
+
+/* 2. Dùng mũi tên xịn của FontAwesome và thêm hiệu ứng */
+.zzz-nav-dropdown .zzz-caret {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.85em; /* Thu nhỏ xíu cho cân đối */
+    vertical-align: middle;
+}
+
+/* 3. Lật ngược 180 độ và phát sáng màu chanh khi bấm mở Menu */
+.zzz-nav-dropdown.show .dropdown-toggle .zzz-caret {
+    transform: rotate(-180deg);
+    color: var(--zzz-primary, #D2FF00);
+}
+
+/* Animation bung Menu */
+@keyframes zzz-dropdown-glitch {
+    0% {
+        transform: scaleY(0);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scaleY(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scaleY(1);
+    }
+}
+
+/* =========================================================
+   📱 MOBILE: CĂN GIỮA TOÀN BỘ NAVBAR VÀ DROPDOWN
+========================================================= */
+@media (max-width: 991.98px) {
+    /* 1. Ép toàn bộ danh sách menu căn giữa màn hình */
+    .navbar-nav {
+        align-items: center !important;
+        text-align: center !important;
+        width: 100% !important;
+    }
+
+    /* 2. Đảm bảo các mục li chiếm hết chiều ngang để nội dung bên trong dễ căn chỉnh */
+    .nav-item {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+
+    /* 3. Chỉnh lại thẻ bọc Dropdown cho Khách hàng & Admin */
+    .zzz-nav-dropdown,
+    .corp-user-dropdown {
+        flex-direction: column !important;
+        align-items: center !important; /* Căn giữa cái Avatar và cái Menu xổ xuống */
+        width: 100% !important;
+    }
+
+        /* 4. Ép cái nút Avatar (nơi khách bấm vào) phải căn giữa */
+        .zzz-nav-dropdown > .nav-link,
+        .corp-user-dropdown > .nav-link {
+            width: auto !important; /* Không ép full ngang để nội dung nó tự co vào giữa */
+            justify-content: center !important;
+            padding-left: 0 !important;
+            margin: 0 auto !important;
+        }
+
+        /* 5. Menu xổ xuống của khách hàng cũng phải căn giữa */
+        .corp-user-dropdown .dropdown-menu {
+            text-align: left !important; /* Bên trong menu thì vẫn để chữ canh trái cho chuyên nghiệp */
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
 }

@@ -1,28 +1,163 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using WebSuDungDIen.Models
-
+@using System.Security.Claims
+@using Microsoft.EntityFrameworkCore
+@using WebSuDungDIen.Data
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
+@inject ApplicationDbContext _context
+
+@{
+    string hoTen = User.Identity?.Name?.Split('@')[0] ?? "Người dùng";
+    string emailHienThi = "Chưa cập nhật Email"; // BỔ SUNG BIẾN NÀY
+    bool isCustomer = true;
+
+    // Lấy ID của tài khoản đang đăng nhập
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    if (!string.IsNullOrEmpty(currentUserId))
+    {
+        // ---> MÓC EMAIL TỪ BẢNG TÀI KHOẢN (AspNetUsers) <---
+        var userAccount = _context.Users.FirstOrDefault(u => u.Id == currentUserId);
+        if (userAccount != null && !string.IsNullOrEmpty(userAccount.Email))
+        {
+            emailHienThi = userAccount.Email;
+        }
+
+        // 1. Dò xem ông này có phải Nhân Viên không?
+        var isNhanVien = _context.NhanVien.FirstOrDefault(n => n.IdentityUserId == currentUserId);
+        if (isNhanVien != null)
+        {
+            hoTen = isNhanVien.TenNV;
+            isCustomer = false;
+            // Lưu ý: Nếu bảng NhanVien sếp có lưu cột Email riêng thì có thể móc từ đây
+            // emailHienThi = isNhanVien.Email ?? emailHienThi;
+        }
+        else
+        {
+            // 2. Không phải Nhân Viên thì dò xem có phải Khách Hàng không?
+            var isKhachHang = _context.KhachHang.FirstOrDefault(k => k.IdentityUserId == currentUserId);
+            if (isKhachHang != null)
+            {
+                hoTen = isKhachHang.TenKh;
+                isCustomer = true;
+                // Lưu ý: Tương tự, nếu bảng KhachHang có cột Email thì móc từ đây
+                // emailHienThi = isKhachHang.Email ?? emailHienThi;
+            }
+        }
+    }
+}
 
 <ul class="navbar-nav align-items-center gap-2">
     @if (SignInManager.IsSignedIn(User))
     {
-        <li class="nav-item">
-            <a class="zzz-user-tag" asp-area="Identity" asp-page="/Account/Manage/Index" title="Thông tin Đặc Vụ">
-                <span class="status-dot-green"></span>
-                <span class="ms-1">ID: @User.Identity?.Name?.Split('@')[0]</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <form class="form-inline m-0" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                <button type="submit" class="zzz-logout-btn">
-                    <i class="fas fa-power-off"></i> THOÁT
-                </button>
-            </form>
-        </li>
+        @if (isCustomer)
+        {
+            <!-- ======================================================== -->
+            <!-- GIAO DIỆN KHÁCH HÀNG (CORPORATE THEME - SANG TRỌNG)        -->
+            <!-- ======================================================== -->
+            <li class="nav-item dropdown ms-lg-3 d-flex align-items-center corp-user-dropdown">
+                <a class="nav-link dropdown-toggle d-flex align-items-center gap-2"
+                   href="#" id="customerProfileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="border: none !important; box-shadow: none !important; background: transparent !important;">
+                    
+                    <!-- Avatar tròn thanh lịch -->
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white shadow-sm" style="width: 40px; height: 40px; background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    
+                    <!-- Lời chào & Tên -->
+                    <span class="d-flex flex-column align-items-start" style="line-height: 1.2;">
+                        <span class="small text-muted fw-medium mb-0" style="font-size: 0.75rem;">Xin chào,</span>
+                        <span class="fw-bold text-dark text-truncate" style="font-size: 0.95rem; max-width: 150px;">@hoTen</span>
+                    </span>
+                </a>
+
+                <!-- Menu xổ xuống (Bo góc, bóng mây, chuẩn văn phòng) -->
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 mt-2" aria-labelledby="customerProfileDropdown" style="min-width: 260px; border-radius: 16px;">
+                    
+                    <!-- Header -->
+                    <li>
+                        <div class="px-3 py-2 bg-light rounded-3 mb-2 border">
+                            <p class="mb-0 fw-bold text-dark fs-6 text-truncate">@hoTen</p>
+                            <p class="mb-0 text-muted small text-truncate"><i class="fas fa-envelope me-1"></i> @emailHienThi</p>
+                        </div>
+                    </li>
+                    
+                    <!-- Nút Quản lý -->
+                    <li>
+                        <a class="dropdown-item rounded-3 py-2 d-flex align-items-center text-secondary fw-medium" asp-area="Identity" asp-page="/Account/Manage/Index">
+                            <div class="icon-box-sm bg-primary bg-opacity-10 text-primary rounded d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                <i class="fas fa-user-cog"></i>
+                            </div>
+                            Quản lý tài khoản
+                        </a>
+                    </li>
+                    
+                    <li><hr class="dropdown-divider opacity-25 my-2"></li>
+                    
+                    <!-- Nút Đăng xuất -->
+                    <li>
+                        <form class="form-inline m-0 p-0" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                            <button type="submit" class="dropdown-item rounded-3 py-2 d-flex align-items-center text-danger fw-medium w-100 text-start border-0 bg-transparent corp-logout-item">
+                                <div class="icon-box-sm bg-danger bg-opacity-10 text-danger rounded d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </div>
+                                Đăng xuất
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </li>
+        }
+        else
+        {
+            <!-- ======================================================== -->
+            <!-- GIAO DIỆN ADMIN/NHÂN VIÊN (ZZZ THEME - BẠO LỰC)            -->
+            <!-- ======================================================== -->
+            <li class="nav-item dropdown zzz-nav-dropdown ms-lg-3 d-flex align-items-center">
+                <a class="nav-link dropdown-toggle zzz-urban-link d-flex align-items-center gap-2"
+                   href="#" id="userProfileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+                    <!-- Khung Avatar cơ học -->
+                    <div class="zzz-avatar-box">
+                        <i class="fas fa-user-astronaut"></i>
+                    </div>
+
+                    <!-- Tên người dùng -->
+                    <span class="d-flex flex-column align-items-start" style="line-height: 1.2;">
+                        <span class="fw-bold text-uppercase fs-6">@(User.Identity?.Name?.Split('@')[0])</span>
+                    </span>
+                </a>
+
+                <!-- Menu xổ xuống góc vuông -->
+                <ul class="dropdown-menu dropdown-menu-end border-dark border-3 rounded-0 shadow-sm p-0 mt-2" aria-labelledby="userProfileDropdown">
+
+                    <li class="bg-dark text-white p-3 border-bottom border-dark border-3 position-relative overflow-hidden">
+                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.03) 10px, rgba(255,255,255,0.03) 20px); pointer-events: none;"></div>
+                        <div class="small text-muted zzz-text-mono fw-bold mb-1" style="font-size: 0.7rem;">THÔNG TIN NGƯỜI DÙNG</div>
+                        <div class="fw-black fs-5 text-uppercase zzz-text-mono text-truncate" style="color: var(--zzz-primary, #D2FF00); letter-spacing: -0.5px;">@hoTen</div>
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item py-3 px-3 fw-bold zzz-text-mono" asp-area="Identity" asp-page="/Account/Manage/Index">
+                            <i class="fas fa-user-edit me-2 fs-5 text-dark"></i> CHỈNH SỬA THÔNG TIN
+                        </a>
+                    </li>
+
+                    <li>
+                        <form class="form-inline m-0 p-0" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                            <button type="submit" class="dropdown-item zzz-danger-item fw-bold zzz-text-mono py-3 px-3 w-100 text-start border-0 bg-transparent">
+                                <i class="fas fa-power-off me-2 fs-5"></i> THOÁT HỆ THỐNG
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </li>
+        }
     }
     else
     {
+        <!-- GIAO DIỆN KHI CHƯA ĐĂNG NHẬP -->
         <li class="nav-item">
             <a class="zzz-auth-link" asp-area="Identity" asp-page="/Account/Register">ĐĂNG KÝ</a>
         </li>

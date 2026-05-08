@@ -1,7 +1,7 @@
 ﻿@model WebSuDungDIen.Models.HoaDon
 
 @{
-    ViewData["Title"] = "Chi tiết Hóa Đơn";
+    ViewData["Title"] = "Chi Tiết Hóa Đơn";
     // Nhận dữ liệu từ Controller
     var chiSoCu = ViewBag.ChiSoCu != null ? (int)ViewBag.ChiSoCu : 0;
     var chiSoMoi = ViewBag.ChiSoMoi != null ? (int)ViewBag.ChiSoMoi : 0;
@@ -103,10 +103,6 @@
         </div>
 
         <div class="d-grid gap-3 d-md-flex flex-md-column flex-xl-row mt-4 pt-4 border-top border-dark border-3">
-            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary fw-bold rounded-0 px-4 py-3 zzz-btn-action w-100 w-md-auto text-center shadow-sm">
-                <i class="bi bi-pencil-square me-2"></i> CẬP NHẬT BIÊN LAI
-            </a>
-
             <a asp-action="Index" class="btn btn-dark zzz-btn-cancel fw-bold border-dark border-3 rounded-0 px-4 py-3 zzz-btn-action w-100 w-md-auto text-center ms-xl-auto shadow-sm text-white">
                 <i class="bi bi-arrow-left me-2"></i> QUAY VỀ
             </a>

@@ -4,125 +4,159 @@
     ViewData["Title"] = "Quản Lý Tài Khoản";
 }
 
-@if (TempData["ThongBao"] != null)
-{
-    <div id="thongBao" class="zzz-notification border-dark border-3 mb-4" style="box-shadow: 4px 4px 0px var(--zzz-black);">
-        <div class="zzz-content fw-bold zzz-text-mono">
-            <span class="zzz-icon">👾</span> <span class="zzz-text">@TempData["ThongBao"]</span>
-        </div>
-        <div class="zzz-decor-line bg-dark"></div>
+<div class="border-dashed p-3 p-lg-4 mb-5 d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3 zzz-command-panel border-dark border-3 bg-white">
+    <div class="d-inline-block text-nowrap bg-transparent py-2 w-100 w-lg-auto text-center text-lg-start zzz-title-wrap">
+        <h1 class="m-0 zzz-page-title fw-bold text-uppercase fs-3 fs-lg-2 border-start border-primary border-5 ps-3 text-nowrap d-inline-block"
+            style="border-left-color: var(--zzz-primary) !important; letter-spacing: 1px;"
+            data-intro="Chào mừng đến với trang quản lý tài khoản!"
+            data-step="1">
+            [ HỆ THỐNG ] QUẢN LÝ TÀI KHOẢN
+        </h1>
     </div>
-}
-
-<div class="border-dashed p-3 mb-4 d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3 zzz-command-panel border-dark border-3 bg-white">
-
-    <h1 class="m-0 zzz-page-title fw-bold text-uppercase fs-3 text-center text-lg-start w-100 w-lg-auto border-start border-primary border-5 ps-3" style="border-left-color: var(--zzz-primary) !important;">
-        [ HỆ THỐNG ] QUẢN LÝ TÀI KHOẢN
-    </h1>
-
     <div class="d-flex align-items-center gap-3 w-100 w-lg-auto justify-content-center justify-content-lg-end">
-        <a asp-controller="Admin" asp-action="TaoTaiKhoan" class="btn btn-primary fw-bold border-dark border-2 rounded-0 shadow-sm px-4 py-2 zzz-text-mono text-nowrap" style="max-width: max-content;">
-            <i class="bi bi-plus-square-fill me-1"></i> CẤP TÀI KHOẢN MỚI
-        </a>
+        <div class="d-inline-block shadow-sm"
+             data-intro="Nhấn vào đây để tiến hành tạo tài khoản mới cho khách hàng, nhân viên!"
+             data-step="2">
+            <a asp-controller="Admin" asp-action="TaoTaiKhoan"
+               class="btn btn-primary fw-bold border-dark border-2 rounded-0 px-4 py-2 zzz-text-mono text-nowrap d-inline-flex align-items-center">
+                <i class="bi bi-plus-square-fill me-2"></i> CẤP TÀI KHOẢN MỚI
+            </a>
+        </div>
     </div>
 </div>
 
-<div class="row g-4">
+<div class="row g-5">
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="col-12"
+            data-intro="Đầu tiên đến với phần của nhân viên"
+            data-step="3"
+            data-position="bottom">
+            <div class="d-inline-flex align-items-stretch border border-dark border-3 mb-0 position-relative z-1" style="transform: translateY(3px); background-color: #dc3545;">
+                <div class="bg-dark d-flex align-items-center justify-content-center px-4 py-2 border-end border-dark border-3">
+                    <i class="fas fa-user-shield fs-4 text-white"></i>
+                </div>
+                <div class="px-4 py-2 d-flex align-items-center">
+                    <h5 class="m-0 fw-black zzz-text-mono text-white text-uppercase" style="letter-spacing: 1px;">>_ NHÂN SỰ</h5>
+                </div>
+            </div>
 
-    <div class="col-12">
-        <div class="d-flex align-items-center mb-3">
-            <i class="fas fa-user-shield fs-3 me-2 text-primary"></i>
-            <h5 class="m-0 fw-bold zzz-text-mono text-uppercase border-bottom border-dark border-3 pb-1">TỆP DỮ LIỆU: NHÂN SỰ</h5>
-        </div>
+            <div class="card position-relative border-dark border-3 rounded-0 bg-white" style="box-shadow: 8px 8px 0px #000;">
+                <div class="zzz-hazard-line" style="height: 6px; background: repeating-linear-gradient(45deg, #000, #000 10px, transparent 10px, transparent 20px);"></div>
 
-        <div class="card position-relative border-dark border-3 rounded-0 bg-white shadow-lg">
-            <div class="card-body p-0" style="overflow: visible;">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0 zzz-table align-middle">
-                        <thead class="table-dark">
-                            <tr class="zzz-text-mono text-uppercase text-nowrap">
-                                <th class="border-end border-secondary" style="min-width: 120px;">MÃ NV</th>
-                                <th class="border-end border-secondary" style="min-width: 220px;">TÊN NHÂN VIÊN</th>
-                                <th class="border-end border-secondary" style="min-width: 150px;">USERNAME</th>
-                                <th class="border-end border-secondary" style="min-width: 250px;">EMAIL</th>
-                                <th class="text-center border-end border-secondary" style="min-width: 160px;">TRẠNG THÁI</th>
-                                <th class="text-center" style="min-width: 140px;">LỆNH</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var user in Model.NhanVien)
-                            {
-                                var hoSo = Model.DanhSachNhanVien.FirstOrDefault(nv => nv.IdentityUserId == user.Id);
-                                <tr class="border-bottom border-dark-subtle">
-                                    <td data-label="MÃ NV" class="border-end border-dark-subtle">
-                                        <span class="badge bg-secondary zzz-badge-id fs-6">@(hoSo?.MaNV ?? "N/A")</span>
-                                    </td>
-                                    <td data-label="TÊN NHÂN VIÊN" class="border-end border-dark-subtle">
-                                        <div class="zzz-text-name text-danger fw-bold fs-5 text-wrap">@(hoSo?.TenNV ?? "[ CHƯA CẬP NHẬT ]")</div>
-                                    </td>
-                                    <td data-label="USERNAME" class="border-end border-dark-subtle fw-bold zzz-text-mono fs-6 text-primary">@user.UserName</td>
-                                    <td data-label="EMAIL" class="border-end border-dark-subtle fw-bold zzz-text-mono text-muted small">@user.Email</td>
-                                    <td data-label="TRẠNG THÁI" class="text-center border-end border-dark-subtle">
-                                        @if (hoSo == null)
-                                        {
-                                            <span class="badge bg-secondary zzz-status-badge border border-dark border-2 text-white fw-bold"><i class="zzz-status-x">!</i> THIẾU HỒ SƠ</span>
-                                        }
-                                        else if (user.LockoutEnd != null && user.LockoutEnd > DateTimeOffset.Now)
-                                        {
-                                            <span class="badge bg-danger zzz-status-badge border border-dark border-2 fw-bold"><i class="zzz-status-x">×</i> BỊ KHÓA</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-success zzz-status-badge border border-dark border-2 text-white fw-bold"><span class="zzz-status-dot">●</span> HOẠT ĐỘNG</span>
-                                        }
-                                    </td>
-                                    <td data-label="LỆNH" class="text-lg-center align-middle">
-                                        <div class="dropdown">
-                                            <button class="btn btn-outline-dark border-2 rounded-0 dropdown-toggle zzz-btn-action fw-bold w-100 w-lg-auto text-end text-lg-center px-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                CHỌN
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow">
-                                                <li>
-                                                    <a class="dropdown-item fw-bold zzz-text-mono" asp-controller="Admin" asp-action="ChiTietTaiKhoan" asp-route-userId="@user.Id">
-                                                        <i class="fas fa-id-card me-2 text-primary"></i> XEM TÀI KHOẢN
-                                                    </a>
-                                                </li>
-                                                <li><hr class="dropdown-divider border-dark border-2"></li>
-                                                <li>
-                                                    <a class="dropdown-item text-danger fw-bold zzz-text-mono" asp-controller="Admin" asp-action="ResetPassword" asp-route-userId="@user.Id">
-                                                        <i class="fas fa-key me-2"></i> ĐẶT LẠI MẬT KHẨU
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td>
+                <div class="card-body p-0" style="overflow: visible;">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 zzz-table align-middle">
+                            <thead class="table-dark">
+                                <tr class="zzz-text-mono text-uppercase text-nowrap" style="letter-spacing: 0.5px;">
+                                    <th class="border-end border-secondary py-3 ps-4" style="min-width: 120px;">MÃ NV</th>
+                                    <th class="border-end border-secondary py-3" style="min-width: 220px;">TÊN NHÂN VIÊN</th>
+                                    <th class="border-end border-secondary py-3" style="min-width: 150px;">USERNAME</th>
+                                    <th class="border-end border-secondary py-3" style="min-width: 250px;">EMAIL</th>
+                                    <th class="text-center border-end border-secondary py-3" style="min-width: 160px;">TRẠNG THÁI</th>
+                                    <th class="text-center py-3" style="min-width: 140px;">LỆNH THỰC THI</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model.NhanVien)
+                                {
+                                    var hoSo = Model.DanhSachNhanVien.FirstOrDefault(nv => nv.IdentityUserId == user.Id);
+                                    <tr class="border-bottom border-dark-subtle">
+                                        <td data-label="MÃ NV" class="border-end border-dark-subtle ps-4">
+                                            <span class="badge bg-light text-dark border border-dark border-2 zzz-badge-id fs-6 shadow-sm">@(hoSo?.MaNV ?? "N/A")</span>
+                                        </td>
+                                        <td data-label="TÊN NHÂN VIÊN" class="border-end border-dark-subtle">
+                                            <div class="zzz-text-name fw-black fs-5 text-wrap">
+                                                @{
+                                                    var tenHienThi = !string.IsNullOrWhiteSpace(user.HoTen)
+                                                    ? user.HoTen
+                                                    : (!string.IsNullOrWhiteSpace(hoSo?.TenNV) ? hoSo.TenNV : "[ CHƯA CẬP NHẬT ]");
+                                                }
+                                                @tenHienThi
+                                            </div>
+                                        </td>
+
+                                        <td data-label="USERNAME" class="border-end border-dark-subtle fw-bold zzz-text-mono fs-6 text-dark">@user.UserName</td>
+                                        <td data-label="EMAIL" class="border-end border-dark-subtle fw-bold zzz-text-mono text-muted small">@user.Email</td>
+                                        <td data-label="TRẠNG THÁI" class="text-center border-end border-dark-subtle">
+                                            @if (hoSo == null)
+                                            {
+                                                <span class="badge bg-secondary zzz-status-badge border border-dark border-2 text-white fw-bold shadow-sm"><i class="zzz-status-x">!</i> THIẾU HỒ SƠ</span>
+                                            }
+                                            else if (user.LockoutEnd != null && user.LockoutEnd > DateTimeOffset.Now)
+                                            {
+                                                <span class="badge bg-danger zzz-status-badge border border-dark border-2 fw-bold shadow-sm"><i class="zzz-status-x">×</i> BỊ KHÓA</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="zzz-badge-custom hide-on-mobile">
+                                                    <span class="text-dark zzz-blink-dot" style="margin-right: 14px;">●</span> HOẠT ĐỘNG
+                                                </span>
+                                            }
+                                        </td>
+                                        <td data-label="LỆNH" class="text-lg-center align-middle pe-3">
+                                            <div class="dropdown">
+                                                <button class="btn btn-dark border-2 border-dark rounded-0 zzz-btn-action fw-bold w-100 d-flex justify-content-between align-items-center px-4 shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <span class="flex-grow-1 text-center">CHỌN</span>
+                                                    <i class="fas fa-chevron-down"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end"
+                                                    data-intro="Nhấn vào đây để mở ra các chức năng quản lý tài khoản"
+                                                    data-step="4">
+                                                    <li>
+                                                        <a class="dropdown-item zzz-text-mono" asp-controller="Admin" asp-action="ChiTietTaiKhoan" asp-route-userId="@user.Id">
+                                                            <i class="fas fa-id-card me-2"></i> XEM TÀI KHOẢN
+                                                        </a>
+                                                    </li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li>
+                                                        <form asp-controller="Admin" asp-action="ResetPassword" method="post" class="d-inline">
+                                                            <input type="hidden" name="userId" value="@user.Id" />
+                                                            <button type="button" class="dropdown-item text-danger zzz-text-mono" onclick="confirmReset(this)"
+                                                            data-intro="Lưu ý chỉ khi có yêu cầu rồi hãy tiến hành thay đổi dữ liệu của khách hàng"
+                                                            data-step="5">
+                                                                <i class="fas fa-key me-2"></i> ĐẶT LẠI MẬT KHẨU
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
 
     <div class="col-12 mt-5">
-        <div class="d-flex align-items-center mb-3">
-            <i class="fas fa-users fs-3 me-2 text-warning"></i>
-            <h5 class="m-0 fw-bold zzz-text-mono text-uppercase border-bottom border-dark border-3 pb-1">TỆP DỮ LIỆU: KHÁCH HÀNG</h5>
+
+        <div class="d-inline-flex align-items-stretch border border-dark border-3 mb-0 position-relative z-1" style="transform: translateY(3px); background-color: var(--zzz-primary);">
+            <div class="bg-dark d-flex align-items-center justify-content-center px-4 py-2 border-end border-dark border-3">
+                <i class="fas fa-users fs-4" style="color: var(--zzz-primary);"></i>
+            </div>
+            <div class="px-4 py-2 d-flex align-items-center">
+                <h5 class="m-0 fw-black zzz-text-mono text-dark text-uppercase" style="letter-spacing: 1px;">>_ KHÁCH HÀNG</h5>
+            </div>
         </div>
 
-        <div class="card position-relative border-dark border-3 rounded-0 bg-white shadow-lg">
+        <div class="card position-relative border-dark border-3 rounded-0 bg-white" style="box-shadow: 8px 8px 0px #000;">
+            <div class="zzz-hazard-line" style="height: 6px; background: repeating-linear-gradient(-45deg, #000, #000 10px, transparent 10px, transparent 20px);"></div>
+
             <div class="card-body p-0" style="overflow: visible;">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0 zzz-table align-middle">
                         <thead class="table-dark">
-                            <tr class="zzz-text-mono text-uppercase text-nowrap">
-                                <th class="border-end border-secondary" style="min-width: 120px;">MÃ KH</th>
-                                <th class="border-end border-secondary" style="min-width: 220px;">TÊN KHÁCH HÀNG</th>
-                                <th class="border-end border-secondary" style="min-width: 150px;">USERNAME</th>
-                                <th class="border-end border-secondary" style="min-width: 250px;">EMAIL</th>
-                                <th class="text-center border-end border-secondary" style="min-width: 160px;">TRẠNG THÁI</th>
-                                <th class="text-center" style="min-width: 140px;">LỆNH</th>
+                            <tr class="zzz-text-mono text-uppercase text-nowrap" style="letter-spacing: 0.5px;">
+                                <th class="border-end border-secondary py-3 ps-4" style="min-width: 120px;">MÃ KH</th>
+                                <th class="border-end border-secondary py-3" style="min-width: 220px;">TÊN KHÁCH HÀNG</th>
+                                <th class="border-end border-secondary py-3" style="min-width: 150px;">USERNAME</th>
+                                <th class="border-end border-secondary py-3" style="min-width: 250px;">EMAIL</th>
+                                <th class="text-center border-end border-secondary py-3" style="min-width: 160px;">TRẠNG THÁI</th>
+                                <th class="text-center py-3" style="min-width: 140px;">LỆNH THỰC THI</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -132,20 +166,25 @@
                                 {
                                     var hoSo = Model.DanhSachKhach.FirstOrDefault(k => k.IdentityUserId == user.Id);
                                     <tr class="border-bottom border-dark-subtle">
-                                        <td data-label="MÃ KH" class="border-end border-dark-subtle">
-                                            <span class="badge bg-secondary zzz-badge-id fs-6">@(hoSo?.MaKh ?? "N/A")</span>
+                                        <td data-label="MÃ KH" class="border-end border-dark-subtle ps-4">
+                                            <span class="badge bg-light text-dark border border-dark border-2 zzz-badge-id fs-6 shadow-sm">@(hoSo?.MaKh ?? "N/A")</span>
                                         </td>
                                         <td data-label="TÊN KHÁCH HÀNG" class="border-end border-dark-subtle">
-                                            <div class="zzz-text-name text-danger fw-bold fs-5 text-wrap">
-                                                @(string.IsNullOrWhiteSpace(hoSo?.TenKh) ? "[ CHƯA CẬP NHẬT ]" : hoSo.TenKh)
+                                            <div class="zzz-text-name text-dark fw-black fs-5 text-wrap">
+                                                @{
+                                                    var tenHienThi = !string.IsNullOrWhiteSpace(user.HoTen)
+                                                    ? user.HoTen
+                                                    : (!string.IsNullOrWhiteSpace(hoSo?.TenKh) ? hoSo.TenKh : "[ CHƯA CẬP NHẬT ]");
+                                                }
+                                                @tenHienThi
                                             </div>
                                         </td>
-                                        <td data-label="USERNAME" class="border-end border-dark-subtle fw-bold zzz-text-mono fs-6 text-primary">@user.UserName</td>
+                                        <td data-label="USERNAME" class="border-end border-dark-subtle fw-bold zzz-text-mono fs-6 text-dark">@user.UserName</td>
                                         <td data-label="EMAIL" class="border-end border-dark-subtle fw-bold zzz-text-mono text-muted small">@user.Email</td>
                                         <td data-label="TRẠNG THÁI" class="text-center border-end border-dark-subtle">
                                             @if (hoSo == null)
                                             {
-                                                <span class="badge bg-secondary zzz-status-badge border border-dark border-2 text-white fw-bold"><i class="zzz-status-x">!</i> THIẾU HỒ SƠ</span>
+                                                <span class="badge bg-secondary zzz-status-badge border border-dark border-2 text-white fw-bold shadow-sm"><i class="zzz-status-x">!</i> THIẾU HỒ SƠ</span>
                                             }
                                             else if (user.LockoutEnd != null && user.LockoutEnd > DateTimeOffset.Now)
                                             {
@@ -157,36 +196,40 @@
                                             }
                                             else
                                             {
-                                                <span class="badge bg-success zzz-status-badge border border-dark border-2 text-white fw-bold shadow-sm"><span class="zzz-status-dot">●</span> HOẠT ĐỘNG</span>
+                                                <span class="zzz-badge-custom hide-on-mobile">
+                                                    <span class="text-dark zzz-blink-dot" style="margin-right: 14px;">●</span> HOẠT ĐỘNG
+                                                </span>
                                             }
                                         </td>
-                                        <td data-label="LỆNH" class="text-lg-center align-middle">
+                                        <td data-label="LỆNH" class="text-lg-center align-middle pe-3">
                                             <div class="dropdown">
-                                                <button class="btn btn-dark border-2 rounded-0 dropdown-toggle zzz-btn-action fw-bold w-100 w-lg-auto text-end text-lg-center px-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    CHỌN
+                                                <button class="btn btn-dark border-2 border-dark rounded-0 zzz-btn-action fw-bold w-100 d-flex justify-content-between align-items-center px-4 shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <span class="flex-grow-1 text-center">CHỌN</span>
+                                                    <i class="fas fa-chevron-down"></i>
                                                 </button>
-                                                <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow">
+                                                <ul class="dropdown-menu dropdown-menu-end">
                                                     <li>
-                                                        <a class="dropdown-item fw-bold zzz-text-mono" asp-controller="Admin" asp-action="ChiTietTaiKhoan" asp-route-userId="@user.Id">
-                                                            <i class="fas fa-id-card me-2 text-primary"></i> XEM TÀI KHOẢN
+                                                        <a class="dropdown-item zzz-text-mono" asp-controller="Admin" asp-action="ChiTietTaiKhoan" asp-route-userId="@user.Id">
+                                                            <i class="fas fa-id-card me-2"></i> XEM TÀI KHOẢN
                                                         </a>
                                                     </li>
                                                     @if (hoSo != null && hoSo.TrangThai)
                                                     {
-                                                        <li><hr class="dropdown-divider border-dark border-2"></li>
+                                                        <li><hr class="dropdown-divider"></li>
                                                         <li>
-                                                            <a class="dropdown-item fw-bold zzz-text-mono text-success" asp-controller="KhachHang" asp-action="Details" asp-route-id="@hoSo.Id">
+                                                            <a class="dropdown-item zzz-text-mono" asp-controller="KhachHang" asp-action="Details" asp-route-id="@hoSo.Id" asp-route-source="QuanLyTaiKhoan">
                                                                 <i class="fas fa-folder-open me-2"></i> XEM HỒ SƠ KH
                                                             </a>
                                                         </li>
                                                     }
                                                     @if (hoSo == null || !hoSo.TrangThai)
                                                     {
-                                                        <li><hr class="dropdown-divider border-dark border-2"></li>
+                                                        <li><hr class="dropdown-divider"></li>
                                                         <li>
-                                                            <a class="dropdown-item text-warning fw-bold zzz-text-mono" asp-controller="Admin" asp-action="DuyetKhach" asp-route-userId="@user.Id">
+                                                            <button type="button" class="dropdown-item zzz-text-mono text-success fw-bold"
+                                                                    onclick="moHopThoaiDuyetKhach('@user.Id', '@(hoSo?.TenKh ?? user.UserName)')">
                                                                 <i class="fas fa-check-circle me-2"></i> PHÊ DUYỆT
-                                                            </a>
+                                                            </button>
                                                         </li>
                                                     }
                                                 </ul>
@@ -199,10 +242,10 @@
                             {
                                 <tr>
                                     <td colspan="6" class="text-center py-5 border-0 bg-light">
-                                        <div class="text-center">
-                                            <i class="bi bi-search text-muted mb-3" style="font-size: 3rem;"></i>
-                                            <h4 class="fw-bold text-danger zzz-text-mono">CHƯA CÓ KHÁCH HÀNG NÀO.</h4>
-                                            <p class="text-muted fw-bold mb-0">Hệ thống ghi nhận tệp dữ liệu khách hàng đang trống.</p>
+                                        <div class="text-center py-4">
+                                            <i class="fas fa-database text-muted mb-3" style="font-size: 3.5rem;"></i>
+                                            <h4 class="fw-black text-danger zzz-text-mono text-uppercase">SYS.WARN // CHƯA CÓ KHÁCH HÀNG NÀO.</h4>
+                                            <p class="text-muted fw-bold mb-0">>_ Hệ thống ghi nhận tệp dữ liệu khách hàng đang trống.</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -216,6 +259,66 @@
 
 </div>
 
+<div class="modal fade" id="modalDuyetKhach" tabindex="-1" aria-labelledby="modalDuyetKhachLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-0 border-dark border-3" style="box-shadow: 8px 8px 0px #000;">
+            <div class="modal-header bg-dark text-white rounded-0 border-bottom border-dark border-3">
+                <h5 class="modal-title fw-black text-white zzz-text-mono" id="modalDuyetKhachLabel">PHÊ DUYỆT & CẤP ĐIỆN KẾ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form asp-controller="Admin" asp-action="DuyetKhach" method="post">
+                <div class="modal-body p-4 bg-white">
+                    <input type="hidden" id="modalUserId" name="userId" value="" />
+
+                    <div class="alert alert-warning border-dark border-2 rounded-0 shadow-sm fw-bold mb-4 zzz-text-mono" style="font-size: 0.9rem;">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Đang xét duyệt hồ sơ cho khách:<br />
+                        <span id="modalTenKh" class="text-danger fw-black fs-5 mt-1 d-block"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="chiSoDau" class="form-label fw-bold zzz-text-mono">>_ CHỈ SỐ ĐIỆN KẾ BAN ĐẦU <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control border-dark border-2 rounded-0 fs-3 fw-black text-center zzz-text-mono"
+                               id="chiSoDau" name="chiSoDau" required min="0" placeholder="0" style="height: 60px; color: var(--zzz-primary); background-color: #111;" />
+                        <div class="form-text mt-2 text-muted fw-bold">Ghi nhận chỉ số hiện tại trên đồng hồ lúc gắn công tơ.</div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-top border-dark border-3 rounded-0 justify-content-between">
+                    <button type="button" class="btn btn-secondary fw-bold rounded-0 border-dark border-2 zzz-text-mono shadow-sm px-4" data-bs-dismiss="modal">
+                        <i class="fas fa-arrow-left me-2"></i> QUAY LẠI
+                    </button>
+                    <button type="submit" class="btn btn-primary fw-bold rounded-0 border-dark border-2 zzz-text-mono shadow-sm px-4">
+                        <i class="fas fa-check me-2"></i> XÁC NHẬN DUYỆT
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script src="~/js/auto-alert.js"></script>
+    <script>
+        function confirmReset(button) {
+            // Nếu sếp có xài SweetAlert2 thì dùng Swal.fire cho đẹp, ở đây em dùng confirm mặc định
+            if (confirm("⚠️ CẢNH BÁO BẢO MẬT ⚠️\n\nBạn có chắc chắn muốn RESET mật khẩu của người này về '123' không? Hành động này không thể hoàn tác!")) {
+                button.closest('form').submit(); // Người dùng bấm OK thì mới chạy lệnh
+            }
+        }
+
+        function moHopThoaiDuyetKhach(userId, tenKh) {
+            // 1. Nạp UserId vào thẻ input ẩn
+            document.getElementById('modalUserId').value = userId;
+
+            // 2. Hiển thị tên khách lên thông báo cho Admin đỡ nhìn nhầm
+            document.getElementById('modalTenKh').innerText = tenKh;
+
+            // 3. Xóa trắng ô nhập chỉ số cũ (phòng khi trước đó đang nhập dở)
+            document.getElementById('chiSoDau').value = '';
+
+            // 4. Kích hoạt Bootstrap Modal
+            var myModal = new bootstrap.Modal(document.getElementById('modalDuyetKhach'));
+            myModal.show();
+        }
+    </script>
 }

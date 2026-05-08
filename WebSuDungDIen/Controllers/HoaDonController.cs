@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,6 +14,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using WebSuDungDIen.Data;
 using WebSuDungDIen.Models;
+using WebSuDungDIen.Services;
 using WebSuDungDIen.ViewModels;
 
 namespace WebSuDungDIen.Controllers
@@ -24,8 +26,9 @@ namespace WebSuDungDIen.Controllers
         private readonly IMongoCollection<ChiSoDien> _chiSoDienCollection;
         private readonly TaoMaService _taoMaService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IMongoArchiveService _mongoService;
 
-        public HoaDonController(ApplicationDbContext context, IMongoClient mongoClient, TaoMaService taoMaService, UserManager<ApplicationUser> userManager)
+        public HoaDonController(ApplicationDbContext context, IMongoClient mongoClient, TaoMaService taoMaService, UserManager<ApplicationUser> userManager, IMongoArchiveService mongoService)
         {
             var database = mongoClient.GetDatabase("Cluster0");
             _chiSoDienCollection = database.GetCollection<ChiSoDien>("ChiSoDien");
@@ -33,6 +36,7 @@ namespace WebSuDungDIen.Controllers
             _context = context;
             _taoMaService = taoMaService;
             _userManager = userManager;
+            _mongoService = mongoService;
         }
 
         [HttpGet]
@@ -279,34 +283,39 @@ namespace WebSuDungDIen.Controllers
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> Index(string maPhuongApi, int? thang, int? nam)
+        public async Task<IActionResult> Index(string maTinh, string maPhuongApi, int? thang, int? nam)
         {
             // ====================================================================
-            // 1. TẠO DROPDOWN ĐỘNG TỪ DATABASE (CẢ PHƯỜNG, THÁNG, NĂM)
+            // 💥 1. LẤY MÃ PHƯỜNG VÀ TÊN TỈNH ĐÃ CÓ HÓA ĐƠN
             // ====================================================================
 
-            // 🟢 BÙA CHÚ 1: Lọc Địa Bàn (Chỉ lấy Phường/Xã ĐÃ CÓ HÓA ĐƠN)
-            // Kéo dữ liệu thô lên RAM trước để tránh EF Core báo lỗi khi GroupBy
-            var rawPhuongData = await (from hd in _context.HoaDon
-                                       join kh in _context.KhachHang on hd.KhachHangId equals kh.Id.ToString()
-                                       where !string.IsNullOrEmpty(kh.MaPhuongApi)
-                                       select new { kh.MaPhuongApi, kh.DiaChiDayDu })
-                                       .Distinct()
-                                       .ToListAsync();
+            // Móc dữ liệu Khách hàng ĐÃ CÓ Hóa đơn lên RAM
+            var dsKhachHangCoHoaDon = await (from hd in _context.HoaDon
+                                             join kh in _context.KhachHang on hd.KhachHangId equals kh.Id.ToString()
+                                             where !string.IsNullOrEmpty(kh.MaPhuongApi) && !string.IsNullOrEmpty(kh.DiaChiDayDu)
+                                             select new { kh.MaPhuongApi, kh.DiaChiDayDu })
+                                             .Distinct()
+                                             .ToListAsync();
 
-            // Nhóm lại trên RAM để lấy tên địa chỉ đầy đủ (Ví dụ: Phường A, Quận B, Tỉnh C) làm nhãn
-            var listPhuong = rawPhuongData
-                .GroupBy(x => x.MaPhuongApi)
-                .Select(g => new
-                {
-                    Value = g.Key,
-                    Text = g.First().DiaChiDayDu ?? ("Mã địa bàn: " + g.Key)
-                })
+            // Lấy mảng Mã Phường
+            var phuongCoData = dsKhachHangCoHoaDon.Select(x => x.MaPhuongApi).Distinct().ToList();
+
+            // 💥 TÀ THUẬT: Cắt phần tử cuối cùng sau dấu phẩy để lấy TÊN TỈNH
+            var tinhCoData = dsKhachHangCoHoaDon
+                .Select(x => x.DiaChiDayDu.Split(',').LastOrDefault()?.Trim())
+                .Where(t => !string.IsNullOrEmpty(t))
+                .Distinct()
                 .ToList();
 
-            ViewBag.PhuongList = new SelectList(listPhuong, "Value", "Text", maPhuongApi);
+            ViewBag.DanhSachPhuongCoData = phuongCoData;
+            ViewBag.DanhSachTinhCoData = tinhCoData; // Bơm đạn mới cho Javascipt!
 
-            // 🟢 BÙA CHÚ 2: Lọc Tháng / Năm (Chỉ lấy Tháng/Năm ĐÃ CÓ HÓA ĐƠN)
+            ViewBag.CurrentTinh = maTinh;
+            ViewBag.CurrentPhuong = maPhuongApi;
+
+            // ====================================================================
+            // 2. TẠO DROPDOWN THÁNG / NĂM (Giữ nguyên)
+            // ====================================================================
             var existingDates = await (from hd in _context.HoaDon
                                        join cs in _context.ChiSoDien on hd.ChiSoDienId equals cs.Id.ToString()
                                        select new { cs.Thang, cs.Nam })
@@ -315,42 +324,27 @@ namespace WebSuDungDIen.Controllers
 
             var listThang = existingDates.Select(x => x.Thang).Distinct().OrderBy(x => x)
                                          .Select(x => new { Value = x, Text = "Tháng " + x }).ToList();
-
             var listNam = existingDates.Select(x => x.Nam).Distinct().OrderByDescending(x => x)
                                        .Select(x => new { Value = x, Text = "Năm " + x }).ToList();
 
             ViewBag.ThangList = new SelectList(listThang, "Value", "Text", thang);
             ViewBag.NamList = new SelectList(listNam, "Value", "Text", nam);
-
-            // Lưu trạng thái đang chọn
-            ViewBag.CurrentPhuong = maPhuongApi;
             ViewBag.CurrentThang = thang;
             ViewBag.CurrentNam = nam;
 
             // ====================================================================
-            // 2. TRUY VẤN VÀ LỌC DỮ LIỆU (Đoạn này giữ nguyên của sếp)
+            // 3. TRUY VẤN VÀ LỌC DỮ LIỆU
             // ====================================================================
             var query = from hd in _context.HoaDon
                         join cs in _context.ChiSoDien on hd.ChiSoDienId equals cs.Id.ToString()
                         join kh in _context.KhachHang on hd.KhachHangId equals kh.Id.ToString()
                         select new { hd, cs, kh };
 
-            if (!string.IsNullOrEmpty(maPhuongApi))
-            {
-                query = query.Where(x => x.kh.MaPhuongApi == maPhuongApi);
-            }
+            if (!string.IsNullOrEmpty(maTinh)) query = query.Where(x => x.kh.DiaChiDayDu.Contains(maTinh));
+            if (!string.IsNullOrEmpty(maPhuongApi)) query = query.Where(x => x.kh.MaPhuongApi == maPhuongApi);
+            if (thang.HasValue) query = query.Where(x => x.cs.Thang == thang.Value);
+            if (nam.HasValue) query = query.Where(x => x.cs.Nam == nam.Value);
 
-            if (thang.HasValue)
-            {
-                query = query.Where(x => x.cs.Thang == thang.Value);
-            }
-
-            if (nam.HasValue)
-            {
-                query = query.Where(x => x.cs.Nam == nam.Value);
-            }
-
-            // 4. Sắp xếp và xuất ViewModel
             var result = await query
                 .OrderByDescending(x => x.cs.Nam)
                 .ThenByDescending(x => x.cs.Thang)
@@ -372,46 +366,6 @@ namespace WebSuDungDIen.Controllers
             return View(result);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> DuyetThanhToan(string id)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                return NotFound();
-            }
-
-            // 1. Tìm hóa đơn trong Database
-            var hoaDon = await _context.HoaDon.FindAsync(id);
-            if (hoaDon == null)
-            {
-                TempData["Error"] = "Không tìm thấy hóa đơn này!";
-                return RedirectToAction(nameof(Index));
-            }
-
-            bool khachDaTraTien = false; // Thay bằng: hoaDon.KhachDaChuyenKhoan == true; hoặc tương tự
-
-            // 3. Xử lý kết quả duyệt
-            if (khachDaTraTien)
-            {
-                // Nếu khách đã trả: Cập nhật hóa đơn thành ĐÃ THU
-                hoaDon.TrangThai = "DaThanhToan";
-                hoaDon.NgayThanhToan = DateTime.Now;
-
-                _context.Update(hoaDon);
-                await _context.SaveChangesAsync();
-
-                TempData["ThongBao"] = $"Tuyệt vời! Đã duyệt thanh toán thành công cho hóa đơn #{hoaDon.MaHd}.";
-            }
-            else
-            {
-                // Nếu khách chưa trả: Bật cảnh báo (Cái này sẽ ăn vào TempData["Error"] màu đỏ của bạn ở View)
-                TempData["Error"] = $"Khách hàng chưa thanh toán cho hóa đơn #{hoaDon.MaHd}. Không thể duyệt!";
-            }
-
-            // Quay lại trang danh sách hóa đơn
-            return RedirectToAction(nameof(Index));
-        }
-
         // GET: HoaDon/Details/5
         public async Task<IActionResult> Details(string id)
         {
@@ -426,11 +380,23 @@ namespace WebSuDungDIen.Controllers
             // 1. Lấy thông tin Chỉ Số Điện
             var chiSo = await _context.ChiSoDien.FirstOrDefaultAsync(c => c.Id == hoaDon.ChiSoDienId);
 
-            // 2. Lấy Bảng giá điện hiện hành
-            var bangGia = await _context.DonGiaDien.OrderBy(g => g.Bac).ToListAsync();
+            // =========================================================
+            // 🔥 SỬA LỖI TẠI ĐÂY: Truy vết đúng bộ 6 bậc giá của hóa đơn
+            // =========================================================
+            var donGiaNeo = await _context.DonGiaDien.FirstOrDefaultAsync(d => d.Id == hoaDon.DonGiaId);
+            var bangGia = new List<DonGiaDien>();
+
+            if (donGiaNeo != null)
+            {
+                // Chỉ lấy 6 bậc có cùng "Ngày Tạo" (Cùng 1 bộ) với cái đơn giá neo
+                bangGia = await _context.DonGiaDien
+                    .Where(d => d.NgayTao == donGiaNeo.NgayTao && d.Bac > 0)
+                    .OrderBy(g => g.Bac)
+                    .ToListAsync();
+            }
 
             ViewBag.ThongTinKhach = kh != null ? $"{kh.TenKh} - {kh.MaKh}" : "Không tìm thấy thông tin";
-            ViewBag.ThongTinNhanVien = nv != null ? nv.TenNV : "Không tìm thấy nhân viên";
+            ViewBag.ThongTinNhanVien = nv != null ? nv.TenNV : "Hệ thống";
 
             // Đẩy dữ liệu tính toán sang View
             ViewBag.ChiSoCu = chiSo != null ? chiSo.ChiSoCu : 0;
@@ -519,17 +485,16 @@ namespace WebSuDungDIen.Controllers
 
             return Json(result);
         }
-
         // GET: HoaDon/Create
         public async Task<IActionResult> Create()
         {
-            // Bước 1: Lấy dữ liệu thô từ Database về bộ nhớ (chỉ lấy đúng 2 cột cần dùng cho nhẹ)
+            // Bước 1: Lấy dữ liệu thô từ Database về bộ nhớ 
             var khachHangTho = await _context.KhachHang
                 .Where(k => !string.IsNullOrEmpty(k.MaPhuongApi) && !string.IsNullOrEmpty(k.DiaChiDayDu))
                 .Select(k => new { k.MaPhuongApi, k.DiaChiDayDu })
-                .ToListAsync(); // <--- CHỐT CHẶN Ở ĐÂY: Ép chạy câu lệnh SQL và lưu vào RAM
+                .ToListAsync();
 
-            // Bước 2: Xử lý chuỗi và GroupBy bằng C# trên RAM (Không lo lỗi Expression Tree nữa)
+            // Bước 2: Xử lý chuỗi và GroupBy bằng C# trên RAM
             var danhSachPhuong = khachHangTho
                 .GroupBy(k => k.MaPhuongApi)
                 .Select(g => {
@@ -547,17 +512,33 @@ namespace WebSuDungDIen.Controllers
 
             var model = new LapHoaDonTheoPhuongVM();
 
-            // Load bảng giá như cũ
-            var bangGia = await _context.DonGiaDien
-                .OrderBy(x => x.Bac)
-                .ToListAsync();
+            // ==========================================
+            // TUYỆT CHIÊU TRỊ TRÙNG LẶP: MỖI BẬC CHỈ LẤY 1 DÒNG MỚI NHẤT
+            // ==========================================
+            // Lấy hết lên RAM để xử lý mượt mà, không lo EF Core báo lỗi dịch SQL
+            var allGiaTho = await _context.DonGiaDien.ToListAsync();
 
-            model.DanhSachGia = bangGia.Select(x => new DonGiaBacVM
-            {
-                Bac = x.Bac,
-                Gia = x.Gia
-            }).ToList();
+            var bangGia = allGiaTho
+                .GroupBy(x => x.Bac) // Nhóm lại: Bậc 1 ra 1 nhóm, Bậc 2 ra 1 nhóm...
+                .Select(g => g.OrderByDescending(x => x.NgayTao).First()) // Trong mỗi nhóm, bốc đúng 1 thằng có ngày tạo mới nhất
+                .OrderBy(x => x.Bac) // Sắp xếp lại từ Bậc 0 đến 6
+                .ToList();
+            // ==========================================
 
+            // 1. Tách Thuế VAT (Bac == 0) để gán vào ô Input
+            var thueVAT = bangGia.FirstOrDefault(x => x.Bac == 0);
+            model.PhanTramVAT = thueVAT != null ? thueVAT.Gia : 8; // Mặc định 8 nếu chưa có
+
+            // 2. Tách Giá Điện Bậc Thang (Bac > 0) để hiện ra bảng
+            model.DanhSachGia = bangGia
+                .Where(x => x.Bac > 0)
+                .Select(x => new DonGiaBacVM
+                {
+                    Bac = x.Bac,
+                    Gia = x.Gia
+                }).ToList();
+
+            // Nếu db chưa có giá điện nào thì tạo mặc định 6 bậc trống
             if (model.DanhSachGia.Count == 0)
             {
                 for (int i = 1; i <= 6; i++)
@@ -603,57 +584,69 @@ namespace WebSuDungDIen.Controllers
             public int SoDien { get; set; }
             public List<DonGiaBacVM> DsGia { get; set; }
         }
-        private async Task<int> LuuBangGiaAsync(List<DonGiaBacVM> dsGia)
+        private async Task<int> LuuBangGiaAsync(List<DonGiaBacVM> dsGia, decimal phanTramVAT)
         {
             var now = DateTime.Now;
 
-            // Lấy danh sách bảng giá hiện tại trong Database
-            var allGia = await _context.DonGiaDien.ToListAsync();
+            // 1. Lấy bộ đơn giá mới nhất hiện có trong DB để so sánh
+            var latestGroup = await _context.DonGiaDien
+                .OrderByDescending(x => x.NgayTao)
+                .ToListAsync();
 
-            if (allGia.Any())
+            // Lấy mốc thời gian của lần nhập gần nhất
+            var latestTimestamp = latestGroup.FirstOrDefault()?.NgayTao;
+            var lastSet = latestGroup.Where(x => x.NgayTao == latestTimestamp).ToList();
+
+            // 2. Kiểm tra xem giá người dùng vừa nhập có khác gì so với giá cũ không
+            bool coThayDoi = false;
+
+            // So sánh 6 bậc giá
+            foreach (var bac in dsGia)
             {
-                // === CÁCH 1: NẾU ĐÃ CÓ BẢNG GIÁ -> CHỈ CẬP NHẬT TIỀN (KHÔNG XÓA) ===
-                foreach (var bac in dsGia)
-                {
-                    var giaDb = allGia.FirstOrDefault(g => g.Bac == bac.Bac);
-                    if (giaDb != null)
-                    {
-                        giaDb.Gia = bac.Gia; // Cập nhật lại giá tiền mới
-                    }
-                    else
-                    {
-                        // Phòng hờ trường hợp bạn thêm bậc 7, bậc 8...
-                        _context.DonGiaDien.Add(new DonGiaDien
-                        {
-                            Bac = bac.Bac,
-                            Gia = bac.Gia,
-                            NgayTao = now
-                        });
-                    }
-                }
+                var giaCu = lastSet.FirstOrDefault(x => x.Bac == bac.Bac)?.Gia ?? -1;
+                if (bac.Gia != giaCu) { coThayDoi = true; break; }
             }
-            else
+
+            // So sánh thuế VAT (Bậc 0)
+            var vatCu = lastSet.FirstOrDefault(x => x.Bac == 0)?.Gia ?? -1;
+            if (phanTramVAT != vatCu) coThayDoi = true;
+
+            // 3. XỬ LÝ LƯU
+            if (coThayDoi || !lastSet.Any())
             {
-                // === CÁCH 2: NẾU DB TRỐNG TRƠN -> THÊM MỚI HOÀN TOÀN ===
-                var listGiaMoi = new List<DonGiaDien>();
+                // Nếu có thay đổi hoặc DB đang trống -> ĐẺ THÊM BỘ MỚI (Timestamp mới)
+                var listMoi = new List<DonGiaDien>();
+
+                // Thêm 6 bậc điện
                 foreach (var bac in dsGia)
                 {
-                    listGiaMoi.Add(new DonGiaDien
+                    listMoi.Add(new DonGiaDien
                     {
                         Bac = bac.Bac,
                         Gia = bac.Gia,
                         NgayTao = now
                     });
                 }
-                _context.DonGiaDien.AddRange(listGiaMoi);
+
+                // Thêm dòng Thuế VAT (Bậc 0)
+                listMoi.Add(new DonGiaDien
+                {
+                    Bac = 0,
+                    Gia = phanTramVAT,
+                    NgayTao = now
+                });
+
+                _context.DonGiaDien.AddRange(listMoi);
+                await _context.SaveChangesAsync();
+
+                // Trả về ID của dòng Bậc 1 mới tạo
+                return listMoi.First(x => x.Bac == 1).Id;
             }
-
-            // Lưu mọi thay đổi (Update hoặc Insert) xuống Database
-            await _context.SaveChangesAsync();
-
-            // Lấy ID của Bậc 1 trả về để gán cho Hóa Đơn (tránh lỗi khóa ngoại)
-            var bac1 = await _context.DonGiaDien.FirstOrDefaultAsync(g => g.Bac == 1);
-            return bac1?.Id ?? 1;
+            else
+            {
+                // Nếu giá y hệt cũ -> Không lưu gì cả, chỉ lấy ID của Bậc 1 hiện tại trả về
+                return lastSet.First(x => x.Bac == 1).Id;
+            }
         }
 
         // POST: HoaDon/Create
@@ -737,49 +730,72 @@ namespace WebSuDungDIen.Controllers
                 }
 
                 // 4. Cập nhật bảng giá SQL
-                int donGiaIdHopLe = await LuuBangGiaAsync(model.DanhSachGia);
+                int donGiaIdHopLe = await LuuBangGiaAsync(model.DanhSachGia, model.PhanTramVAT);
 
-                // [ BƯỚC ĐỆM QUAN TRỌNG ]: Hút toàn bộ Mã Khách Hàng (MaKh) lên RAM để dùng cho việc tạo Mã Hóa Đơn
+                // [ BƯỚC ĐỆM QUAN TRỌNG ]: Hút toàn bộ Mã Khách Hàng (MaKh) lên RAM...
                 var dictKhachHang = await _context.KhachHang
                     .Where(k => khachHangIds.Contains(k.Id))
                     .ToDictionaryAsync(k => k.Id, k => k.MaKh);
+
+                // =======================================================
+                // [ CHỐT CHẶN MỚI LẮP ĐẶT ]: Tìm ra các khách hàng CHỈ CÓ ĐÚNG 1 LẦN GHI CHỈ SỐ
+                // (Tức là mới chỉ có chỉ số đầu vào lúc lắp đồng hồ, chưa có tháng tiếp theo để đối chiếu tiêu thụ)
+                var danhSachKhachMoiIds = await _context.ChiSoDien
+                    .Where(x => khachHangIds.Contains(x.KhachHangId))
+                    .GroupBy(x => x.KhachHangId)
+                    .Where(g => g.Count() == 1) // Lọc ra ông nào mới có 1 record
+                    .Select(g => g.Key)
+                    .ToListAsync();
+                // =======================================================
+
+                // THÊM 2 BIẾN ĐẾM NÀY TRƯỚC VÒNG LẶP:
+                int soKhachMoiBiBoQua = 0;
+                int soHoaDonDaTonTai = 0;
 
                 // 5. Xử lý logic tạo hóa đơn
                 Console.WriteLine("[Debug 5] Bắt đầu tính tiền và tạo hóa đơn...");
                 foreach (var chiSo in danhSachChiSo)
                 {
                     var chiSoIdStr = chiSo.Id.ToString();
+                    if (chiSo.KhachHangId == null) continue;
 
-                    // Kiểm tra tồn tại trong SQL
-                    var daTonTai = await _context.HoaDon.AnyAsync(x => x.ChiSoDienId == chiSoIdStr);
+                    // === CHUYỂN PHẦN TẠO MÃ HÓA ĐƠN LÊN ĐÂY ===
+                    string maKhachHang = dictKhachHang.ContainsKey(chiSo.KhachHangId) ? dictKhachHang[chiSo.KhachHangId] : "UNKNOWN";
+                    string namNgan = (thangMoiNhat.Nam % 100).ToString("D2");
+                    string kyHoaDon = $"{thangMoiNhat.Thang:D2}{namNgan}";
+                    string maHdChinhThuc = $"HD-{maKhachHang}-{kyHoaDon}";
+
+                    // 👉 [SỬA LẠI CHỖ NÀY]: Check tồn tại bằng cả ChiSoDienId HOẶC MaHd
+                    var daTonTai = await _context.HoaDon.AnyAsync(x => x.ChiSoDienId == chiSoIdStr || x.MaHd == maHdChinhThuc);
                     if (daTonTai)
                     {
+                        soHoaDonDaTonTai++; // Ghi nhận 1 ca đã có hóa đơn
                         continue;
                     }
 
-                    if (chiSo.KhachHangId == null) continue;
+                    if (danhSachKhachMoiIds.Contains(chiSo.KhachHangId))
+                    {
+                        soKhachMoiBiBoQua++; // Ghi nhận 1 ca mới lắp đồng hồ
+                        continue;
+                    }
 
                     int soDien = chiSo.ChiSoMoi - chiSo.ChiSoCu;
+
+                    if (soDien <= 0)
+                    {
+                        soKhachMoiBiBoQua++; // Cũng tính là chưa phát sinh tiêu thụ
+                        continue;
+                    }
+                    // =======================================================
+
+                    // Vượt qua được trạm kiểm lâm thì mới tiến hành chém đẹp
                     decimal tienDien = TinhTienDienBacThang(soDien, model.DanhSachGia);
                     decimal thue = tienDien * (model.PhanTramVAT / 100m);
-
-                    // =======================================================
-                    // [ UPDATE LOGIC TẠO MÃ HÓA ĐƠN CHUẨN ZZZ CỦA BẠN ]
-                    // 1. Tìm MaKh từ Dictionary (Tốc độ ánh sáng, không gọi DB)
-                    string maKhachHang = dictKhachHang.ContainsKey(chiSo.KhachHangId) ? dictKhachHang[chiSo.KhachHangId] : "UNKNOWN";
-
-                    // 2. Format năm (Chia lấy dư cho 100 sẽ an toàn hơn Substring. VD: 2026 % 100 = 26)
-                    string namNgan = (thangMoiNhat.Nam % 100).ToString("D2");
-
-                    // 3. Ghép chuỗi chuẩn định dạng
-                    string kyHoaDon = $"{thangMoiNhat.Thang:D2}{namNgan}";
-                    string maHd = $"HD-{maKhachHang}-{kyHoaDon}";
-                    // =======================================================
 
                     danhSachHoaDonMoi.Add(new HoaDon
                     {
                         Id = Guid.NewGuid().ToString(),
-                        MaHd = maHd, // Nhét cái mã mới xịn xò vào đây
+                        MaHd = maHdChinhThuc, // Dùng luôn cái biến vừa tạo ở trên
                         KhachHangId = chiSo.KhachHangId.ToString(),
                         ChiSoDienId = chiSoIdStr,
                         SoDienTieuThu = soDien,
@@ -835,7 +851,18 @@ namespace WebSuDungDIen.Controllers
                 }
                 else
                 {
-                    TempData["Error"] = "Tất cả hóa đơn đã tồn tại.";
+                    if (soKhachMoiBiBoQua > 0 && soHoaDonDaTonTai == 0)
+                    {
+                        TempData["Error"] = $"Hệ thống đã bỏ qua {soKhachMoiBiBoQua} khách hàng do đây là tháng đầu lắp đồng hồ (Chưa phát sinh tiêu thụ). Không có hóa đơn nào được lập!";
+                    }
+                    else if (soHoaDonDaTonTai > 0 && soKhachMoiBiBoQua == 0)
+                    {
+                        TempData["Error"] = "Có khách hàng trong phường này đều đã được lập hóa đơn cho tháng này từ trước.";
+                    }
+                    else
+                    {
+                        TempData["Error"] = $"Đã bỏ qua: {soHoaDonDaTonTai} khách cũ (đã có HĐ) và {soKhachMoiBiBoQua} khách mới (chưa dùng điện). Không có hóa đơn mới nào!";
+                    }
                 }
             }
             catch (Exception ex)
@@ -906,12 +933,20 @@ namespace WebSuDungDIen.Controllers
                 return NotFound();
             }
 
-            var hoaDon = await _context.HoaDon
-                .FirstOrDefaultAsync(m => m.Id == id);
+            // 1. Lôi Hóa Đơn lên (Bỏ mẹ cái Include đi)
+            var hoaDon = await _context.HoaDon.FirstOrDefaultAsync(m => m.Id == id);
+
             if (hoaDon == null)
             {
                 return NotFound();
             }
+
+            // 2. 💥 TÀ THUẬT MÓC TAY: Dùng KhachHangId đi tóm cổ thằng Khách
+            var khach = await _context.KhachHang.FindAsync(hoaDon.KhachHangId);
+            ViewBag.ChiSoMucTieu = await _context.ChiSoDien.FindAsync(hoaDon.ChiSoDienId);
+
+            // 3. Nhét nó vào bao bố (ViewBag) để gửi sang View
+            ViewBag.KhachMucTieu = khach;
 
             return View(hoaDon);
         }
@@ -919,16 +954,95 @@ namespace WebSuDungDIen.Controllers
         // POST: HoaDon/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(string id, string lyDoXoa = "")
         {
             var hoaDon = await _context.HoaDon.FindAsync(id);
-            if (hoaDon != null)
+            if (hoaDon == null) return NotFound();
+
+            // 🛑 CHẶN ĐỨNG: Hóa đơn đã thu tiền thì cấm tuyệt đối việc xóa!
+            // (Bảo vệ dữ liệu tài chính, muốn xóa thì phải làm nghiệp vụ Hoàn Tiền / Hủy thanh toán trước)
+            if (hoaDon.TrangThai == "DaThanhToan")
             {
-                _context.HoaDon.Remove(hoaDon);
+                TempData["Error"] = "TỪ CHỐI TIÊU HỦY: Hóa đơn này đã được khách hàng thanh toán. Lịch sử tài chính không cho phép xóa!";
+                return RedirectToAction(nameof(Index));
             }
 
-            await _context.SaveChangesAsync();
+            // Chuẩn bị lý do để ghi vào sổ Nam Tào (MongoDB)
+            string finalReason = string.IsNullOrWhiteSpace(lyDoXoa) ? "Không có lý do" : lyDoXoa;
+
+            try
+            {
+                // 1. Đóng gói và bưng qua MongoDB (Archive)
+                await _mongoService.ArchiveAsync(hoaDon, User.Identity.Name ?? "Hệ thống_Admin", finalReason);
+
+                // 2. Trảm khỏi SQL Server
+                _context.HoaDon.Remove(hoaDon);
+                await _context.SaveChangesAsync();
+
+                TempData["ThongBao"] = $"Đã tiêu hủy hóa đơn [{hoaDon.MaHd}] và đẩy vào phân vùng Archive thành công!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Lỗi hệ thống trong quá trình tiêu hủy hóa đơn: " + ex.Message;
+            }
+
             return RedirectToAction(nameof(Index));
+        }
+
+        // POST: HoaDon/Restore
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")] // Tùy sếp phân quyền ai được phục hồi
+        public async Task<IActionResult> Restore(string archiveId)
+        {
+            if (string.IsNullOrEmpty(archiveId))
+            {
+                TempData["Error"] = "LỖI: Thiếu mã định danh Archive ID!";
+                return Redirect(Request.Headers["Referer"].ToString() ?? "/");
+            }
+
+            try
+            {
+                // 1. Lôi cái xác Hóa Đơn từ MongoDB lên
+                var hoaDonPhucHoi = await _mongoService.GetArchivedDataAsync<HoaDon>(archiveId);
+
+                if (hoaDonPhucHoi == null)
+                {
+                    TempData["Error"] = "THẤT BẠI: Không tìm thấy hóa đơn này trong Archive!";
+                    return Redirect(Request.Headers["Referer"].ToString() ?? "/");
+                }
+
+                // ========================================================================
+                // 🛡️ 4 LỚP GIÁP KIỂM TRA KHÓA NGOẠI (FOREIGN KEY CHECKS)
+                // Nếu 1 trong 4 trụ cột này đã biến mất khỏi SQL, tuyệt đối không cho Restore!
+                // ========================================================================
+                bool khachTonTai = await _context.KhachHang.AnyAsync(k => k.Id == hoaDonPhucHoi.KhachHangId);
+                bool chiSoTonTai = await _context.ChiSoDien.AnyAsync(c => c.Id == hoaDonPhucHoi.ChiSoDienId);
+                bool nhanVienTonTai = await _context.NhanVien.AnyAsync(nv => nv.Id == hoaDonPhucHoi.NhanVienId);
+                bool donGiaTonTai = await _context.DonGiaDien.AnyAsync(d => d.Id == hoaDonPhucHoi.DonGiaId);
+
+                if (!khachTonTai || !chiSoTonTai || !nhanVienTonTai || !donGiaTonTai)
+                {
+                    TempData["Error"] = "Lỗi: Các dữ liệu gốc (Khách Hàng / Nhân Viên / Chỉ Số / Đơn Giá) liên kết với hóa đơn này đã bị mất khỏi hệ thống. Yêu cầu phục hồi dữ liệu gốc trước!";
+                    return Redirect(Request.Headers["Referer"].ToString() ?? "/");
+                }
+                // ========================================================================
+
+                // 2. An toàn rồi, bơm lại vào SQL
+                _context.HoaDon.Add(hoaDonPhucHoi);
+                await _context.SaveChangesAsync();
+
+                // 3. Phục hồi xong thì xóa rác trong MongoDB
+                await _mongoService.RemoveFromArchiveAsync<HoaDon>(archiveId);
+
+                TempData["ThongBao"] = $"[ PHỤC HỒI THÀNH CÔNG ] Đã đưa hóa đơn [{hoaDonPhucHoi.MaHd}] quay lại hệ thống!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Lỗi khi phục hồi hóa đơn: " + ex.Message;
+            }
+
+            return Redirect(Request.Headers["Referer"].ToString() ?? "/");
         }
 
         private bool HoaDonExists(string id)
@@ -972,6 +1086,7 @@ namespace WebSuDungDIen.Controllers
                                              .OrderBy(d => d.Bac)
                                              .Select(d => d.Gia)
                                              .ToArrayAsync();
+
 
                 // Quăng mảng số thực này sang cho HTML tự xào nấu
                 ViewBag.GiaBacThang = mang6Bac;

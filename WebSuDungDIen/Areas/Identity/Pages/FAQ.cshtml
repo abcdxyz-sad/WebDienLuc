@@ -1,0 +1,445 @@
+﻿@page
+
+<style>
+    /* 💥 TÀ THUẬT 4 GÓC NGẮM BẮN (BẢN NÂNG CẤP) */
+    .zzz-target-box {
+        position: relative;
+        padding: 40px 45px;
+        background-color: #ffffff;
+        background-image: linear-gradient(to right,#111 100%,transparent 0),linear-gradient(to bottom,#111 100%,transparent 0),linear-gradient(to left,#111 100%,transparent 0),linear-gradient(to bottom,#111 100%,transparent 0),linear-gradient(to right,#111 100%,transparent 0),linear-gradient(to top,#111 100%,transparent 0),linear-gradient(to left,#111 100%,transparent 0),linear-gradient(to top,#111 100%,transparent 0);
+        background-position: 0 0,0 0,100% 0,100% 0,0 100%,0 100%,100% 100%,100% 100%;
+        background-repeat: no-repeat;
+        background-size: 35px 5px,5px 35px,35px 5px,5px 35px,35px 5px,5px 35px,35px 5px,5px 35px;
+        overflow: hidden;
+        box-shadow: 8px 8px 0px rgba(0,0,0,0.05);
+    }
+
+        /* Lưới HUD */
+        .zzz-target-box::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(#d1d1d1 2px,transparent 2px);
+            background-size: 20px 20px;
+            opacity: 0.6;
+            z-index: 0;
+        }
+
+        .zzz-target-box > div {
+            position: relative;
+            z-index: 1;
+        }
+
+    /* 💥 SỌC CẢNH BÁO */
+    .zzz-vertical-hazard {
+        width: 10px;
+        background: repeating-linear-gradient(-45deg,#111,#111 10px,var(--zzz-primary,#D2FF00) 10px,var(--zzz-primary,#D2FF00) 20px);
+        border: 2px solid #111;
+        animation: hazard-scroll 2s linear infinite;
+    }
+
+    @@keyframes hazard-scroll {
+        100%
+
+    {
+        background-position: 0 28px;
+    }
+
+    }
+
+    /* ACCORDION */
+    .zzz-collapse-trigger {
+        cursor: pointer;
+        transition: all .25s cubic-bezier(.25,.8,.25,1);
+        position: relative;
+        z-index: 1;
+        border: 2px solid transparent;
+    }
+
+        .zzz-collapse-trigger:hover {
+            background-color: #111 !important;
+            color: #fff !important;
+            padding-left: 20px !important;
+            border: 2px solid #111;
+            box-shadow: 5px 5px 0 var(--zzz-primary,#D2FF00);
+        }
+
+            .zzz-collapse-trigger:hover h4,
+            .zzz-collapse-trigger:hover p,
+            .zzz-collapse-trigger:hover i {
+                color: #fff !important;
+            }
+
+    .zzz-collapse-icon {
+        transition: transform .4s cubic-bezier(.4,0,.2,1);
+    }
+
+    .zzz-collapse-trigger:not(.collapsed) {
+        background-color: var(--zzz-primary,#D2FF00) !important;
+        color: #111 !important;
+        border: 2px solid #111;
+        border-bottom: 4px solid #111 !important;
+    }
+
+        .zzz-collapse-trigger:not(.collapsed) h4,
+        .zzz-collapse-trigger:not(.collapsed) p,
+        .zzz-collapse-trigger:not(.collapsed) i {
+            color: #111 !important;
+        }
+
+        .zzz-collapse-trigger:not(.collapsed) .zzz-collapse-icon {
+            transform: rotate(180deg) scale(1.3);
+            color: #FF3366 !important;
+        }
+
+    /* --- PHẦN SUBQUEST (ĐÃ FIX LỖI KẸT NHÃN) --- */
+    .zzz-subquest-item {
+        position: relative;
+        background: #fff;
+        border: 2px solid #111 !important;
+        transform: skewX(-5deg);
+        margin: 15px 0 .5rem 15px; /* Tăng margin top lên để nhãn có chỗ hiện ra */
+        overflow: visible; /* QUAN TRỌNG: Đổi thành visible để nhãn không bị cắt */
+        transition: all .2s cubic-bezier(.25,.8,.25,1);
+    }
+
+        .zzz-subquest-item > * {
+            transform: skewX(5deg);
+        }
+
+        .zzz-subquest-item::before {
+            content: "OBJ_TRACKING";
+            position: absolute;
+            top: -12px; /* Đẩy cao lên một chút hẳn so với viền */
+            left: 15px;
+            background: #111;
+            color: var(--zzz-primary,#D2FF00);
+            font-size: .65rem;
+            font-family: monospace;
+            padding: 2px 8px; /* Thêm padding cho nhãn to rõ hơn */
+            font-weight: bold;
+            transform: skewX(5deg);
+            opacity: 0;
+            z-index: 10; /* Đảm bảo luôn nằm trên cùng */
+            transition: all .2s;
+            pointer-events: none;
+        }
+
+        /* Hiệu ứng khi Hover */
+        .zzz-subquest-item:hover {
+            border-left: 10px solid #111 !important;
+            background: #f4f4f6 !important;
+            transform: skewX(-5deg) translate(-2px,-2px); /* Giảm độ giật để không đè nhãn */
+            box-shadow: 8px 8px 0 rgba(17,17,17,.15);
+        }
+
+            .zzz-subquest-item:hover::before {
+                opacity: 1;
+                top: -15px; /* Khi hover nhãn nhấc cao lên một xíu cho rõ */
+            }
+
+    /* LAYER */
+    .zzz-layer-base {
+        position: relative;
+        z-index: 1;
+    }
+
+    .zzz-layer-overlay {
+        position: absolute;
+        inset: 0;
+        background: var(--zzz-accent,#FF3366);
+        z-index: 2;
+        clip-path: inset(0 100% 0 0);
+        transition: clip-path .8s cubic-bezier(.25,.8,.25,1);
+    }
+
+    .zzz-subquest-item:hover .zzz-layer-overlay {
+        clip-path: inset(0 0 0 0);
+    }
+
+    /* BUTTON */
+    .zzz-btn-launch {
+        background: var(--zzz-black);
+        color: var(--zzz-primary);
+        border: 2px solid var(--zzz-primary) !important;
+        transform: skewX(-15deg);
+        box-shadow: 3px 3px 0 var(--zzz-primary,#D2FF00);
+        transition: all .1s ease;
+        text-decoration: none;
+    }
+
+        .zzz-btn-launch > * {
+            display: inline-block;
+            transform: skewX(15deg);
+            font-weight: 900;
+        }
+
+        .zzz-btn-launch:hover {
+            background: var(--zzz-primary,#D2FF00) !important;
+            color: var(--zzz-black) !important;
+            box-shadow: 5px 5px 0 var(--zzz-black);
+            transform: skewX(-15deg) translate(-2px,-2px);
+            border: 2px solid var(--zzz-black) !important;
+        }
+
+        .zzz-btn-launch:active {
+            transform: skewX(-15deg) translate(4px,4px);
+            box-shadow: none;
+        }
+
+    .zzz-btn-launch-inverted {
+        background: #111;
+        color: var(--zzz-primary,#D2FF00);
+        border: 2px solid #111 !important;
+        transform: skewX(-15deg);
+        box-shadow: 3px 3px 0 var(--zzz-primary,#D2FF00);
+        text-decoration: none;
+    }
+
+        .zzz-btn-launch-inverted > * {
+            display: inline-block;
+            transform: skewX(15deg);
+            font-weight: 900;
+        }
+
+</style>
+
+<div class="zzz-container py-5">
+
+    <div class="mb-5 zzz-target-box border-dark border-2 pb-5 bg-white">
+        <div class="d-flex h-100 align-items-stretch">
+            <div class="zzz-vertical-hazard flex-shrink-0 me-4"></div>
+            <div class="py-2">
+                <h1 class="fw-black display-5 mb-4 text-uppercase" style="font-family: 'Orbitron', 'Jura', sans-serif; letter-spacing: -1px;">
+                    <span class="text-dark align-middle">HỆ THỐNG LÕI</span><span class="zzz-cursor-blink"></span>
+                </h1>
+
+                <p class="fs-5 zzz-text-mono text-dark mb-0 fw-bold border-start border-4 border-dark ps-3" style="max-width: 900px; line-height: 1.7; background: rgba(0,0,0,0.02);">
+                    <span class="bg-dark text-white px-2 py-1 me-2 fs-6" style="font-family: monospace;">LOG: 001</span>
+                    Chúng tôi là đơn vị cung cấp giải pháp năng lượng Cyber tại khu vực New Eridu. Hệ thống này được thiết kế để tối ưu hóa việc quản lý điện năng, truy xuất dữ liệu tiêu thụ và kiểm soát rủi ro hệ thống ở mức độ cực đoan nhất.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-end mb-4 border-bottom border-dark border-3 pb-2">
+        <h2 class="fw-black mb-0 d-flex align-items-center text-uppercase fs-3">
+            <span class="d-inline-block bg-dark text-white px-3 py-1 me-3 fs-5" style="transform: skewX(-12deg);">
+                <span style="display: inline-block; transform: skewX(12deg); font-family: monospace; font-weight: 900;">EXE</span>
+            </span>
+            CHƯƠNG TRÌNH HƯỚNG DẪN THAO TÁC TRÊN GIAO DIỆN
+        </h2>
+        <span class="text-muted zzz-text-mono fw-bold fs-6 d-none d-md-block">VER 1.0.4 // AUTHORIZED ONLY</span>
+    </div>
+
+    <div class="zzz-tutorial-list pt-2">
+
+        <!-- MODULE 01: HÓA ĐƠN -->
+        <div class="mb-3 border-dark border-1 overflow-hidden" style="border: 2px solid #111;">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center py-3 px-4 zzz-collapse-trigger collapsed bg-white"
+                 data-bs-toggle="collapse"
+                 data-bs-target="#collapseHoaDon"
+                 aria-expanded="false">
+
+                <div class="mb-3 mb-md-0 pe-md-4">
+                    <h4 class="fw-bold mb-2 zzz-text-mono text-uppercase" style="letter-spacing: -0.5px;">
+                        <i class="fas fa-file-invoice me-2 text-muted"></i> [01] QUẢN LÝ HÓA ĐƠN
+                    </h4>
+                    <p class="mb-0 text-muted zzz-text-mono small fw-bold">
+                        >> BUNG MENU: Lập hóa đơn, kiểm tra thanh toán, truy xuất dữ liệu.
+                    </p>
+                </div>
+            </div>
+
+            <div class="collapse" id="collapseHoaDon">
+                <div class="p-3 p-md-4 bg-white border-top border-dark border-2 ms-md-4 mb-3" style="border-left: 4px dashed #111;">
+                    <h6 class="fw-black zzz-text-mono text-uppercase mb-4 opacity-75 d-flex align-items-center">
+                        <span class="bg-dark text-white px-2 py-1 me-2" style="font-size: 0.7rem;">ACTION</span> LỰA CHỌN TRANG ĐỂ HƯỚNG DẪN:
+                    </h6>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center bg-white p-3 mb-3 zzz-subquest-item">
+                        <span class="zzz-text-mono fw-bold text-uppercase mb-3 mb-sm-0 fs-5"><span class="text-muted me-2">1.</span> Tổng quan danh sách</span>
+                        <a href="/HoaDon/Index?startTour=true" class="btn btn-sm px-4 py-2 zzz-btn-launch">
+                            <span>CHẠY</span> <i class="fas fa-play ms-1"></i>
+                        </a>
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center bg-white p-3 mb-2 zzz-subquest-item">
+                        <span class="zzz-text-mono fw-bold text-uppercase mb-3 mb-sm-0 fs-5"><span class="text-muted me-2">2.</span> Khởi tạo hóa đơn mới</span>
+                        <a href="/HoaDon/Create?startTour=true" class="btn btn-sm px-4 py-2 zzz-btn-launch">
+                            <span>CHẠY</span> <i class="fas fa-play ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE 02: KHÁCH HÀNG -->
+        <div class="mb-3 border-dark border-1 overflow-hidden" style="border: 2px solid #111;">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center py-3 px-4 zzz-collapse-trigger collapsed bg-white"
+                 data-bs-toggle="collapse"
+                 data-bs-target="#collapseKhachHang"
+                 aria-expanded="false">
+
+                <div class="mb-3 mb-md-0 pe-md-4">
+                    <h4 class="fw-bold mb-2 zzz-text-mono text-uppercase" style="letter-spacing: -0.5px;">
+                        <i class="fas fa-user-tag me-2 text-muted"></i> [02] QUẢN LÝ KHÁCH HÀNG
+                    </h4>
+                    <p class="mb-0 text-muted zzz-text-mono small fw-bold">
+                        >> BUNG MENU: Thêm mới khách hàng, cập nhật dữ liệu định danh.
+                    </p>
+                </div>
+            </div>
+
+            <div class="collapse" id="collapseKhachHang">
+                <div class="p-3 p-md-4 bg-white border-top border-dark border-2 ms-md-4 mb-3" style="border-left: 4px dashed #111;">
+                    <h6 class="fw-black zzz-text-mono text-uppercase mb-4 opacity-75 d-flex align-items-center">
+                        <span class="bg-dark text-white px-2 py-1 me-2" style="font-size: 0.7rem;">ACTION</span> LỰA CHỌN TRANG ĐỂ HƯỚNG DẪN:
+                    </h6>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center bg-white p-3 mb-3 zzz-subquest-item">
+                        <span class="zzz-text-mono fw-bold text-uppercase mb-3 mb-sm-0 fs-5"><span class="text-muted me-2">1.</span> Tổng quan danh sách</span>
+                        <a href="/KhachHang/Index?startTour=true" class="btn btn-sm px-4 py-2 zzz-btn-launch">
+                            <span>CHẠY</span> <i class="fas fa-play ms-1"></i>
+                        </a>
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center bg-white p-3 mb-2 zzz-subquest-item">
+                        <span class="zzz-text-mono fw-bold text-uppercase mb-3 mb-sm-0 fs-5"><span class="text-muted me-2">2.</span> Khởi tạo khách hàng mới</span>
+                        <a href="/KhachHang/Create?startTour=true" class="btn btn-sm px-4 py-2 zzz-btn-launch">
+                            <span>CHẠY</span> <i class="fas fa-play ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE 03: NHÂN SỰ -->
+        <div class="mb-3 border-dark border-1 overflow-hidden" style="border: 2px solid #111;">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center py-3 px-4 zzz-collapse-trigger collapsed bg-white"
+                 data-bs-toggle="collapse"
+                 data-bs-target="#collapseNhanSu"
+                 aria-expanded="false">
+
+                <div class="mb-3 mb-md-0 pe-md-4">
+                    <h4 class="fw-bold mb-2 zzz-text-mono text-uppercase" style="letter-spacing: -0.5px;">
+                        <i class="fas fa-users-cog me-2 text-muted"></i> [03] QUẢN LÝ NHÂN VIÊN
+                    </h4>
+                    <p class="mb-0 text-muted zzz-text-mono small fw-bold">
+                        >> BUNG MENU: Thêm mới nhân viên, cập nhật dữ liệu định danh.
+                    </p>
+                </div>
+            </div>
+
+            <div class="collapse" id="collapseNhanSu">
+                <div class="p-3 p-md-4 bg-white border-top border-dark border-2 ms-md-4 mb-3" style="border-left: 4px dashed #111;">
+                    <h6 class="fw-black zzz-text-mono text-uppercase mb-4 opacity-75 d-flex align-items-center">
+                        <span class="bg-dark text-white px-2 py-1 me-2" style="font-size: 0.7rem;">ACTION</span> LỰA CHỌN TRANG ĐỂ HƯỚNG DẪN:
+                    </h6>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center bg-white p-3 mb-3 zzz-subquest-item">
+                        <span class="zzz-text-mono fw-bold text-uppercase mb-3 mb-sm-0 fs-5"><span class="text-muted me-2">1.</span> Danh sách nhân viên</span>
+                        <a href="/NhanVien/Index?startTour=true" class="btn btn-sm px-4 py-2 zzz-btn-launch">
+                            <span>CHẠY</span> <i class="fas fa-play ms-1"></i>
+                        </a>
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center bg-white p-3 mb-2 zzz-subquest-item">
+                        <span class="zzz-text-mono fw-bold text-uppercase mb-3 mb-sm-0 fs-5"><span class="text-muted me-2">2.</span> Khởi tạo nhân viên mới </span>
+                        <a href="/NhanVien/Create?startTour=true" class="btn btn-sm px-4 py-2 zzz-btn-launch">
+                            <span>CHẠY</span> <i class="fas fa-play ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE 04: CHỈ SỐ ĐIỆN -->
+        <div class="mb-3 border-dark border-1 overflow-hidden" style="border: 2px solid #111;">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center py-3 px-4 zzz-collapse-trigger collapsed bg-white"
+                 data-bs-toggle="collapse"
+                 data-bs-target="#collapseChiSoDien"
+                 aria-expanded="false">
+
+                <div class="mb-3 mb-md-0 pe-md-4">
+                    <h4 class="fw-bold mb-2 zzz-text-mono text-uppercase" style="letter-spacing: -0.5px;">
+                        <i class="fas fa-users-cog me-2 text-muted"></i> [03] QUẢN LÝ CHỈ SỐ ĐIỆN
+                    </h4>
+                    <p class="mb-0 text-muted zzz-text-mono small fw-bold">
+                        >> BUNG MENU: Cập nhật chỉ số điện đa khách hàng theo kỳ, theo phường.
+                    </p>
+                </div>
+            </div>
+
+            <div class="collapse" id="collapseChiSoDien">
+                <div class="p-3 p-md-4 bg-white border-top border-dark border-2 ms-md-4 mb-3" style="border-left: 4px dashed #111;">
+                    <h6 class="fw-black zzz-text-mono text-uppercase mb-4 opacity-75 d-flex align-items-center">
+                        <span class="bg-dark text-white px-2 py-1 me-2" style="font-size: 0.7rem;">ACTION</span> LỰA CHỌN TRANG ĐỂ HƯỚNG DẪN:
+                    </h6>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center bg-white p-3 mb-3 zzz-subquest-item">
+                        <span class="zzz-text-mono fw-bold text-uppercase mb-3 mb-sm-0 fs-5"><span class="text-muted me-2">1.</span> Danh sách khách đăng ký sử dụng điện</span>
+                        <a href="/ChiSoDien/Index?startTour=true" class="btn btn-sm px-4 py-2 zzz-btn-launch">
+                            <span>CHẠY</span> <i class="fas fa-play ms-1"></i>
+                        </a>
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center bg-white p-3 mb-2 zzz-subquest-item">
+                        <span class="zzz-text-mono fw-bold text-uppercase mb-3 mb-sm-0 fs-5"><span class="text-muted me-2">2.</span> Cập nhật chỉ số điện mới </span>
+                        <a href="/ChiSoDien/Create?startTour=true" class="btn btn-sm px-4 py-2 zzz-btn-launch">
+                            <span>CHẠY</span> <i class="fas fa-play ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE 05: QUẢN LÝ TÀI KHOẢN -->
+        <div class="mb-3 border-dark border-1 overflow-hidden" style="border: 2px solid #111;">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center py-3 px-4 zzz-collapse-trigger collapsed bg-white"
+                 data-bs-toggle="collapse"
+                 data-bs-target="#collapseAdmin"
+                 aria-expanded="false">
+
+                <div class="mb-3 mb-md-0 pe-md-4">
+                    <h4 class="fw-bold mb-2 zzz-text-mono text-uppercase" style="letter-spacing: -0.5px;">
+                        <i class="fas fa-users-cog me-2 text-muted"></i> [03] QUẢN LÝ TÀI KHOẢN
+                    </h4>
+                    <p class="mb-0 text-muted zzz-text-mono small fw-bold">
+                        >> BUNG MENU: Thêm tài khoản mới cho khách, nhân viên. Cập nhật thông tin tài khoản của khách, nhân viên.
+                    </p>
+                </div>
+            </div>
+
+            <div class="collapse" id="collapseAdmin">
+                <div class="p-3 p-md-4 bg-white border-top border-dark border-2 ms-md-4 mb-3" style="border-left: 4px dashed #111;">
+                    <h6 class="fw-black zzz-text-mono text-uppercase mb-4 opacity-75 d-flex align-items-center">
+                        <span class="bg-dark text-white px-2 py-1 me-2" style="font-size: 0.7rem;">ACTION</span> LỰA CHỌN TRANG ĐỂ HƯỚNG DẪN:
+                    </h6>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center bg-white p-3 mb-3 zzz-subquest-item">
+                        <span class="zzz-text-mono fw-bold text-uppercase mb-3 mb-sm-0 fs-5"><span class="text-muted me-2">1.</span> Danh sách khách đăng ký sử dụng điện</span>
+                        <a href="/Admin/QuanLyTaiKhoan?startTour=true" class="btn btn-sm px-4 py-2 zzz-btn-launch">
+                            <span>CHẠY</span> <i class="fas fa-play ms-1"></i>
+                        </a>
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center bg-white p-3 mb-2 zzz-subquest-item">
+                        <span class="zzz-text-mono fw-bold text-uppercase mb-3 mb-sm-0 fs-5"><span class="text-muted me-2">2.</span> TẠO TÀI KHOẢN mới </span>
+                        <a href="/Admin/TaoTaiKhoan?startTour=true" class="btn btn-sm px-4 py-2 zzz-btn-launch">
+                            <span>CHẠY</span> <i class="fas fa-play ms-1"></i>
+                        </a>
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center bg-white p-3 mb-2 zzz-subquest-item">
+                        <span class="zzz-text-mono fw-bold text-uppercase mb-3 mb-sm-0 fs-5"><span class="text-muted me-2">2.</span> Trang chi tiết tài khoản </span>
+                        <a href="/Admin/ChiTietTaiKhoan?startTour=true" class="btn btn-sm px-4 py-2 zzz-btn-launch">
+                            <span>CHẠY</span> <i class="fas fa-play ms-1"></i>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

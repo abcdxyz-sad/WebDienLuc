@@ -1,6 +1,6 @@
 ﻿@model dynamic
 @{
-    // Tắt Layout gốc để trang này trắng bóc, chỉ hiện đúng tờ hóa đơn
+    ViewData["Title"] = "In Hóa Đơn";
     Layout = null;
 }
 
@@ -146,7 +146,7 @@
                 <div class="signature-box">
                     <span style="color: #0a4275; font-weight: bold;">Người bán hàng (Seller)</span>
                     <div class="seller-stamp">
-                        Được ký bởi: CÔNG TY ĐIỆN LỰC PROXY<br />
+                        Được ký bởi: CÔNG TY ĐIỆN LỰC<br />
                         Ngày ký: @(Model.HoaDon.NgayLap?.ToString("dd/MM/yyyy HH:mm:ss"))
                     </div>
                 </div>

@@ -3,16 +3,18 @@
 @{
     ViewData["Title"] = "Phát Hành Hóa Đơn";
 }
-
-<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel border-light border-3 bg-white" style="box-shadow: 4px 4px 0px rgba(0,0,0,0.1);">
-    <h1 class="m-0 zzz-page-title d-flex align-items-center gap-2 text-dark">
-        <i class="fas fa-file-invoice-dollar text-primary"></i> [ ĐIỆN LỰC ] PHÁT HÀNH HÓA ĐƠN
+<div id="zzz-welcome-msg"
+     data-msg="Lưu ý: Ở trang này đơn giá sau lần nhập vào lần đầu sẽ tự động lưu vào hệ thống và tự động điền vào cho các lần lập hóa đơn sau [ BẤM NEXT ĐỂ TIẾP TỤC ]"
+     style="display: none;">
+</div>
+<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel border-light border-3 bg-white">
+    <h1 class="m-0 zzz-page-title border-start border-5 ps-3" style="border-left-color: var(--zzz-primary) !important;">
+        PHÁT HÀNH HÓA ĐƠN
     </h1>
-    <div class="d-flex align-items-center gap-3 bg-light text-dark px-3 py-2 border border-dark border-2">
-        <span class="zzz-sys-status fw-bold text-uppercase fs-6">
-            TRẠNG THÁI: <span class="zzz-blink-dot text-success">●</span> SẴN SÀNG LẬP LỆNH
-        </span>
-    </div>
+    <span class="badge text-dark rounded-0 border border-dark border-2 fs-6 zzz-text-mono px-3 py-2 shadow-sm d-none d-md-block"
+            style="background-color: var(--zzz-primary); box-shadow: 2px 2px 0px #000 !important;">
+        <i class="fas fa-check-circle"></i> TRẠNG THÁI: <span class="text-dark zzz-blink-dot">●</span> SẴN SÀNG LẬP LỆNH
+    </span>
 </div>
 
 <div class="row g-4">
@@ -32,24 +34,32 @@
                         </div>
                     }
 
-                    <div class="zzz-fieldset border border-dark border-2 p-4 pt-4 mb-4 position-relative" style="background-color: #f8f9fa;">
-                        <div class="zzz-fieldset-title border border-dark border-2 bg-dark text-white fw-bold px-3 py-1 position-absolute" style="top: -15px; left: 15px;">
-                            SYS.01 // THÔNG TIN ĐỊA BÀN
+                    <div class="d-block bg-transparent w-100 pt-4 mb-4"
+                         data-intro="Đây là khu vực tải dữ liệu. Chọn Phường ở trên, danh sách sẽ tự lấy dữ liệu trong cơ sở dữ liệu của hệ thống!"
+                         data-step="2"
+                         data-position="top">
+
+                        <div class="zzz-fieldset border border-dark border-2 p-4 pt-4 mb-3 position-relative" style="background-color: #f8f9fa;">
+                            <div class="zzz-fieldset-title border border-dark border-2 bg-dark text-white fw-bold px-3 py-1 position-absolute" style="top: -15px; left: 15px;">
+                                SYS.01 // THÔNG TIN ĐỊA BÀN
+                            </div>
+
+                            <div class="form-group mb-0 mt-2">
+                                <label class="form-label zzz-cmd-label fw-bold"><i class="fas fa-map-marker-alt text-danger me-1"></i> ĐỊA BÀN PHƯỜNG / XÃ</label>
+                                <select asp-for="MaPhuongApi" class="form-select zzz-terminal-input fw-bold text-uppercase fs-5 border border-dark border-2 bg-white" id="phuongSelect" asp-items="@ViewBag.DanhSachPhuong" style="cursor: pointer; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+                                    <option value="">-- CHỌN PHƯỜNG / XÃ ĐỂ TẢI DỮ LIỆU --</option>
+                                </select>
+                                <span asp-validation-for="MaPhuongApi" class="text-danger small fw-bold zzz-text-mono mt-1 d-block"></span>
+                            </div>
                         </div>
 
-                        <div class="form-group mb-0 mt-2">
-                            <label class="form-label zzz-cmd-label fw-bold"><i class="fas fa-map-marker-alt text-danger me-1"></i> ĐỊA BÀN PHƯỜNG / XÃ</label>
-                            <select asp-for="MaPhuongApi" class="form-select zzz-terminal-input fw-bold text-uppercase fs-5 border border-dark border-2 bg-white" id="phuongSelect" asp-items="@ViewBag.DanhSachPhuong" style="cursor: pointer; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
-                                <option value="">-- CHỌN PHƯỜNG / XÃ ĐỂ TẢI DỮ LIỆU --</option>
-                            </select>
+                        <div>
+                            <label class="form-label zzz-cmd-label fw-bold"><i class="fas fa-users text-primary me-1"></i> DANH SÁCH KHÁCH HÀNG (CHƯA LẬP HÓA ĐƠN)</label>
+                            <div id="khachList" class="p-3 border border-dark border-2 bg-white zzz-text-mono fs-6 text-dark" style="height: 250px; overflow-y: auto; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);">
+                                <span class="text-muted"><span class="text-dark fw-bold">>_</span> Đang chờ chọn địa bàn...</span>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="mb-4">
-                        <label class="form-label zzz-cmd-label fw-bold"><i class="fas fa-users text-primary me-1"></i> DANH SÁCH KHÁCH HÀNG (CHƯA LẬP HÓA ĐƠN)</label>
-                        <div id="khachList" class="p-3 border border-dark border-2 bg-white zzz-text-mono fs-6 text-dark" style="height: 250px; overflow-y: auto; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);">
-                            <span class="text-muted">>_ Đang chờ chọn địa bàn...</span>
-                        </div>
                     </div>
 
                     <div class="zzz-fieldset border border-dark border-2 p-4 pt-4 mb-4 position-relative" style="background-color: #f8f9fa;">
@@ -62,8 +72,15 @@
                             {
                                 <div class="col-md-4 col-sm-6 mb-2 gia-container">
                                     <label class="form-label zzz-cmd-label small text-muted">BẬC @Model.DanhSachGia[i].Bac</label>
-                                    <input asp-for="DanhSachGia[i].Gia" class="form-control zzz-terminal-input fw-bold text-end text-danger border-dark border-1" placeholder="VNĐ" />
+
+                                    <input asp-for="DanhSachGia[i].Gia" type="text" asp-format="{0:N0}"
+                                           class="form-control zzz-terminal-input zzz-money-input fw-bold text-end text-danger border-dark border-1"
+                                           placeholder="VNĐ"
+                                           oninput="this.value = this.value.replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',');" />
+
                                     <input type="hidden" asp-for="DanhSachGia[i].Bac" />
+
+                                    <span asp-validation-for="DanhSachGia[i].Gia" class="text-danger small fw-bold zzz-text-mono mt-1 d-block"></span>
                                 </div>
                             }
                         </div>
@@ -72,17 +89,20 @@
 
                         <div class="row g-3 align-items-end">
                             <div class="col-md-12 mb-2 vat-container">
-                                <label class="form-label zzz-cmd-label fw-bold"><i class="fas fa-percent text-success me-1"></i> THUẾ GTGT (VAT %)</label>
-                                <input asp-for="PhanTramVAT" type="number" step="0.1" class="form-control zzz-terminal-input fw-bold fs-5 border-dark border-2 text-primary" id="vatInput" placeholder="Ví dụ: 8 hoặc 10" />
+                                <label class="form-label zzz-cmd-label fw-bold"><i class="fas fa-percent text-success me-1"></i> THUẾ GTGT (VAT)</label>
+                                <div class="input-group">
+                                    <input asp-for="PhanTramVAT" asp-format="{0:0.##}" type="number" step="any" class="form-control zzz-terminal-input fw-bold fs-5 border-dark border-2 text-primary" id="vatInput" placeholder="Ví dụ: 8 hoặc 10" />
+                                    <span class="input-group-text border-dark border-2 fw-bold text-primary fs-5 bg-white zzz-text-mono">%</span>
+                                </div>
                             </div>
                         </div>
 
                         <div class="d-flex flex-column flex-md-row gap-3 mt-4">
-                            <button type="submit" class="btn btn-primary w-100 fw-bold fs-5 py-3 border border-dark border-3 rounded-0 shadow-sm" style="box-shadow: 4px 4px 0px var(--zzz-black) !important; transition: all 0.1s;">
-                                <i class="fas fa-bolt me-2 text-warning"></i> LẬP HÓA ĐƠN ĐỒNG LOẠT
+                            <button type="submit" class="btn btn-primary w-100 fw-bold fs-5 py-3 border border-dark border-3 rounded-0 shadow-sm">
+                                <i class="fas fa-bolt me-2"></i> LẬP HÓA ĐƠN ĐỒNG LOẠT
                             </button>
 
-                            <a asp-controller="HoaDon" asp-action="Index" class="btn btn-cancel w-100 fw-bold fs-5 py-3 border border-dark border-3 rounded-0 d-flex align-items-center justify-content-center" style="box-shadow: 4px 4px 0px var(--zzz-black) !important; transition: all 0.1s;">
+                            <a asp-controller="HoaDon" asp-action="Index" class="btn zzz-btn-cancel w-100 fw-bold fs-5 py-3 border border-dark border-3 rounded-0 d-flex align-items-center justify-content-center">
                                 <i class="fas fa-undo me-2"></i> RÚT LUI
                             </a>
                         </div>
@@ -106,14 +126,16 @@
             if (phuongSelect) {
                 phuongSelect.addEventListener("change", async function () {
                     const phuongId = this.value;
-                    khachList.innerHTML = "<span class='text-primary'>Đang tải dữ liệu từ máy chủ...</span>";
+                    // Đổi >_ thành text-dark
+                    khachList.innerHTML = "<span class='text-primary fw-bold'><span class='text-dark'>>_</span> Đang tải dữ liệu từ máy chủ...</span>";
 
                     if(this.options[this.selectedIndex]) {
                         diaChiDayDuInput.value = this.options[this.selectedIndex].text;
                     }
 
                     if (!phuongId) {
-                        khachList.innerHTML = "<span class='text-muted'>>_ Đang chờ chọn địa bàn...</span>";
+                        // 💥 Nhuộm đen khi chọn lại về 0 (Đã có sẵn text-dark)
+                        khachList.innerHTML = "<span class='text-muted'><span class='text-dark fw-bold'>>_</span> Đang chờ chọn địa bàn...</span>";
                         return;
                     }
 
@@ -124,7 +146,8 @@
                         const data = await response.json();
 
                         if (data.length === 0) {
-                            khachList.innerHTML = "<div class='text-danger fw-bold'>Khu vực này chưa có khách hàng!</div>";
+                            // Đổi >_ thành text-dark
+                            khachList.innerHTML = "<div class='text-danger fw-bold'><span class='text-dark'>>_</span> Khu vực này chưa có khách hàng!</div>";
                             return;
                         }
 
@@ -163,7 +186,8 @@
                         khachList.innerHTML += ul;
 
                     } catch (error) {
-                        khachList.innerHTML = `<div class='text-danger fw-bold'>[LỖI] Không thể kết nối đến API.</div>`;
+                        // Đổi >_ thành text-dark
+                        khachList.innerHTML = `<div class='text-danger fw-bold'><span class='text-dark'>>_</span> [LỖI] Không thể kết nối đến API.</div>`;
                         console.error("Fetch error:", error);
                     }
                 });

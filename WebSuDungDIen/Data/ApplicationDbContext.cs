@@ -27,20 +27,20 @@ namespace WebSuDungDIen.Data
                 .HasOne(nv => nv.User)
                 .WithOne()
                 .HasForeignKey<NhanVien>(nv => nv.IdentityUserId)
-                .IsRequired();
+                .IsRequired(false);
 
             // 🔗 KhachHang ↔ ApplicationUser (1–1)
             modelBuilder.Entity<KhachHang>()
                 .HasOne(kh => kh.User)
                 .WithOne()
                 .HasForeignKey<KhachHang>(kh => kh.IdentityUserId)
-                .IsRequired();
+                .IsRequired(false);
 
             // ===============================
             // 🔗 KhachHang (1) ↔ ChiSoDien (N)
             // ===============================
             modelBuilder.Entity<ChiSoDien>()
-                .HasOne<KhachHang>()
+                .HasOne(cs => cs.KhachHang)
                 .WithMany(kh => kh.ChiSoDien)
                 .HasForeignKey(cs => cs.KhachHangId)
                 .OnDelete(DeleteBehavior.Restrict);
@@ -49,7 +49,7 @@ namespace WebSuDungDIen.Data
             // 🔗 NhanVien (1) ↔ ChiSoDien (N)
             // ===============================
             modelBuilder.Entity<ChiSoDien>()
-                .HasOne<NhanVien>()
+                .HasOne(cs => cs.NhanVien)
                 .WithMany()
                 .HasForeignKey(cs => cs.NhanVienId)
                 .OnDelete(DeleteBehavior.Restrict);

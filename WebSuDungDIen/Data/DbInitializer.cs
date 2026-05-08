@@ -14,21 +14,23 @@ public static class DbInitializer
         const string adminEmail = "admin@admin.com";
         const string adminPassword = "123";
 
-        if (!await roleManager.RoleExistsAsync("Admin"))
+        // ✅ 1. ĐẢM BẢO CÁC ROLE CƠ BẢN TỒN TẠI (Gộp chung vào đây cho sạch Program.cs)
+        string[] roles = { "Admin", "NhanVien", "KhachHang" };
+        foreach (var role in roles)
         {
-            await roleManager.CreateAsync(new IdentityRole("Admin"));
+            if (!await roleManager.RoleExistsAsync(role))
+            {
+                await roleManager.CreateAsync(new IdentityRole(role));
+            }
         }
 
-        if (!await roleManager.RoleExistsAsync("KhachHang"))
-        {
-            await roleManager.CreateAsync(new IdentityRole("KhachHang"));
-        }
+        // ✅ 2. LOGIC BỌC THÉP: Tìm xem CÓ AI đang làm Admin chưa? (Không tìm theo UserName nữa)
+        var danhSachAdmin = await userManager.GetUsersInRoleAsync("Admin");
 
-        var user = await userManager.FindByNameAsync(adminUserName);
-
-        if (user == null)
+        // ✅ 3. NẾU CHƯA CÓ AI LÀM ADMIN -> MỚI TIẾN HÀNH TẠO MỚI
+        if (danhSachAdmin.Count == 0)
         {
-            user = new ApplicationUser
+            var user = new ApplicationUser
             {
                 UserName = adminUserName,
                 Email = adminEmail,
@@ -40,24 +42,14 @@ public static class DbInitializer
 
             if (!result.Succeeded)
             {
-                throw new Exception("Không tạo được admin: " +
-                    string.Join(", ", result.Errors.Select(e => e.Description)));
+                throw new Exception("Không tạo được admin: " + string.Join(", ", result.Errors.Select(e => e.Description)));
             }
-        }
 
-        // ✅ 3. GÁN ROLE ADMIN
-        if (!await userManager.IsInRoleAsync(user, "Admin"))
-        {
+            // Gán quyền Admin
             await userManager.AddToRoleAsync(user, "Admin");
-        }
 
-        // ✅ 4. Tạo bảng Nhân viên nếu chưa có
-        var nhanVien = context.NhanVien
-            .FirstOrDefault(x => x.IdentityUserId == user.Id);
-
-        if (nhanVien == null)
-        {
-            nhanVien = new NhanVien
+            // Tạo luôn hồ sơ Nhân viên cho ông Admin này
+            var nhanVien = new NhanVien
             {
                 IdentityUserId = user.Id,
                 MaNV = "NVADMIN",
@@ -68,6 +60,13 @@ public static class DbInitializer
 
             context.NhanVien.Add(nhanVien);
             await context.SaveChangesAsync();
+
+            Console.WriteLine("\n[HỆ THỐNG] Đã khởi tạo tài khoản Admin mặc định thành công!");
+        }
+        else
+        {
+            // Đã có Admin rồi (dù đổi tên/email) thì hệ thống sẽ im lặng đi tiếp, không đẻ thêm ma!
+            Console.WriteLine("\n[HỆ THỐNG] Đã có Quản trị viên điều hành. Bỏ qua khởi tạo.");
         }
     }
 }

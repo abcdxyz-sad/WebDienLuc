@@ -73,3 +73,74 @@
     margin-right: 4px;
     font-weight: 900;
 }
+
+/* =========================================================
+   BỘ ĐIỀU KHIỂN THỜI GIAN (BẢN COMPACT KHÔNG VIỀN)
+========================================================= */
+/* Thay vì đóng hộp, ta làm 2 đường line cắt ngang màn hình */
+.zzz-timeline-deck {
+    background: transparent;
+    padding: 10px 0;
+    border-top: 2px solid var(--zzz-black, #111);
+    border-bottom: 2px solid var(--zzz-black, #111);
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+/* Nhãn Năm - Lột sạch box, biến thành HUD Label trần trụi */
+.zzz-hud-label {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    color: var(--zzz-black, #111);
+    letter-spacing: 1px;
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+
+    .zzz-hud-label span {
+        color: var(--zzz-accent, #FF3366) !important; /* Năm màu đỏ rực cho nổi bật */
+        font-size: 1.5rem;
+        text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+    }
+
+/* Đường ray chứa các nút Tháng */
+.zzz-month-track {
+    /* Đổ một lớp vân chéo siêu mờ để làm nền */
+    background-image: repeating-linear-gradient(-45deg, rgba(0,0,0,0.02), rgba(0,0,0,0.02) 10px, transparent 10px, transparent 20px);
+    border: 1px dashed var(--zzz-black, #111);
+    background-color: #fcfcfc;
+    padding: 8px;
+}
+
+/* --- NÚT CHUYỂN NAV (MŨI TÊN) --- */
+.zzz-btn-nav {
+    background-color: var(--zzz-black, #111);
+    color: var(--zzz-primary, #D2FF00);
+    width: 32px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none !important; /* Lột viền, dùng full nền đen */
+    transform: skewX(-10deg);
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 2px 2px 0 var(--zzz-primary, #D2FF00);
+}
+
+    .zzz-btn-nav i {
+        transform: skewX(10deg);
+        font-weight: 900;
+    }
+
+    .zzz-btn-nav:hover {
+        background-color: var(--zzz-primary, #D2FF00);
+        color: var(--zzz-black, #111);
+        box-shadow: 3px 3px 0 var(--zzz-black);
+        transform: skewX(-10deg) translate(-2px, -2px);
+    }
+
+    .zzz-btn-nav:active {
+        transform: skewX(-10deg) translate(2px, 2px);
+        box-shadow: 0px 0px 0 transparent;
+    }
+

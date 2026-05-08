@@ -1,0 +1,242 @@
+﻿/* =========================================================
+   💥 TÀ THUẬT V3: ĐỘ SKIN INTRO.JS CHUẨN NEON VỊNH QUYỂN
+========================================================= */
+
+/* Nhúng Font Pixel Game từ Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+/* 1. KHUNG CHÍNH: Co giãn tự do, Font Pixel, Bóng đổ cục súc */
+.introjs-tooltip {
+    background-color: #fff !important;
+    border: 4px solid #000 !important;
+    border-radius: 0 !important;
+    box-shadow: 8px 8px 0px #000 !important;
+    font-family: 'VT323', monospace !important;
+    padding: 0 !important;
+    width: fit-content !important;
+    min-width: 280px !important;
+    max-width: 90vw !important;
+    white-space: normal !important;
+}
+  
+    /* 💥 CHỈ ÉP DUY NHẤT CÁI CUTSCENE MỞ MÀN RA GIỮA MÀN HÌNH */
+    .introjs-tooltip.zzz-cutscene-box {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        margin: 0 !important;
+        bottom: auto !important;
+        right: auto !important;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 0 4px var(--zzz-primary, #ccff00) !important;
+        border-radius: 8px !important;
+    }
+
+    /* 💥 Đổi thành bùa ghim đáy màn hình (Phụ đề) */
+    .introjs-tooltip.force-bottom-screen {
+        position: fixed !important;
+        bottom: 30px !important; /* Càng to thì càng nhích lên cao */
+        left: 50% !important;
+        transform: translateX(-50%) !important; /* Chỉ căn giữa theo chiều ngang */
+        /* Xóa bỏ mọi hệ tọa độ khác */
+        top: auto !important;
+        right: auto !important;
+        margin: 0 !important;
+    }
+
+/* 2. CHẶT MŨI TÊN */
+.introjs-arrow {
+    display: none !important;
+}
+
+/* 3. NỘI DUNG CHỮ & HÌNH ẢNH */
+.introjs-tooltiptext {
+    padding: 35px 20px 20px 20px !important;
+    font-size: 22px !important;
+    color: #000 !important;
+    border-bottom: 4px dashed #000 !important;
+    line-height: 1.2 !important;
+}
+
+    .introjs-tooltiptext img,
+    .introjs-tooltiptext video,
+    .introjs-tooltiptext iframe {
+        max-width: 100% !important;
+        height: auto !important;
+        display: block;
+        border: 2px solid #000;
+        margin-top: 10px;
+    }
+
+/* 4. 💥 NÚT SKIP (THU NHỎ + PHONG CÁCH ARCADE - BẢN FIX RỚT CHỮ) */
+.introjs-skipbutton {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important; /* Khoảng cách giữa Icon và chữ */
+    /* 👇 💥 CÁC DÒNG QUYỀN LỰC ÉP KHÔNG CHO BÓP MÉO VÀ RỚT CHỮ */
+    width: auto !important;
+    height: auto !important;
+    max-width: none !important;
+    white-space: nowrap !important; /* Cấm tuyệt đối việc tự động xuống dòng */
+    word-break: keep-all !important;
+    box-sizing: border-box !important;
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    background-color: #dc3545 !important;
+    color: #fff !important;
+    font-size: 13px !important;
+    padding: 4px 8px !important;
+    border-left: 3px solid #000 !important;
+    border-bottom: 3px solid #000 !important;
+    border-radius: 0 !important;
+    text-decoration: none !important;
+    margin: 0 !important;
+    z-index: 99999 !important;
+    font-weight: bold !important;
+    letter-spacing: 1px !important;
+    transition: all 0.1s !important;
+}
+
+    /* Đảo màu khi hover */
+    .introjs-skipbutton:hover {
+        background-color: #000 !important;
+        color: #dc3545 !important;
+    }
+
+    /* Hiệu ứng lún nút khi click chuẩn Game thùng */
+    .introjs-skipbutton:active {
+        background-color: #ff4757 !important;
+        color: #000 !important;
+    }
+
+/* 5. KHU VỰC CHỨA NÚT BẤM */
+.introjs-tooltipbuttons {
+    padding: 15px !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    justify-content: flex-end !important;
+    border-top: none !important;
+}
+
+/* 6. NÚT BẤM NEXT/PREV/DONE: Phong cách Game Retro */
+.introjs-button {
+    border-radius: 0 !important;
+    border: 3px solid #000 !important;
+    text-shadow: none !important;
+    font-size: 18px !important;
+    padding: 6px 14px !important;
+    box-shadow: 4px 4px 0px #000 !important;
+    transition: all 0.1s !important;
+    text-transform: uppercase !important;
+    cursor: pointer !important;
+    flex-grow: 1;
+    text-align: center;
+}
+
+    .introjs-button:active {
+        transform: translate(3px, 3px) !important;
+        box-shadow: 1px 1px 0px #000 !important;
+    }
+
+.introjs-nextbutton {
+    background-color: var(--zzz-primary, #ccff00) !important;
+    color: #000 !important;
+}
+
+.introjs-prevbutton {
+    background-color: #fff !important;
+    color: #000 !important;
+}
+
+.introjs-disabled {
+    opacity: 0.5 !important;
+    box-shadow: none !important;
+    transform: translate(3px, 3px) !important;
+    cursor: not-allowed !important;
+}
+
+/* 7. CHẤM CHỈ MỤC THÀNH KHỐI PIXEL VUÔNG */
+.introjs-bullets {
+    padding-bottom: 10px !important;
+}
+
+    .introjs-bullets ul li a {
+        border-radius: 0 !important;
+        background: #fff !important;
+        width: 12px !important;
+        height: 12px !important;
+        border: 3px solid #000 !important;
+        margin: 0 4px !important;
+        box-shadow: 2px 2px 0px #000 !important;
+    }
+
+        .introjs-bullets ul li a.active {
+            background: var(--zzz-primary, #ccff00) !important;
+        }
+
+/* 8. TỐI TRANG VỪA PHẢI: Xóa hố đen vũ trụ, giảm độ mù mịt xuống 70% */
+.introjs-overlay {
+    opacity: 0.7 !important; /* Số càng nhỏ thì màn che càng mờ, sếp tự chỉnh nếu muốn */
+    background: #000 !important;
+}
+
+/* 9. KHOANH VÙNG (HELPER LAYER): Trả lại viền Neon sáng nhẹ, bỏ bóng đen khổng lồ */
+.introjs-helperLayer {
+    background: transparent !important;
+    /* 💥 Tội đồ đây: Xóa mẹ cái border thực đi, nó làm phình box model gây lệch! */
+    border: none !important;
+    /* 💥 Tà thuật thay thế: Dùng 'outline' vẽ viền ma, đéo ảnh hưởng tọa độ! */
+    outline: 4px dashed var(--zzz-primary, #ccff00) !important;
+    outline-offset: 0px !important; /* Ép viền ma ôm sát sàn sạt vào mục tiêu */
+
+    border-radius: 0 !important;
+    box-shadow: 0 0 15px var(--zzz-primary, #ccff00) !important;
+}
+
+/* 10. PHẦN TỬ MỤC TIÊU: Nổi lên trên cùng (Bring to Front) và CẤM CLICK */
+.introjs-showElement,
+tr.introjs-showElement > td,
+tr.introjs-showElement > th {
+    background-color: #fff !important; /* Màu nền khi nổi lên, sếp có thể đổi thành var(--zzz-bg) */
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    border: none !important;
+    pointer-events: none !important;
+}
+
+ul.introjs-showElement.dropdown-menu {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    z-index: 9999999 !important;
+    position: absolute !important;
+    width: max-content !important;
+    min-width: 100% !important;
+}
+
+.dropdown.introjs-fixParent {
+    position: relative !important;
+}
+
+.zzz-title-wrap.introjs-showElement {
+    /* 👇 Sếp THAY MÀU NÀY cho trùng với màu nền Web của sếp (VD: #1a1a1a, #222, v.v.) */
+    background-color: var(--zzz-bg) !important;
+    border-radius: 4px !important;
+    /* Ép không cho viền hay bóng đổ nào lòi ra ngoài gây gai mắt */
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/* Ép bảng hướng dẫn lên đỉnh chóp vũ trụ (8 số 9) */
+.introjs-tooltip,
+.introjs-tooltipReferenceLayer {
+    z-index: 99999999 !important;
+}
+
+/* Kéo luôn cái khung nét đứt Neon lêm sát ngay dưới bảng hướng dẫn để không bị Dropdown che mất viền */
+.introjs-helperLayer {
+    z-index: 99999998 !important;
+}

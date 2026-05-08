@@ -1,5 +1,5 @@
 ﻿using WebSuDungDIen.Models;
-
+using System.ComponentModel.DataAnnotations;
 namespace WebSuDungDIen.ViewModels
 {
     public class LapHoaDonTheoPhuongVM
@@ -7,7 +7,6 @@ namespace WebSuDungDIen.ViewModels
         public string? MaPhuongApi { get; set; }
 
         public List<KhachHang> DanhSachKhach { get; set; } = new();
-
         public List<DonGiaBacVM> DanhSachGia { get; set; } = new();
 
         public decimal PhanTramVAT { get; set; }

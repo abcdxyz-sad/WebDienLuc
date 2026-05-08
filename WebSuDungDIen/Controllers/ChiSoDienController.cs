@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -27,57 +28,51 @@ namespace WebSuDungDIen.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index(string maTinh, string maPhuongApi, string searchKeyword)
+        [Authorize(Roles = "Admin, NhanVien")]
+        public async Task<IActionResult> Index(string maTinh, string maPhuongApi, string searchKeyword, int? thang, int? nam)
         {
-            // 1. Khởi tạo Query từ Context của bạn
-            // MongoDB LINQ hỗ trợ rất tốt việc kết hợp Filter và Query
             var query = _context.KhachHang.AsQueryable();
 
-            // 2. Lọc theo Tỉnh (Dựa trên chuỗi địa chỉ)
             if (!string.IsNullOrEmpty(maTinh))
             {
                 query = query.Where(k => k.DiaChiDayDu.Contains(maTinh));
             }
 
-            // 3. Lọc theo Phường
             if (!string.IsNullOrEmpty(maPhuongApi))
             {
                 query = query.Where(k => k.MaPhuongApi == maPhuongApi);
             }
 
-            // 4. Kiểm tra xem người dùng có gõ tìm kiếm không
             if (!string.IsNullOrEmpty(searchKeyword))
             {
-                // Phải dùng cái biến keyword này cho toàn bộ quá trình so sánh bên dưới!
                 string keyword = searchKeyword.Trim().ToLower();
-
-                bool isNumberOnly = keyword.All(char.IsDigit); // Kiểm tra trên keyword đã Trim
+                bool isNumberOnly = keyword.All(char.IsDigit);
 
                 if (isNumberOnly)
                 {
-                    // NẾU LÀ SỐ: Chỉ quất đúng cột Số điện thoại. 
                     query = query.Where(k => k.DienThoai.StartsWith(keyword));
                 }
                 else
                 {
-                    // NẾU LÀ CHỮ: Chỉ quét cột Tên hoặc Mã Khách Hàng.
-                    // Mã KH thì bắt buộc gõ chính xác, Tên thì cho phép chứa (Contains)
-                    query = query.Where(k => k.TenKh.ToLower().Contains(keyword) ||
-                                             k.MaKh.ToLower() == keyword);
+                    query = query.Where(k => k.TenKh.ToLower().Contains(keyword) || k.MaKh.ToLower() == keyword);
                 }
             }
 
-            // --- GIỮ NGUYÊN PHẦN LOGIC ĐỔ DATA VÀO DROPDOWN CỦA BẠN ---
-            var rootKhachHang = await _context.KhachHang
+            // --- TỐI ƯU: Lấy Data cho Dropdown ---
+            var addressData = await _context.KhachHang
                 .Where(k => !string.IsNullOrEmpty(k.MaPhuongApi) && !string.IsNullOrEmpty(k.DiaChiDayDu))
+                .Select(k => new { k.DiaChiDayDu, k.MaPhuongApi })
+                .Distinct()
                 .ToListAsync();
 
-            ViewBag.DanhSachTinh = rootKhachHang
-                .Select(k => k.DiaChiDayDu.Split(',').Last().Trim())
+            ViewBag.DanhSachTinh = addressData
+                .Select(k => k.DiaChiDayDu.Split(',').LastOrDefault()?.Trim())
+                .Where(t => !string.IsNullOrEmpty(t))
                 .Distinct()
-                .Select(t => new SelectListItem { Value = t, Text = t, Selected = (t == maTinh) }).ToList();
+                .Select(t => new SelectListItem { Value = t, Text = t, Selected = (t == maTinh) })
+                .ToList();
 
-            ViewBag.DanhSachPhuong = rootKhachHang
+            ViewBag.DanhSachPhuong = addressData
                 .Where(k => string.IsNullOrEmpty(maTinh) || k.DiaChiDayDu.Contains(maTinh))
                 .GroupBy(k => k.MaPhuongApi)
                 .Select(g => {
@@ -90,110 +85,190 @@ namespace WebSuDungDIen.Controllers
                     };
                 }).ToList();
 
+            // ==========================================
+            // XỬ LÝ KỲ CHỐT (THÁNG / NĂM)
+            // Nếu mới vào trang chưa chọn gì, mặc định lấy tháng/năm hiện tại
+            // ==========================================
+            int currentThang = thang ?? 0;
+            int currentNam = nam ?? 0;
+
+            // Nếu không có tham số truyền vào (lần đầu load trang)
+            if (currentThang == 0 || currentNam == 0)
+            {
+                // Truy vấn tìm tháng/năm lớn nhất đã có người nhập chỉ số
+                var kyChotMoiNhat = await _context.ChiSoDien
+                    .OrderByDescending(c => c.Nam)
+                    .ThenByDescending(c => c.Thang)
+                    .Select(c => new { c.Thang, c.Nam })
+                    .FirstOrDefaultAsync();
+
+                if (kyChotMoiNhat != null)
+                {
+                    currentThang = kyChotMoiNhat.Thang;
+                    currentNam = kyChotMoiNhat.Nam;
+                }
+                else
+                {
+                    // Nếu DB trống trơn chưa có ai nhập bao giờ thì mới xài tháng hiện tại
+                    currentThang = DateTime.Now.Month;
+                    currentNam = DateTime.Now.Year;
+                }
+            }
+
             ViewBag.SearchKeyword = searchKeyword;
             ViewBag.MaPhuongApi = maPhuongApi;
+            ViewBag.SelectedThang = currentThang;
+            ViewBag.SelectedNam = currentNam;
 
-            // --- ĐỔ DỮ LIỆU RA VIEWMODEL ---
-            // 1. Lôi dữ liệu thô từ Database lên trước (Tránh lỗi EF Core không dịch được phép trừ)
+            // Lấy dữ liệu bảng và Filter ĐÚNG CÁI THÁNG/NĂM đang chọn
             var rawData = await query.Select(k => new
             {
                 KhachHangId = k.Id,
                 TenKh = k.TenKh,
                 DiaChi = k.DiaChiDayDu ?? k.DiaChi,
-                // Chỉ bốc ĐÚNG 1 dòng chỉ số mới nhất của ông khách này
-                ChiSoGanNhat = k.ChiSoDien
-                                .OrderByDescending(c => c.Nam)
-                                .ThenByDescending(c => c.Thang)
-                                .FirstOrDefault()
+                // SỬA Ở ĐÂY: Chỉ lấy record có Thang và Nam khớp với bộ lọc Timeline
+                ChiSoKyNay = k.ChiSoDien.FirstOrDefault(c => c.Thang == currentThang && c.Nam == currentNam)
             }).ToListAsync();
 
-            // 2. Map sang ViewModel và xử lý Logic tính tiền trên RAM (Bao mượt, không bao giờ lỗi SQL)
             var data = rawData.Select(x => new ChiSoDienIndexVM
             {
                 KhachHangId = x.KhachHangId,
                 TenKh = x.TenKh,
                 DiaChi = x.DiaChi,
-
-                // Nếu không có chỉ số (null) thì cho mặc định là 0
-                ThangGanNhat = x.ChiSoGanNhat?.Thang ?? 0,
-                NamGanNhat = x.ChiSoGanNhat?.Nam ?? 0,
-                ChiSoCu = x.ChiSoGanNhat?.ChiSoCu ?? 0,
-                ChiSoMoi = x.ChiSoGanNhat?.ChiSoMoi ?? 0,
-
-                // 🚨 BÙA CHỐNG KHÁCH HÀNG CHÉM: 
-                // Nếu là mốc lắp đặt (ChiSoCu == 0), thì Tiêu thụ = 0! Không tính tiền!
-                DienTieuThu = (x.ChiSoGanNhat != null && x.ChiSoGanNhat.ChiSoCu > 0)
-                              ? (x.ChiSoGanNhat.ChiSoMoi - x.ChiSoGanNhat.ChiSoCu)
-                              : 0
+                // Nếu ChiSoKyNay = null (tháng này chưa chốt) -> gán = 0 để UI hiện chữ "CHƯA CÓ" đỏ chót
+                ThangGanNhat = x.ChiSoKyNay?.Thang ?? 0,
+                NamGanNhat = x.ChiSoKyNay?.Nam ?? 0,
+                ChiSoCu = x.ChiSoKyNay?.ChiSoCu ?? 0,
+                ChiSoMoi = x.ChiSoKyNay?.ChiSoMoi ?? 0,
+                DienTieuThu = (x.ChiSoKyNay != null && x.ChiSoKyNay.ChiSoCu > 0)
+                              ? (x.ChiSoKyNay.ChiSoMoi - x.ChiSoKyNay.ChiSoCu) : 0
             }).ToList();
 
             return View(data);
         }
 
+        // --- THÊM ACTION NÀY ĐỂ JS GỌI LẤY PHƯỜNG KHI ĐỔI TỈNH ---
+        [HttpGet]
+        public async Task<IActionResult> GetPhuongByTinh(string maTinh)
+        {
+            var addressData = await _context.KhachHang
+                .Where(k => !string.IsNullOrEmpty(k.MaPhuongApi) && !string.IsNullOrEmpty(k.DiaChiDayDu))
+                .Where(k => string.IsNullOrEmpty(maTinh) || k.DiaChiDayDu.Contains(maTinh))
+                .Select(k => new { k.DiaChiDayDu, k.MaPhuongApi })
+                .Distinct()
+                .ToListAsync();
+
+            var phuongList = addressData
+                .GroupBy(k => k.MaPhuongApi)
+                .Select(g => {
+                    var parts = g.First().DiaChiDayDu.Split(',');
+                    return new
+                    {
+                        value = g.Key,
+                        text = parts.Length >= 2 ? parts[parts.Length - 2].Trim() : "Phường " + g.Key
+                    };
+                }).ToList();
+
+            return Json(phuongList);
+        }
+
         // GET: ChiSoDien/Details/5
+        [Authorize(Roles = "Admin, NhanVien")]
         public async Task<IActionResult> Details(string id)
         {
             var kh = await _context.KhachHang
                 .Include(x => x.ChiSoDien)
+                .ThenInclude(c => c.NhanVien) // 💥 MÓC NỐI TIẾP: Kéo thằng Nhân Viên ra ánh sáng!
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (kh == null)
             {
                 return NotFound();
+            }   
+
+            if (!string.IsNullOrEmpty(kh.IdentityUserId))
+            {
+                kh.User = await _context.Users.FirstOrDefaultAsync(u => u.Id == kh.IdentityUserId);
             }
 
             return View(kh);
         }
 
         // GET: ChiSoDien/Create
-        public IActionResult Create(string maPhuongApi)
+        [Authorize(Roles = "Admin, NhanVien")]
+        [HttpGet]
+        public IActionResult Create(string maPhuongApi, string startTour, int? thang, int? nam)
         {
-            // Nếu chưa chọn phường (chuỗi rỗng) thì đá về Index bắt chọn lại
+            // Cờ báo hiệu có đang chạy Tour không
+            bool isTour = !string.IsNullOrEmpty(startTour) && startTour.Trim().ToLower() == "true";
+
+            // --- KHÚC 1: XỬ LÝ TOUR (BỐC DATA TẠI CHỖ) ---
+            if (isTour && string.IsNullOrEmpty(maPhuongApi))
+            {
+                // Ưu tiên 1: Phường có chỉ số
+                var dataMau = (from kh in _context.KhachHang
+                                join cs in _context.ChiSoDien on kh.Id equals cs.KhachHangId
+                                where !string.IsNullOrEmpty(kh.MaPhuongApi)
+                                orderby cs.Nam descending, cs.Thang descending
+                                select new { kh.MaPhuongApi, cs.Thang, cs.Nam }).FirstOrDefault();
+
+                if (dataMau != null)
+                {
+                    maPhuongApi = dataMau.MaPhuongApi;
+                    thang = dataMau.Thang;
+                    nam = dataMau.Nam;
+                }
+                else
+                {
+                    // Ưu tiên 2: Phường chỉ có khách
+                    maPhuongApi = _context.KhachHang
+                        .FirstOrDefault(k => !string.IsNullOrEmpty(k.MaPhuongApi))?.MaPhuongApi;
+                    thang = DateTime.Now.Month;
+                    nam = DateTime.Now.Year;
+                }
+            }
+
+            // --- KHÚC 2: CHẶN LỖI ---
             if (string.IsNullOrEmpty(maPhuongApi))
             {
-                TempData["ThongBao"] = "Vui lòng chọn Phường/Xã trước khi nhập chỉ số điện.";
+                TempData["ThongBao"] = "Vui lòng chọn tình, phường/xã trước.";
                 return RedirectToAction("Index");
             }
+
+            // Gán lại ViewBag để View và JS sử dụng
+            ViewBag.MaPhuongApi = maPhuongApi;
+            ViewBag.Thang = thang;
+            ViewBag.Nam = nam;
+            ViewBag.StartTour = isTour ? "true" : "false";
 
             var ds = _context.KhachHang
                 .Where(kh => kh.MaPhuongApi == maPhuongApi)
                 .Select(kh => new ChiSoDienIndexVM
                 {
+                    MaKh = kh.MaKh,
                     KhachHangId = kh.Id,
                     TenKh = kh.TenKh,
-                    DiaChi = kh.DiaChiDayDu ?? kh.DiaChi, // Ưu tiên show địa chỉ đầy đủ
-
+                    DiaChi = kh.DiaChiDayDu ?? kh.DiaChi,
                     ChiSoCu = _context.ChiSoDien
                         .Where(cs => cs.KhachHangId == kh.Id)
-                        .OrderByDescending(cs => cs.Nam)
-                        .ThenByDescending(cs => cs.Thang)
-                        .Select(cs => cs.ChiSoMoi) // Chỉ số mới của tháng trước = Chỉ số cũ tháng này
-                        .FirstOrDefault(),
-
+                        .OrderByDescending(cs => cs.Nam).ThenByDescending(cs => cs.Thang)
+                        .Select(cs => cs.ChiSoMoi).FirstOrDefault(),
                     ThangGanNhat = _context.ChiSoDien
                         .Where(cs => cs.KhachHangId == kh.Id)
-                        .OrderByDescending(cs => cs.Nam)
-                        .ThenByDescending(cs => cs.Thang)
-                        .Select(cs => cs.Thang)
-                        .FirstOrDefault(),
-
+                        .OrderByDescending(cs => cs.Nam).ThenByDescending(cs => cs.Thang)
+                        .Select(cs => cs.Thang).FirstOrDefault(),
                     NamGanNhat = _context.ChiSoDien
                         .Where(cs => cs.KhachHangId == kh.Id)
-                        .OrderByDescending(cs => cs.Nam)
-                        .ThenByDescending(cs => cs.Thang)
-                        .Select(cs => cs.Nam)
-                        .FirstOrDefault()
+                        .OrderByDescending(cs => cs.Nam).ThenByDescending(cs => cs.Thang)
+                        .Select(cs => cs.Nam).FirstOrDefault()
                 })
                 .ToList();
 
             if (!ds.Any())
             {
-                TempData["ThongBao"] = "Phường này hiện chưa có khách hàng nào để ghi điện.";
+                TempData["ThongBao"] = $"Phường {maPhuongApi} hiện chưa có khách hàng nào.";
                 return RedirectToAction("Index");
             }
-
-            // Gửi cái mã phường này sang View để lát nữa lúc bấm [LƯU], form POST còn biết đang lưu cho phường nào
-            ViewBag.MaPhuongApi = maPhuongApi;
 
             return View(ds);
         }
@@ -201,6 +276,7 @@ namespace WebSuDungDIen.Controllers
         // POST: ChiSoDien/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin, NhanVien")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int Thang, int Nam, List<ChiSoDienIndexVM> model)
@@ -230,6 +306,16 @@ namespace WebSuDungDIen.Controllers
                 TempData["ThongBao"] = "Không có dữ liệu gửi lên.";
                 return RedirectToAction(nameof(Index));
             }
+
+            // ========================================================
+            // ❌ XÓA HOẶC COMMENT ĐOẠN NÀY LẠI
+            // ========================================================
+            // bool daCoChiSoThangNay = await _context.ChiSoDien.AnyAsync(x => x.Thang == Thang && x.Nam == Nam);
+            // if (daCoChiSoThangNay)
+            // {
+            //     TempData["ThongBao"] = $"[ CẢNH BÁO ] Dữ liệu chỉ số điện của Tháng {Thang}/{Nam} đã tồn tại trong hệ thống. Không thể tạo đè!";
+            //     return View(model);
+            // }
 
             var danhSachLoi = new List<string>();
             int soLuongThem = 0;
@@ -361,6 +447,7 @@ namespace WebSuDungDIen.Controllers
         }
 
         // GET: ChiSoDien/Edit?khachHangId=....
+        [Authorize(Roles = "Admin, NhanVien")]
         public async Task<IActionResult> Edit(string khachHangId)
         {
             if (string.IsNullOrEmpty(khachHangId))
@@ -390,6 +477,7 @@ namespace WebSuDungDIen.Controllers
         // POST: ChiSoDien/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin, NhanVien")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([Bind("Id,KhachHangId,Thang,Nam,ChiSoCu,ChiSoMoi")] ChiSoDien model)
@@ -481,6 +569,7 @@ namespace WebSuDungDIen.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Admin, NhanVien")]
         // GET: ChiSoDien/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
@@ -500,6 +589,7 @@ namespace WebSuDungDIen.Controllers
         }
 
         // POST: ChiSoDien/Delete/5
+        [Authorize(Roles = "Admin, NhanVien")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
@@ -520,33 +610,31 @@ namespace WebSuDungDIen.Controllers
         }
 
         [Authorize(Roles = "KhachHang")]
-        public async Task<IActionResult> LichSuCuaToi(string userId)
+        public async Task<IActionResult> LichSuCuaToi()
         {
-            // 1. Lấy thông tin user hiện tại
+            // 1. Lấy thông tin user hiện tại đang đăng nhập
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound();
 
-            // 2. Tìm mã khách hàng tương ứng với tài khoản này
+            // 2. Tìm thông tin Khách hàng tương ứng (Dùng Include nếu cần lấy thêm dữ liệu liên quan)
             var khachHang = await _context.KhachHang
                 .FirstOrDefaultAsync(k => k.IdentityUserId == user.Id);
 
             if (khachHang == null) return NotFound();
 
-            // 3. Query lấy danh sách chỉ số điện (ĐÃ FIX THEO MODEL)
+            // 3. Gán luôn thông tin vào ViewBag từ biến khachHang vừa tìm được
+            // Không cần dùng cái tham số userId truyền vào nữa cho rắc rối sếp nhé
+            ViewBag.TenKhachHang = khachHang.TenKh;
+            ViewBag.MaKhachHang = khachHang.MaKh;
+            ViewBag.DiaChi = khachHang.DiaChi;
+
+            // 4. Query lấy danh sách chỉ số điện
             var lichSuDien = await _context.ChiSoDien
                 .Where(c => c.KhachHangId == khachHang.Id)
-                .OrderByDescending(c => c.Nam)    // Ưu tiên sắp xếp theo Năm mới nhất
-                .ThenByDescending(c => c.Thang)  // Cùng năm thì sắp xếp theo Tháng mới nhất
+                .OrderByDescending(c => c.Nam)
+                .ThenByDescending(c => c.Thang)
                 .ToListAsync();
 
-            var kh = _context.KhachHang.FirstOrDefault(x => x.IdentityUserId == userId);
-            if (kh != null)
-            {
-                ViewBag.TenKhachHang = kh.TenKh;
-                ViewBag.MaKhachHang = kh.MaKh;
-                ViewBag.DiaChi = kh.DiaChi; // Hoặc kh.DiaChiDayDu
-            }
-            // 4. Trả về View dành riêng cho khách
             return View(lichSuDien);
         }
     }

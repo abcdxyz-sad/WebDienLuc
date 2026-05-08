@@ -183,6 +183,58 @@
         background-color: #e9ecef !important;
     }
 
+/* Khai báo biến để dễ tùy chỉnh */
+.zzz-badge-custom {
+    /* Tùy chỉnh màu sắc */
+    --bg-color: var(--zzz-primary); /* Mặc định lấy biến primary của bạn */
+    --text-color: #212529; /* Màu chữ (text-dark) */
+    --border-color: #000000; /* Màu viền */
+    /* Tùy chỉnh kích thước */
+    --font-size: 14px; /* Độ lớn của chữ */
+    --padding-y: 8px; /* Độ cao (tương đương py-2) */
+    --padding-x: 12px; /* Độ rộng (px-3) */
+    --border-width: 2px; /* Độ dày viền */
+    --shadow-offset: 2px; /* Độ lệch của bóng đổ */
+    /* Thuộc tính cố định */
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: var(--border-width) solid var(--border-color);
+    padding: var(--padding-y) var(--padding-x);
+    font-size: var(--font-size);
+    font-weight: bold;
+    text-transform: uppercase; /* Cho giống kiểu badge hoạt động */
+    line-height: 1;
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0px #000 !important;
+    white-space: nowrap;
+}
+
+.zzz-blink-dot {
+    animation: zzz-blink 1s infinite;
+}
+
+@keyframes zzz-blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Responsive: Ẩn trên mobile nếu cần (giống d-none d-md-block) */
+@media (max-width: 767px) {
+    .hide-on-mobile {
+        display: none;
+    }
+}
+
 /* =========================================================
    3. DROPDOWN MENU
 ========================================================= */
@@ -312,7 +364,7 @@
 
 /* HIỆU ỨNG KHI TRẠNG THÁI LÀ TRUE (CHECKED) */
 .zzz-switch input:checked + .zzz-slider {
-    background-color: #00FF99; /* Màu xanh lá Neon của Badge Success */
+    background-color: var(--zzz-primary); /* Màu xanh lá Neon của Badge Success */
     box-shadow: 3px 3px 0px var(--zzz-black); /* Bóng đen cứng đặc trưng */
 }
 

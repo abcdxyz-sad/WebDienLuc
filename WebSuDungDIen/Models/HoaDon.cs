@@ -5,7 +5,7 @@ namespace WebSuDungDIen.Models
     public class HoaDon
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonRepresentation(BsonType.String)]
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
         public string MaHd { get; set; } = null!;
@@ -28,7 +28,7 @@ namespace WebSuDungDIen.Models
         public decimal TongThanhToan { get; set; }
 
         public string TrangThai { get; set; } = "ChuaThanhToan";
-
+        public string? HinhThucThanhToan { get; set; }
         public DateTime? NgayThanhToan { get; set; }
         public DateTime? NgayLap { get; set; }
     }

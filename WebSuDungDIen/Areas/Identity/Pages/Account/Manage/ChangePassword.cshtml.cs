@@ -40,16 +40,13 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account.Manage
             [EmailAddress(ErrorMessage = "Định dạng Email không hợp lệ.")]
             public string Email { get; set; }
 
-            // 💥 TÀ THUẬT: Thêm dấu ? để biến nó thành Nullable, vô hiệu hóa Required ngầm định của C#
             [DataType(DataType.Password)]
             public string? OldPassword { get; set; }
 
-            [StringLength(100, ErrorMessage = "Mật khẩu mới phải từ {2} đến {1} ký tự.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             public string? NewPassword { get; set; }
 
             [DataType(DataType.Password)]
-            [Compare("NewPassword", ErrorMessage = "Mật khẩu xác nhận không trùng khớp!")]
             public string? ConfirmPassword { get; set; }
         }
 
@@ -77,15 +74,42 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound();
 
-            // 💥 XÓA ÁN TỬ: Lờ đi lỗi Password nếu khách không thèm nhập
-            if (string.IsNullOrEmpty(Input.NewPassword))
+            // 💥 MÁY QUÉT Ý ĐỊNH: Đã gõ 1 chữ vào 1 trong 3 ô thì xác định là đang muốn đổi Pass
+            bool isChangingPassword = !string.IsNullOrEmpty(Input.OldPassword) ||
+                                      !string.IsNullOrEmpty(Input.NewPassword) ||
+                                      !string.IsNullOrEmpty(Input.ConfirmPassword);
+
+            if (!isChangingPassword)
             {
                 ModelState.Remove("Input.OldPassword");
                 ModelState.Remove("Input.NewPassword");
                 ModelState.Remove("Input.ConfirmPassword");
             }
+            else
+            {
+                // 💥 BẪY 1: Nhập thiếu ô
+                if (string.IsNullOrEmpty(Input.OldPassword) ||
+                    string.IsNullOrEmpty(Input.NewPassword) ||
+                    string.IsNullOrEmpty(Input.ConfirmPassword))
+                {
+                    if (string.IsNullOrEmpty(Input.OldPassword)) ModelState.AddModelError("Input.OldPassword", "Vui lòng nhập mật khẩu cũ.");
+                    if (string.IsNullOrEmpty(Input.NewPassword)) ModelState.AddModelError("Input.NewPassword", "Vui lòng tạo mật khẩu mới.");
+                    if (string.IsNullOrEmpty(Input.ConfirmPassword)) ModelState.AddModelError("Input.ConfirmPassword", "Vui lòng xác nhận mật khẩu mới.");
 
-            // Nếu vẫn còn lỗi (ví dụ bỏ trống Email), thì phải nạp lại Data rồi mới văng lỗi!
+                    // 👉 Bắn Notification:
+                    TempData["Error"] = "Vui lòng nhập đầy đủ cả 3 trường mật khẩu!";
+                }
+                // 💥 BẪY 2: Nhập đủ nhưng Mới và Xác nhận đéo giống nhau
+                else if (Input.NewPassword != Input.ConfirmPassword)
+                {
+                    ModelState.AddModelError("Input.ConfirmPassword", "Mật khẩu xác nhận không khớp với mật khẩu mới!");
+
+                    // 👉 Bắn Notification:
+                    TempData["Error"] = "Mật khẩu xác nhận không khớp!";
+                }
+            }
+
+            // Nếu dính bất kỳ bẫy nào ở trên (hoặc lỗi Email/Username) -> Văng lỗi ra màn hình ngay lập tức!
             if (!ModelState.IsValid)
             {
                 await LoadAsync(user);
@@ -107,31 +131,36 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account.Manage
                 isModified = true;
             }
 
-            // 2. LƯU PASS (Chỉ khi nào ngứa tay gõ Pass mới)
-            if (!string.IsNullOrEmpty(Input.NewPassword))
+            // 2. LƯU PASS (Chạy tới đây là 3 ô đã được điền đầy đủ và khớp nhau)
+            if (isChangingPassword)
             {
-                if (string.IsNullOrEmpty(Input.OldPassword))
-                {
-                    ModelState.AddModelError("Input.OldPassword", "Vui lòng nhập Mật khẩu hiện tại!");
-                    await LoadAsync(user); // Lỗi cũng phải nạp lại data!
-                    return Page();
-                }
-
                 var result = await _userManager.ChangePasswordAsync(user, Input.OldPassword, Input.NewPassword);
+
+                // 💥 BẪY 3: Gõ sai mật khẩu cũ (Server trả về lỗi)
                 if (!result.Succeeded)
                 {
                     foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
+
+                    // 👉 Bắn Notification:
+                    TempData["Error"] = "Đổi mật khẩu thất bại. Vui lòng kiểm tra lại mật khẩu cũ!";
+
                     await LoadAsync(user);
                     return Page();
                 }
                 isModified = true;
             }
 
+            // 3. CHỐT HẠ THÔNG BÁO CUỐI CÙNG
             if (isModified)
             {
                 await _userManager.UpdateAsync(user);
                 await _signInManager.RefreshSignInAsync(user);
-                StatusMessage = "Cập nhật thông tin thành công!";
+                TempData["ThongBao"] = "Cập nhật thông tin thành công!";
+            }
+            else
+            {
+                // Chửi vào mặt những kẻ bấm lưu dạo
+                TempData["Error"] = "Không có thông tin nào được thay đổi!";
             }
 
             return RedirectToPage();

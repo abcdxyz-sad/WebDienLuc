@@ -1,13 +1,13 @@
 ﻿@model WebSuDungDIen.Models.KhachHang
 
 @{
-    ViewData["Title"] = "XÓA KHÁCH HÀNG";
+    ViewData["Title"] = "Xóa Khách Hàng";
 }
 
 <div class="container-fluid p-0" style="max-width: 800px; margin: 0 auto;">
 
     <div class="border border-danger border-4 bg-danger text-white p-4 mb-4 position-relative" style="box-shadow: 8px 8px 0px var(--zzz-black);">
-        <h1 class="zzz-page-title m-0 fw-bold text-uppercase d-flex align-items-center gap-2">
+        <h1 class="m-0 zzz-page-title border-start border-5 ps-3" style="border-left-color: var(--zzz-primary) !important;">
             <i class="fas fa-exclamation-triangle"></i> CẢNH BÁO HỆ THỐNG
         </h1>
         <p class="m-0 zzz-text-mono mt-2 fw-bold" style="font-size: 1.1rem;">
@@ -59,12 +59,12 @@
         <form asp-action="Delete" class="w-50">
             <input type="hidden" asp-for="Id" />
             <button type="submit" class="btn w-100 btn-danger zzz-btn-danger fs-5 fw-bold py-3 rounded-0 border-dark border-3" style="box-shadow: 4px 4px 0px var(--zzz-black);">
-                <i class="fas fa-skull me-2"></i> XÁC NHẬN TIÊU HỦY
+                <i class="fas fa-skull me-2"></i> XÁC NHẬN XÓA
             </button>
         </form>
 
         <a asp-action="Index" class="btn w-50 zzz-btn-cancel fs-5 fw-bold py-3 text-center d-flex justify-content-center align-items-center">
-            <i class="fas fa-undo me-2"></i> RÚT LUI
+            <i class="fas fa-undo me-2"></i> QUAY LẠI
         </a>
     </div>
 

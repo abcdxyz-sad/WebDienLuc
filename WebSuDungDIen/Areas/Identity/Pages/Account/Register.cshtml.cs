@@ -78,11 +78,11 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             /// 
-            [Required]
+            [Required(ErrorMessage = "[ LỖI ] - Vui lòng nhập vào tên tài khoản!")]
             [Display(Name = "Username")]
             public string UserName { get; set; }
 
-            [Required]
+            [Required(ErrorMessage = "[ LỖI ] - Vui lòng nhập vào email!")]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
@@ -91,7 +91,7 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "[ LỖI ] - Vui lòng nhập vào mật khẩu!")]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }
@@ -100,9 +100,9 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [DataType(DataType.Password)]
+            [Required(ErrorMessage = "[ LỖI ] - Vui lòng xác nhận mật khẩu!")]
             [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Compare("Password", ErrorMessage = "[ LỖI ] - Mật khẩu không trùng nhau!.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -142,8 +142,8 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    await _emailSender.SendEmailAsync(Input.Email, "Xác nhận email của bạn",
+                        $"Vui lòng xác nhận email của bạn tại <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>nhấn vào đây</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -157,8 +157,19 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account
                 }
                 foreach (var error in result.Errors)
                 {
-                    Console.WriteLine(error.Description);
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    string msgLoi = error.Description;
+
+                    // Bắt mã lỗi và dịch sang tiếng Việt
+                    if (error.Code == "InvalidUserName")
+                    {
+                        msgLoi = "[ LỖI ] - Tên tài khoản không được chứa khoảng trắng hay ký tự đặc biệt.";
+                    }
+                    else if (error.Code == "DuplicateUserName")
+                    {
+                        msgLoi = "[ LỖI ] - Tên tài khoản này đã có người sử dụng!";
+                    }
+
+                    ModelState.AddModelError(string.Empty, msgLoi);
                 }
             }
 

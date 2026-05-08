@@ -106,7 +106,7 @@ connection.on("ReceivePaymentSuccess", function (maKh, maHd) {
     closeQRModal();
 
     // Bắn thông báo siêu xịn xò
-    alert(`🎉 TING TING! Khách hàng [${maKh}] vừa thanh toán thành công hóa đơn [${maHd}]!`);
+    alert(`Khách hàng [${maKh}] vừa thanh toán thành công hóa đơn [${maHd}]!`);
 
     // Tải lại trang để cập nhật huy hiệu "ĐÃ THANH TOÁN"
     window.location.reload();

@@ -15,6 +15,7 @@ using WebSuDungDIen.Models;
 
 namespace WebSuDungDIen.Areas.Identity.Pages.Account
 {
+    [AllowAnonymous]
     public class ResetPasswordModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -49,8 +50,7 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Required(ErrorMessage = "[ LỖI ] - Vui lòng nhập vào mật khẩu!")]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
@@ -58,6 +58,8 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
+            /// 
+            [Required(ErrorMessage = "[ LỖI ] - Vui lòng xác nhận mật khẩu!")]
             [DataType(DataType.Password)]
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
@@ -72,17 +74,18 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account
 
         }
 
-        public IActionResult OnGet(string code = null)
+        public IActionResult OnGet(string code = null, string email = null)
         {
             if (code == null)
             {
-                return BadRequest("A code must be supplied for password reset.");
+                return BadRequest("Bắt buộc phải có mã Token để đổi mật khẩu!");
             }
             else
             {
                 Input = new InputModel
                 {
-                    Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code))
+                    Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code)),
+                    Email = email // 💥 NẠP ĐẠN: Gán cái email lấy được vào biến Input.Email
                 };
                 return Page();
             }

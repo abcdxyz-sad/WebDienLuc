@@ -12,20 +12,24 @@
        LAYOUT CHO ADMIN (ZZZ STYLE - HỔN LOẠN & HIPHOP)
        ======================================================== *@
     <div class="zzz-manage-container py-5">
-        <div class="zzz-urban-card p-4 border-dark border-3" style="box-shadow: 12px 12px 0px #000;">
-            <h2 class="mb-4 d-inline-block p-2 border border-dark border-3 shadow-sm zzz-text-mono text-uppercase fw-bolder" style="background-color: var(--zzz-primary); color: var(--zzz-black); line-height: 1;">
-                <i class="fas fa-shield-alt me-2"></i>Edit account
-            </h2>
+
+        <h2 class="mb-4 d-inline-block p-2 border border-dark border-3 shadow-sm zzz-text-mono text-uppercase fw-black" style="background-color: var(--zzz-primary); color: #000; line-height: 1;">
+            <i class="fas fa-shield-alt me-2"></i> CÀI ĐẶT TÀI KHOẢN
+        </h2>
+        <div class="zzz-urban-card p-4 border-dark border-3 bg-white" style="box-shadow: 8px 8px 0px var(--zzz-black, #000);">
+
             <div class="row g-4">
                 <div class="col-md-3">
                     <partial name="_ManageNav" />
                 </div>
+
                 <div class="col-md-9 border-start border-dark border-3 ps-md-4">
                     <div class="zzz-admin-content-well">
                         @RenderBody()
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 }
@@ -38,7 +42,7 @@ else
         <div class="manage-custom-container py-5">
             <div class="manage-card-glass border-0 shadow-lg" style="border-radius: 20px; background: #fff;">
                 <div class="manage-header-zone p-4 border-bottom bg-light">
-                    <h4 class="fw-bold text-primary mb-0"><i class="bi bi-person-circle"></i> Trung tâm tài khoản</h4>
+                    <h4 class="fw-bold text-primary mb-0"><i class="bi bi-person-circle"></i> CÀI ĐẶT TÀI KHOẢN</h4>
                 </div>
                 <div class="manage-main-body p-4">
                     <nav class="manage-tabs mb-4 border-bottom">

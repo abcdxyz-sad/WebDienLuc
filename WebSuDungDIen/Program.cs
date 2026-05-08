@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
@@ -36,8 +37,10 @@ builder.Services.Configure<SecurityStampValidatorOptions>(options =>
 
 builder.Services.AddScoped<TaoMaService>();
 builder.Services.AddTransient<EmailSender>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+// Tiêm cái Trạm Phát Sóng này vào lõi của Microsoft Identity
 builder.Services.AddSingleton<IMongoClient>(sp =>
-    new MongoClient("mongodb+srv://kira:kira@cluster0.9j2bsjo.mongodb.net/?appName=Cluster0"));
+    new MongoClient("mongodb+srv:/<TÊN_ĐĂNG_NHẬP>:<MẬT_KHẨU>@cluster0.9j2bsjo.mongodb.net/?appName=Cluster0"));
 
 builder.Services.AddScoped(sp =>
 {
@@ -59,7 +62,11 @@ builder.Services.AddControllersWithViews(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddSingleton<MongoService>();
-
+// Đăng ký HttpContextAccessor để lấy IP và User-Agent
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IMongoArchiveService, MongoArchiveService>();
+// Đăng ký Service bắt anomaly
+builder.Services.AddSingleton<AnomalyLoginService>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
 var app = builder.Build();
@@ -72,22 +79,6 @@ using (var scope = app.Services.CreateScope())
     foreach (var user in users)
     {
         await userManager.UpdateSecurityStampAsync(user);
-    }
-}
-
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-
-    string[] roles = { "Admin", "NhanVien", "KhachHang" };
-
-    foreach (var role in roles)
-    {
-        if (!await roleManager.RoleExistsAsync(role))
-        {
-            await roleManager.CreateAsync(new IdentityRole(role));
-        }
     }
 }
 
@@ -109,10 +100,6 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 using (var scope = app.Services.CreateScope())

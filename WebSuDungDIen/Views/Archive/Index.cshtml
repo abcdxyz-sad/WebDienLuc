@@ -1,0 +1,175 @@
+﻿@{
+    ViewData["Title"] = "Trung Tâm Phục Hồi Dữ Liệu";
+    // Layout = "_AdminLayout";
+}
+
+<div class="container-fluid mb-5 zzz-archive-wrapper">
+
+    <div class="border-dashed p-3 p-lg-4 mb-4 d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3 zzz-command-panel border-dark border-3 bg-white">
+        <div class="d-inline-block text-nowrap bg-transparent pe-5 py-2 zzz-title-wrap">
+            <h1 class="m-0 zzz-page-title fw-bold text-uppercase fs-3 fs-lg-2 text-center text-lg-start w-100 w-lg-auto border-start border-5 ps-3 text-nowrap zzz-title" style="border-left-color: var(--zzz-primary) !important;">
+                [ TỆP DỮ LIỆU ] KHO LƯU TRỮ DỮ LIỆU ĐÃ XÓA
+            </h1>
+        </div>
+    </div>
+
+    <div class="card border-0 rounded-0 zzz-main-card bg-transparent shadow-none">
+        <div class="card-body p-0">
+            <ul class="nav nav-pills mb-4 gap-3 zzz-tabs" id="archiveTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active zzz-tab-btn" id="kh-tab" data-bs-toggle="tab" data-bs-target="#kh-content" type="button" role="tab">
+                        <i class="bi bi-people-fill"></i> KHÁCH HÀNG <span class="zzz-counter bg-danger text-white border border-dark">@(ViewBag.KhachHang?.Count ?? 0)</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link zzz-tab-btn" id="nv-tab" data-bs-toggle="tab" data-bs-target="#nv-content" type="button" role="tab">
+                        <i class="bi bi-person-badge-fill"></i> NHÂN VIÊN <span class="zzz-counter bg-danger text-white border border-dark">@(ViewBag.NhanVien?.Count ?? 0)</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link zzz-tab-btn" id="acc-tab" data-bs-toggle="tab" data-bs-target="#acc-content" type="button" role="tab">
+                        <i class="bi bi-shield-lock-fill"></i> TÀI KHOẢN <span class="zzz-counter bg-danger text-white border border-dark">@(ViewBag.TaiKhoan?.Count ?? 0)</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link zzz-tab-btn" id="hd-tab" data-bs-toggle="tab" data-bs-target="#hd-content" type="button" role="tab">
+                        <i class="bi bi-file-earmark-ruled-fill"></i> HÓA ĐƠN <span class="zzz-counter bg-danger text-white border border-dark">@(ViewBag.HoaDon?.Count ?? 0)</span>
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content bg-white p-3" id="archiveTabContent" style="border: 4px solid #111; box-shadow: 8px 8px 0px #111;">
+                <div class="tab-pane fade show active" id="kh-content" role="tabpanel">
+                    @await Html.PartialAsync("_ArchiveTable", (IEnumerable<dynamic>)ViewBag.KhachHang, new ViewDataDictionary(ViewData) { { "Controller", "KhachHang" } })
+                </div>
+                <div class="tab-pane fade" id="nv-content" role="tabpanel">
+                    @await Html.PartialAsync("_ArchiveTable", (IEnumerable<dynamic>)ViewBag.NhanVien, new ViewDataDictionary(ViewData) { { "Controller", "NhanVien" } })
+                </div>
+                <div class="tab-pane fade" id="acc-content" role="tabpanel">
+                    @await Html.PartialAsync("_ArchiveTable", (IEnumerable<dynamic>)ViewBag.TaiKhoan, new ViewDataDictionary(ViewData) { { "Controller", "Admin" } })
+                </div>
+                <div class="tab-pane fade" id="hd-content" role="tabpanel">
+                    @await Html.PartialAsync("_ArchiveTable", (IEnumerable<dynamic>)ViewBag.HoaDon, new ViewDataDictionary(ViewData) { { "Controller", "HoaDon" } })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* ÉP FONT HỆ THỐNG GÓC CẠNH */
+    .zzz-archive-wrapper {
+        font-family: 'Courier New', Courier, monospace, sans-serif;
+    }
+
+    /* COMMAND PANEL BORDER DASHED */
+    .border-dashed {
+        border-style: dashed !important;
+    }
+
+    .zzz-badge-online {
+        background-color: #00FF99 !important;
+        color: #111 !important;
+        font-weight: 900;
+        box-shadow: 4px 4px 0px #111;
+        letter-spacing: 1px;
+    }
+
+    /* CUSTOM TABS CHUẨN ZZZ */
+    .zzz-tab-btn {
+        background-color: #fff;
+        color: #111 !important;
+        border: 3px solid #111 !important;
+        font-weight: 800;
+        text-transform: uppercase;
+        border-radius: 0 !important;
+        box-shadow: 4px 4px 0px #ccc;
+        transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        padding: 12px 24px !important;
+        font-size: 1.1rem;
+    }
+
+        .zzz-tab-btn:hover {
+            background-color: #111;
+            color: #fff !important;
+            transform: translate(-4px, -4px);
+            box-shadow: 6px 6px 0px var(--zzz-accent, #FF3366) !important;
+        }
+
+        .zzz-tab-btn.active {
+            background-color: #111 !important;
+            color: var(--zzz-primary, #FACC15) !important;
+            border-color: #111 !important;
+            transform: translate(-4px, -4px);
+            box-shadow: 6px 6px 0px var(--zzz-primary, #FACC15) !important;
+        }
+
+    .zzz-counter {
+        display: inline-block;
+        padding: 2px 8px;
+        margin-left: 8px;
+        font-size: 0.85rem;
+        box-shadow: 2px 2px 0px #111;
+    }
+    /* =========================================
+           📱 TỐI ƯU GIAO DIỆN MOBILE CHO TRANG KHO
+           ========================================= */
+    @@media (max-width: 991px) {
+        /* 1. Xử lý Tiêu đề: Cho phép rớt dòng, thu nhỏ chữ lại */
+        .zzz-title
+
+    {
+        white-space: normal !important; /* Phá cái text-nowrap */
+        font-size: 1.25rem !important;
+        line-height: 1.4;
+    }
+
+    .zzz-title-wrap {
+        padding-right: 0 !important; /* Bỏ khoảng trống thừa bên phải */
+    }
+
+    /* 2. Xử lý Hàng nút Tabs: Xếp dọc thành một danh sách menu */
+    .zzz-tabs {
+        flex-direction: column !important; /* Ép xếp dọc dọc */
+        gap: 12px !important; /* Giãn cách các nút ra xíu */
+    }
+
+        .zzz-tabs .nav-item {
+            width: 100%; /* Nút bung full 100% chiều ngang */
+        }
+
+    .zzz-tab-btn {
+        width: 100%;
+        display: flex;
+        justify-content: space-between; /* Đẩy Text+Icon qua trái, Bộ đếm qua phải */
+        align-items: center;
+        padding: 12px 16px !important;
+        font-size: 1rem; /* Chữ nhỏ lại một chút cho dễ nhìn */
+        text-align: left;
+    }
+
+        /* 3. Tối ưu Hiệu ứng chạm (Touch) trên Mobile */
+        .zzz-tab-btn:hover {
+            /* Giảm độ giật nảy khi lướt tay trên đt */
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px var(--zzz-accent, #FF3366) !important;
+        }
+
+        .zzz-tab-btn.active {
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px var(--zzz-primary, #FACC15) !important;
+        }
+
+    /* 4. Khung nội dung (Tab Content): Bóp viền lại cho có không gian */
+    #archiveTabContent {
+        padding: 12px !important; /* Rút gọn padding lại */
+        border-width: 3px !important; /* Viền mỏng lại xíu */
+        box-shadow: 4px 4px 0px #111 !important; /* Bóng nhỏ lại */
+    }
+
+    .zzz-command-panel {
+        padding: 15px !important;
+    }
+
+    }
+</style>

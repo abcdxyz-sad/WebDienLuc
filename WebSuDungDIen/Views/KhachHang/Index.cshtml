@@ -4,31 +4,31 @@
     ViewData["Title"] = "Dữ Liệu Khách Hàng";
 }
 
-<div class="border-dashed p-3 mb-4 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 zzz-command-panel border-dark border-3 bg-white">
-
-    <h1 class="m-0 zzz-page-title fw-bold text-uppercase text-center text-lg-start w-100 w-lg-auto border-start border-primary border-5 ps-3" style="border-left-color: var(--zzz-primary) !important;">
-        [ TỆP HỒ SƠ ] KHÁCH HÀNG
-    </h1>
-
-    <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 w-100 w-lg-auto ms-lg-auto justify-content-center justify-content-lg-end">
-
-        <form method="get" asp-action="Index" class="m-0 flex-grow-1 w-100 w-lg-auto">
-            <div class="input-group border border-dark border-2 rounded-0 shadow-sm">
-                <input type="text" id="liveSearchInput" name="searchKeyword" value="@ViewBag.SearchKeyword" class="form-control border-0 rounded-0 font-monospace fw-bold" placeholder="Tên, SĐT, Mã KH..." />
+<div class="border-dashed p-3 p-lg-4 mb-4 d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3 zzz-command-panel border-dark border-3 bg-white">
+    <div class="d-inline-block text-nowrap bg-transparent pe-lg-5 py-2 zzz-title-wrap" data-intro="Chào mừng đến với khu vực quản lý khách hàng!" data-step="1">
+        <h1 class="m-0 zzz-page-title fw-bold text-uppercase fs-3 fs-lg-2 text-center text-lg-start w-100 w-lg-auto border-start border-primary border-5 ps-3 text-nowrap" style="border-left-color: var(--zzz-primary) !important; letter-spacing: 1px;">
+            [ TỆP HỒ SƠ ] KHÁCH HÀNG
+        </h1>
+    </div>
+    <div class="d-flex flex-column flex-lg-row align-items-stretch gap-3 w-100 w-lg-auto justify-content-center justify-content-lg-end" data-intro="Chỗ này để lọc thông tin khách hàng nhanh chóng!" data-step="2">
+        <form method="get" asp-action="Index" class="m-0 flex-grow-1 w-100 w-lg-auto h-100">
+            <div class="input-group border border-dark border-2 rounded-0 shadow-sm h-100">
+                <input type="text" id="liveSearchInput" name="searchKeyword" value="@ViewBag.SearchKeyword" class="form-control border-0 rounded-0 font-monospace fw-bold py-2" placeholder="Tên, SĐT, Mã KH..." />
                 <button type="submit" class="btn zzz-btn-cancel fw-bold px-3 px-lg-4 border-start border-dark border-2 rounded-0">
-                    <i class="bi bi-search ms-1"></i> TÌM
+                    <i class="bi bi-search me-1"></i> TÌM
                 </button>
             </div>
         </form>
-
-        <a asp-action="Create" class="btn btn-primary w-100 w-lg-auto flex-lg-grow-0 align-self-lg-center border-dark border-2 rounded-0 fw-bold shadow-sm zzz-text-mono text-center" style="white-space: nowrap; max-width: max-content;">
-            <i class="bi bi-plus-square-fill me-1"></i> [ THÊM MỚI ]
+        <a asp-action="Create" class="btn btn-primary fw-bold border-dark border-2 rounded-0 shadow-sm px-4 py-2 zzz-text-mono text-nowrap d-inline-flex align-items-center justify-content-center w-auto align-self-center w-lg-auto align-self-lg-stretch">
+            <i class="bi bi-plus-square-fill me-2"></i> [ THÊM MỚI ]
         </a>
-
     </div>
 </div>
 
-<div class="card bg-white border-dark border-3 rounded-0 mt-4" style="box-shadow: 8px 8px 0px var(--zzz-black);">
+<div class="card bg-white border-dark border-3 rounded-0 mt-4" style="box-shadow: 8px 8px 0px var(--zzz-black);"
+     data-intro="Khu vực này là nơi để hiển thị thông tin của khách hàng!"
+     data-step="3"
+     data-position="top">
 
     <div class="bg-dark text-warning px-3 py-2 zzz-text-mono d-flex justify-content-between border-bottom border-dark border-3 fw-bold">
         <span>DỮ LIỆU TỔNG HỢP</span>
@@ -51,12 +51,20 @@
                             <span class="fw-bolder text-danger fs-4 fs-lg-3 text-uppercase text-break" style="line-height: 1.2;">TÊN: @item.TenKh</span>
                         </div>
 
-                        <div class="d-flex flex-wrap flex-sm-nowrap justify-content-xl-end gap-2 w-100 w-xl-auto mt-2 mt-xl-0">
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary fw-bold rounded-0 border-2 zzz-text-mono px-2 text-center">[INFO]</a>
+                        <div class="d-flex flex-wrap flex-sm-nowrap justify-content-xl-end w-100 w-xl-auto mt-2 mt-xl-0">
 
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary fw-bold rounded-0 border-2 zzz-text-mono px-2 text-center">[EDIT]</a>
+                            <div class="d-inline-flex gap-2"
+                                 data-intro="Nhấn [INFO] để trích xuất dữ liệu, [EDIT] để ghi đè thông tin, hoặc [DROP] để tiêu hủy bản ghi."
+                                 data-step="4">
 
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm zzz-btn-danger fw-bold rounded-0 border-2 zzz-text-mono px-2 text-center">[DROP]</a>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary fw-bold rounded-0 border-2 zzz-text-mono px-2 text-center">[INFO]</a>
+
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary fw-bold rounded-0 border-2 zzz-text-mono px-2 text-center">[EDIT]</a>
+
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm zzz-btn-danger fw-bold rounded-0 border-2 zzz-text-mono px-2 text-center">[DROP]</a>
+
+                            </div>
+
                         </div>
                     </div>
 
@@ -65,7 +73,6 @@
                         <div class="mt-2"><span class="text-muted fw-bold">|-- ĐỊA CHỈ:</span> <span class="fw-bold text-uppercase">@item.DiaChiDayDu</span></div>
                         <div class="mt-2"><span class="text-muted fw-bold">|-- EMAIL:</span> <span class="fw-bold">@(item.User?.Email ?? "NULL")</span></div>
                     </div>
-
                 </div>
             }
         }

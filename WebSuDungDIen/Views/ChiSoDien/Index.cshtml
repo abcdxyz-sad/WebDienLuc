@@ -1,68 +1,170 @@
 ﻿@model IEnumerable<ChiSoDienIndexVM>
 
 @{
-    ViewData["Title"] = "Chỉ số điện";
+    ViewData["Title"] = "Chỉ Số Điện";
+    // Giả sử sếp truyền từ Controller xuống, nếu không có mặc định lấy tháng hiện tại (JS sẽ xử lý)
+    var selectedThang = ViewBag.SelectedThang;
+    var selectedNam = ViewBag.SelectedNam;
 }
 
-@if (TempData["ThongBao"] != null)
-{
-    <div id="thongBao" class="zzz-notification">
-        <div class="zzz-content">
-            <span class="zzz-icon">👾</span> <span class="zzz-text">@TempData["ThongBao"]</span>
-        </div>
-        <div class="zzz-decor-line"></div>
-    </div>
-}
+<style>
+    /* --- NÚT CHỌN THÁNG (BẢN COMPACT) --- */
+    .zzz-month-btn {
+        text-decoration: none !important;
+        color: #111 !important;
+        background-color: #ffffff !important;
+        padding: 6px 12px !important;
+        min-width: 45px !important;
+        font-family: 'Orbitron', monospace !important;
+        font-weight: 900 !important;
+        font-size: 0.9rem !important;
+        border: 2px solid #111 !important;
+        transform: skewX(-10deg) !important;
+        transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        cursor: pointer !important;
+        box-shadow: 2px 2px 0px #111 !important; /* Bóng đổ gọt mỏng lại */
+        margin: 2px !important;
+    }
+
+        .zzz-month-btn > div {
+            transform: skewX(10deg) !important;
+        }
+
+        /* Hover - Giữ nguyên vibe nhưng thu nhỏ độ giật */
+        .zzz-month-btn:hover:not(.past-month):not(.active-month) {
+            background-color: #111 !important;
+            color: var(--zzz-primary, #D2FF00) !important;
+            transform: skewX(-10deg) translate(-1px, -1px) !important;
+            box-shadow: 3px 3px 0px var(--zzz-primary, #D2FF00) !important;
+        }
+
+        /* Active - Phóng to vừa phải để không đè nút khác */
+        .zzz-month-btn.active-month {
+            background-color: var(--zzz-primary, #D2FF00) !important;
+            color: #111 !important;
+            transform: skewX(-10deg) translate(-2px, -2px) scale(1.05) !important;
+            box-shadow: 4px 4px 0px #111 !important;
+            z-index: 5 !important;
+        }
+
+        /* Tháng quá khứ - Nhạt và chìm hẳn xuống nền */
+        .zzz-month-btn.past-month {
+            background: #e9ecef !important;
+            opacity: 0.6 !important;
+            box-shadow: 0px 0px 0px transparent !important; /* Xóa bóng để nó bẹp dí xuống */
+            border-color: #ccc !important;
+            color: #999 !important;
+            cursor: not-allowed !important;
+        }
+
+            .zzz-month-btn.past-month:hover {
+                transform: skewX(-10deg) !important; /* Khóa không cho giật nảy */
+            }
+</style>
 
 <div class="border-dashed p-3 p-lg-4 mb-4 zzz-command-panel border-dark border-3 bg-white">
-
-    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 border-bottom border-dark pb-3 mb-3">
-
-        <h1 class="m-0 zzz-page-title fw-bold text-uppercase text-center text-lg-start w-100 w-lg-auto border-start border-primary border-5 ps-3" style="border-left-color: var(--zzz-primary) !important;">
-            [ TỆP DỮ LIỆU ] CHỈ SỐ ĐIỆN
-        </h1>
-
-        <div class="d-flex align-items-center gap-3 w-100 w-lg-auto ms-lg-auto justify-content-center justify-content-lg-end">
-            @if (!string.IsNullOrEmpty(ViewBag.MaPhuongApi))
-            {
-                <a asp-controller="ChiSoDien" asp-action="Create" asp-route-maPhuongApi="@ViewBag.MaPhuongApi"
-                   class="btn btn-primary w-100 w-lg-auto flex-lg-grow-0 align-self-lg-center fw-bold border-dark border-2 rounded-0 shadow-sm text-nowrap py-2 py-lg-1"
-                   style="max-width: max-content;">
-                    <i class="bi bi-plus-square-fill me-1"></i> NHẬP CHỈ SỐ
-                </a>
-            }
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3 border-bottom border-dark pb-3 mb-3">
+        <div class="d-inline-block text-nowrap bg-transparent py-2 w-100 w-lg-auto text-center text-lg-start zzz-title-wrap">
+            <h1 class="m-0 zzz-page-title fw-bold text-uppercase fs-3 fs-lg-2 border-start border-primary border-5 ps-3 text-nowrap d-inline-block"
+                style="border-left-color: var(--zzz-primary) !important; letter-spacing: 1px;"
+                data-intro="Chào mừng đến với khu vực quản lý chỉ số điện!"
+                data-step="1">
+                [ TỆP DỮ LIỆU ] CHỈ SỐ ĐIỆN
+            </h1>
         </div>
 
+        <div class="d-flex align-items-center gap-3 w-100 w-lg-auto justify-content-center justify-content-lg-end">
+            <div class="d-inline-block shadow-sm"
+                 data-intro="Nhấn vào đây để nhập chỉ số điện. Lưu ý là phải chọn tỉnh, phường/xã trước!"
+                 data-step="2">
+                <a id="btnNhapChiSo" asp-controller="ChiSoDien" asp-action="Create" asp-route-maPhuongApi="@ViewBag.MaPhuongApi"
+                   class="btn btn-primary fw-bold border-dark border-2 rounded-0 px-4 py-2 zzz-text-mono text-nowrap d-inline-flex align-items-center justify-content-center w-auto">
+                    <i class="bi bi-plus-square-fill me-2"></i> NHẬP CHỈ SỐ
+                </a>
+            </div>
+        </div>
     </div>
 
     <form method="get" id="filterForm" class="row g-3 align-items-end">
-        <div class="col-12 col-lg-3">
-            <label class="fw-bold zzz-text-mono small mb-1">Tỉnh / Thành phố</label>
-            <select name="maTinh" id="selectTinh" class="form-select border-dark border-2 rounded-0" asp-items="ViewBag.DanhSachTinh">
-                <option value="">-- Tất cả --</option>
-            </select>
+        <input type="hidden" id="hiddenThang" name="thang" value="@selectedThang" />
+        <input type="hidden" id="hiddenNam" name="nam" value="@selectedNam" />
+
+        <div class="col-12 col-lg-6 mb-3 mb-lg-0"
+             data-intro="Đây là chức năng lọc theo tỉnh, phường/xã chỉ số điện, cần chọn trước khi nhập chỉ số điện!"
+             data-step="3">
+
+            <div class="row">
+                <div class="col-12 col-md-6 mb-3 mb-md-0">
+                    <label class="fw-bold zzz-text-mono small mb-1">Tỉnh / Thành phố</label>
+                    <select name="maTinh" id="selectTinh" class="form-select border-dark border-2 rounded-0 fw-bold py-2 shadow-sm" asp-items="ViewBag.DanhSachTinh">
+                        <option value="">-- Tất cả --</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="fw-bold zzz-text-mono small mb-1">Phường / Xã</label>
+                    <select name="maPhuongApi" id="ward" class="form-select border-dark border-2 rounded-0 fw-bold py-2 shadow-sm" asp-items="ViewBag.DanhSachPhuong">
+                        <option value="">-- Chọn Phường/Xã --</option>
+                    </select>
+                </div>
+            </div>
+
         </div>
 
-        <div class="col-12 col-lg-3">
-            <label class="fw-bold zzz-text-mono small mb-1">Phường / Xã</label>
-            <select name="maPhuongApi" id="ward" class="form-select border-dark border-2 rounded-0" asp-items="ViewBag.DanhSachPhuong">
-                <option value="">-- Chọn Phường/Xã --</option>
-            </select>
-        </div>
-
-        <div class="col-12 col-lg-6">
+        <div class="col-12 col-lg-6"
+             data-intro="Đây là chức năng tìm khách hàng sử dụng điện!"
+             data-step="4">
             <label class="fw-bold zzz-text-mono small mb-1">Tra cứu nhanh</label>
-            <div class="input-group border border-dark border-2 rounded-0 shadow-sm">
-                <input type="text" id="liveSearchInput" name="searchKeyword" value="@ViewBag.SearchKeyword" class="form-control border-0 rounded-0" placeholder="Tên KH, Điện thoại..." />
+            <div class="input-group border border-dark border-2 rounded-0 shadow-sm h-100">
+                <input type="text" id="liveSearchInput" name="searchKeyword" value="@ViewBag.SearchKeyword"
+                       class="form-control border-0 rounded-0 font-monospace fw-bold py-2"
+                       placeholder="Tên KH, Điện thoại..." />
                 <button type="submit" class="btn btn-primary fw-bold px-3 px-lg-4 border-start border-dark border-2 rounded-0">
-                    <i class="bi bi-search ms-1"></i> TÌM
+                    <i class="bi bi-search me-1"></i> TÌM
                 </button>
             </div>
         </div>
     </form>
 </div>
 
-<div id="vung-du-lieu-thay-doi">
+<div class="zzz-timeline-deck" data-intro="Có thể chọn tháng để hiển thị chỉ số điện theo tháng đó"
+     data-step="5">
+    <!-- Header của Timeline (Không hộp, chỉ text) -->
+    <div class="d-flex justify-content-between align-items-end mb-2 px-2">
+        <div class="zzz-hud-label">
+            <i class="bi bi-clock-history me-2 text-muted"></i>TIMELINE //
+            <span id="displayYear">@selectedNam</span>
+        </div>
+        <!-- Vài nét gạch ngang trang trí cho có chất Cyberpunk -->
+        <div class="d-none d-md-flex gap-1 mb-1 opacity-50">
+            <div style="width: 20px; height: 3px; background: #111;"></div>
+            <div style="width: 5px; height: 3px; background: #111;"></div>
+            <div style="width: 5px; height: 3px; background: var(--zzz-primary, #D2FF00);"></div>
+        </div>
+    </div>
+
+    <!-- Bảng điều khiển Tháng trên đường ray -->
+    <div class="zzz-month-track d-flex align-items-center justify-content-center gap-2">
+        <!-- Cò gạt Lùi -->
+        <button type="button" class="btn rounded-0 p-2 zzz-btn-nav flex-shrink-0" id="btnPrevMonth" title="Tháng trước">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <!-- Khay đạn chứa 12 tháng -->
+        <div class="zzz-month-grid d-flex flex-wrap justify-content-center gap-1" id="monthContainer">
+            <!-- JS xả 12 cục sắt vào đây -->
+        </div>
+
+        <!-- Cò gạt Tiến -->
+        <button type="button" class="btn rounded-0 p-2 zzz-btn-nav flex-shrink-0" id="btnNextMonth" title="Tháng sau">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+    </div>
+</div>
+
+<div id="vung-du-lieu-thay-doi" data-intro="Đây là khu vực hiển thị thông tin khách sử dụng điện!"
+    data-step="6"
+    data-position="top">
     <div class="card position-relative border-dark border-3 rounded-0 bg-white" style="box-shadow: 6px 6px 0px var(--zzz-black);">
         <div class="card-body p-0" style="overflow: visible;">
             <div class="table-responsive">
@@ -80,24 +182,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (Model != null && Model.Any())
+                        @if (Model != null && Model.Any(x => x.ThangGanNhat == selectedThang))
                         {
                             @foreach (var item in Model)
                             {
                                 <tr class="border-bottom border-dark-subtle">
-
                                     <td data-label="MÃ KHÁCH">
                                         <span class="badge bg-secondary border border-dark text-white zzz-text-mono fs-6 shadow-sm">
                                             #@item.KhachHangId.Substring(0, Math.Min(8, item.KhachHangId.Length))
                                         </span>
                                     </td>
-
                                     <td data-label="KHÁCH HÀNG">
                                         <div class="zzz-text-name fs-6 fw-bolder text-uppercase text-wrap" style="color: var(--zzz-black); line-height: 1.2;">
                                             @item.TenKh
                                         </div>
                                     </td>
-
                                     <td data-label="ĐỊA CHỈ" class="zzz-text-mono small fw-bold text-wrap">
                                         @item.DiaChi
                                     </td>
@@ -111,15 +210,12 @@
                                             <span class="badge bg-light text-dark border border-dark fs-6 shadow-sm">T.@item.ThangGanNhat/@item.NamGanNhat</span>
                                         }
                                     </td>
-
                                     <td data-label="CHỈ SỐ CŨ" class="text-lg-end">
                                         <span class="badge bg-secondary border border-dark text-white zzz-text-mono fs-6 shadow-sm">@item.ChiSoCu</span>
                                     </td>
-
                                     <td data-label="CHỈ SỐ MỚI" class="text-lg-end">
                                         <span class="badge bg-warning text-dark zzz-text-mono fs-6 shadow-sm border border-dark">@item.ChiSoMoi</span>
                                     </td>
-
                                     <td data-label="TIÊU THỤ" class="text-lg-center">
                                         @if (item.ThangGanNhat == 0)
                                         {
@@ -128,7 +224,7 @@
                                         else if (item.ChiSoCu == 0)
                                         {
                                             <span class="badge zzz-status-badge border border-dark border-2 shadow-sm text-nowrap fw-bold" style="background-color: var(--zzz-blue); color: var(--zzz-black);">
-                                                <i class="fas fa-wrench me-1"></i> CHỈ SỐ MỚI LẮP ĐẶT
+                                                <i class="fas fa-wrench me-1"></i> MỚI LẮP
                                             </span>
                                         }
                                         else
@@ -143,13 +239,10 @@
                                             <button class="btn btn-outline-dark border-2 rounded-0 dropdown-toggle zzz-btn-action fw-bold w-100 w-lg-auto" type="button" id="dropdown_@item.KhachHangId" data-bs-toggle="dropdown" aria-expanded="false">
                                                 CHỌN
                                             </button>
-                                            <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow" aria-labelledby="dropdown_@item.KhachHangId">
-                                                <li>
-                                                    <a class="dropdown-item fw-bold zzz-text-mono" asp-action="Details" asp-route-id="@item.KhachHangId"><i class="bi bi-info-square me-2 text-primary"></i>XEM CHI TIẾT</a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item fw-bold zzz-text-mono" asp-controller="ChiSoDien" asp-action="Edit" asp-route-khachHangId="@item.KhachHangId"><i class="bi bi-pencil-square me-2 text-success"></i>CẬP NHẬT</a>
-                                                </li>
+                                            <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow" aria-labelledby="dropdown_@item.KhachHangId" data-intro="Bung menu ra để sửa lại chỉ số điện cho khách nếu nhỡ nhập sai hoặc chỉ xem chi tiết lịch sử chỉ số điện của khách hàng"
+                                                data-step="7">
+                                                <li><a class="dropdown-item fw-bold zzz-text-mono" asp-action="Details" asp-route-id="@item.KhachHangId"><i class="bi bi-info-square me-2 text-primary"></i>XEM CHI TIẾT</a></li>
+                                                <li><a class="dropdown-item fw-bold zzz-text-mono" asp-controller="ChiSoDien" asp-action="Edit" asp-route-khachHangId="@item.KhachHangId"><i class="bi bi-pencil-square me-2 text-success"></i>CẬP NHẬT</a></li>
                                             </ul>
                                         </div>
                                     </td>
@@ -161,9 +254,18 @@
                             <tr>
                                 <td colspan="8" class="text-center py-2 border-0">
                                     <div class="text-center py-5">
-                                        <i class="bi bi-search text-muted mb-3" style="font-size: 3rem;"></i>
-                                        <h4 class="fw-bold text-danger zzz-text-mono">KHÔNG TÌM THẤY DỮ LIỆU.</h4>
-                                        <p class="text-muted fw-bold">Khu vực này trống hoặc từ khóa tìm kiếm không khớp.</p>
+                                        @if (!string.IsNullOrEmpty(ViewBag.SearchKeyword))
+                                        {
+                                            <i class="bi bi-search text-muted mb-3" style="font-size: 3rem;"></i>
+                                            <h4 class="fw-bold text-danger zzz-text-mono">KHÔNG TÌM THẤY DỮ LIỆU.</h4>
+                                            <p class="text-muted fw-bold">Không có khách hàng nào khớp với từ khóa "@ViewBag.SearchKeyword".</p>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-calendar-x text-muted mb-3" style="font-size: 3rem;"></i>
+                                            <h4 class="fw-bold text-danger zzz-text-mono">CHƯA CÓ CHỈ SỐ ĐIỆN.</h4>
+                                            <p class="text-muted fw-bold">Chưa có dữ liệu chỉ số điện nào được ghi nhận trong Tháng @selectedThang/@selectedNam.</p>
+                                        }
                                     </div>
                                 </td>
                             </tr>
@@ -176,63 +278,180 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/auto-alert.js"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
-        // 1. CODE ẨN PHƯỜNG CỦA SẾP (GIỮ NGUYÊN BẢN SẮC)
-        const phuongCoData = @Html.Raw(Json.Serialize(ViewBag.DanhSachPhuongCoData ?? new List<string>()));
-        const phuongCoDataString = phuongCoData.map(String);
-        const wardSelect = document.getElementById('ward');
+        const selectTinh = document.getElementById('selectTinh');
+        const selectPhuong = document.getElementById('ward');
+        const liveSearchInput = document.getElementById('liveSearchInput');
+        const hiddenThang = document.getElementById('hiddenThang');
+        const hiddenNam = document.getElementById('hiddenNam');
 
-        if (wardSelect) {
-            const observer = new MutationObserver(function(mutations) {
-                observer.disconnect();
-                $("#ward option").each(function() {
-                    let val = String($(this).val());
-                    if (val !== "" && !phuongCoDataString.includes(val)) {
-                        $(this).remove();
-                    }
-                });
-                observer.observe(wardSelect, { childList: true });
-            });
-            observer.observe(wardSelect, { childList: true });
-        }
-
-        // 2. LIVE SEARCH CỰC MƯỢT
         let timeout = null;
         let currentAbortController = null;
 
-        document.getElementById('liveSearchInput').addEventListener('input', function (e) {
-            clearTimeout(timeout);
+        // --- 1. HÀM TẢI DATA BẢNG ---
+        function fetchTableData() {
+            let form = document.getElementById('filterForm');
+            let searchParams = new URLSearchParams(new FormData(form)).toString();
+            let url = window.location.pathname + '?' + searchParams;
 
-            timeout = setTimeout(function () {
-                let form = e.target.closest('form');
-                let searchParams = new URLSearchParams(new FormData(form)).toString();
+            if (currentAbortController) {
+                currentAbortController.abort();
+            }
+            currentAbortController = new AbortController();
 
-                let url = window.location.pathname + '?' + searchParams;
+            fetch(url, { signal: currentAbortController.signal })
+                .then(response => response.text())
+                .then(html => {
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(html, 'text/html');
+                    document.getElementById('vung-du-lieu-thay-doi').innerHTML = doc.getElementById('vung-du-lieu-thay-doi').innerHTML;
+                })
+                .catch(error => {
+                    if (error.name !== 'AbortError') console.error('Lỗi Data:', error);
+                });
 
-                if (currentAbortController) {
-                    currentAbortController.abort();
+            let currentMaPhuong = document.getElementById('ward').value;
+            let btnNhapChiSo = document.getElementById('btnNhapChiSo');
+            if (btnNhapChiSo) {
+                btnNhapChiSo.href = '/ChiSoDien/Create?maPhuongApi=' + encodeURIComponent(currentMaPhuong);
+            }
+        }
+
+        // --- 2. XỬ LÝ TIMELINE THÁNG/NĂM (SẠCH SẼ, KHÔNG DÍNH BOOTSTRAP) ---
+        function initTimeline() {
+            const container = document.getElementById('monthContainer');
+            const displayYear = document.getElementById('displayYear');
+            const btnPrevMonth = document.getElementById('btnPrevMonth');
+            const btnNextMonth = document.getElementById('btnNextMonth');
+
+            const realToday = new Date();
+            const realMonth = realToday.getMonth() + 1;
+            const realYear = realToday.getFullYear();
+
+            let currentSelectedMonth = parseInt(hiddenThang.value) || realMonth;
+            let currentSelectedYear = parseInt(hiddenNam.value) || realYear;
+
+            function updateFormAndFetch() {
+                hiddenThang.value = currentSelectedMonth;
+                hiddenNam.value = currentSelectedYear;
+                renderMonths();
+                fetchTableData();
+            }
+
+            function renderMonths() {
+                displayYear.innerText = currentSelectedYear;
+                container.innerHTML = '';
+
+                // Xác định khoảng 6 tháng để hiển thị (Xoay quanh tháng đang chọn)
+                // Giúp giao diện không bị tràn khi dùng chữ "Tháng" dài hơn
+                let startMonth = Math.max(1, currentSelectedMonth - 2);
+                let endMonth = Math.min(12, startMonth + 5);
+
+                // Điều chỉnh lại nếu ở những tháng cuối năm
+                if (endMonth === 12) {
+                    startMonth = Math.max(1, endMonth - 5);
                 }
-                currentAbortController = new AbortController();
 
-                fetch(url, { signal: currentAbortController.signal })
-                    .then(response => response.text())
-                    .then(html => {
-                        let parser = new DOMParser();
-                        let doc = parser.parseFromString(html, 'text/html');
+                for (let m = startMonth; m <= endMonth; m++) {
+                    let btn = document.createElement('button');
+                    btn.type = 'button';
 
-                        let newContent = doc.getElementById('vung-du-lieu-thay-doi').innerHTML;
-                        document.getElementById('vung-du-lieu-thay-doi').innerHTML = newContent;
+                    let isActive = (m === currentSelectedMonth);
+                    let isPast = (currentSelectedYear < realYear) || (currentSelectedYear === realYear && m < realMonth);
+
+                    let classes = 'zzz-month-btn ';
+                    if (isActive) {
+                        classes += 'active-month ';
+                    } else if (isPast) { // <--- CHỖ NÀY
+                        classes += 'past-month ';
+                    }
+
+                    btn.className = classes;
+                    // Đổi T. thành Tháng
+                    btn.innerHTML = `<div>Tháng ${m}</div>`;
+
+                    btn.onclick = function() {
+                        if(isPast) return;
+                        currentSelectedMonth = m;
+                        updateFormAndFetch();
+                    };
+
+                    container.appendChild(btn);
+                }
+            }
+
+            renderMonths();
+
+            btnPrevMonth.onclick = () => {
+                currentSelectedMonth--;
+                if (currentSelectedMonth < 1) {
+                    currentSelectedMonth = 12;
+                    currentSelectedYear--;
+                }
+                updateFormAndFetch();
+            };
+
+            btnNextMonth.onclick = () => {
+                currentSelectedMonth++;
+                if (currentSelectedMonth > 12) {
+                    currentSelectedMonth = 1;
+                    currentSelectedYear++;
+                }
+                updateFormAndFetch();
+            };
+        }
+
+        // --- 3. GẮN SỰ KIỆN FILTER ---
+        selectTinh.addEventListener('change', function () {
+            const maTinh = this.value;
+            selectPhuong.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+
+            if (maTinh) {
+                fetch(`@Url.Action("GetPhuongByTinh", "ChiSoDien")?maTinh=${encodeURIComponent(maTinh)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        data.forEach(item => {
+                            selectPhuong.add(new Option(item.text, item.value));
+                        });
                     })
-                    .catch(error => {
-                        if (error.name === 'AbortError') {
-                            console.log('Đã hủy request cũ!');
-                        } else {
-                            console.error('Lỗi Data:', error);
-                        }
-                    });
-
-            }, 300);
+                    .catch(err => console.error("Lỗi tải phường:", err));
+            }
+            fetchTableData();
         });
+
+        selectPhuong.addEventListener('change', fetchTableData);
+
+        liveSearchInput.addEventListener('input', function () {
+            clearTimeout(timeout);
+            timeout = setTimeout(fetchTableData, 300);
+        });
+
+        document.addEventListener('DOMContentLoaded', initTimeline);
+
+                // --- HÀM KIỂM TRA TRƯỚC KHI BẤM NÚT NHẬP CHỈ SỐ ---
+        function kiemTraChonPhuong(e) {
+            const maPhuong = document.getElementById('ward').value;
+
+            // Nếu chưa chọn phường (value rỗng)
+            if (!maPhuong) {
+                e.preventDefault(); // Chặn ngay, không cho bay sang trang Create
+
+                // Hiện thông báo cảnh báo (Sếp có thể thay bằng SweetAlert nếu thích)
+                alert("⚠️ HỆ THỐNG CẢNH BÁO:\n\nVui lòng chọn [Tỉnh/Thành phố] và [Phường/Xã] ở bộ lọc trước khi tiến hành nhập chỉ số điện!");
+
+                // Nháy viền đỏ để làm nổi bật ô chọn Phường cho người dùng thấy
+                const wardSelect = document.getElementById('ward');
+                wardSelect.classList.add('border-danger', 'text-danger');
+                setTimeout(() => {
+                    wardSelect.classList.remove('border-danger', 'text-danger');
+                }, 1500);
+
+                return false;
+            }
+            return true; // Đã chọn phường thì cho qua trang Create bình thường
+        }
     </script>
 }

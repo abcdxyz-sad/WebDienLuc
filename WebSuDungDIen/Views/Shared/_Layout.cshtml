@@ -11,6 +11,7 @@
     bool isTienDienActive = (ctrl == "khachhang" && act == "tiendienthangnay");
     bool isNhanSuActive = (ctrl == "nhanvien");
     bool isHeThongActive = (ctrl == "admin");
+    bool isArchiveActive = (ctrl == "archive");
     bool isKhachHangActive = (ctrl == "khachhang") && !isTienDienActive && !(act == "dangkythongtin");
     bool isChiSoActive = (ctrl == "chisodien") && !(act == "lichsucuatoi");
     bool isHoaDonActive = (ctrl == "hoadon");
@@ -22,11 +23,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - WebSuDungDIen</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/intro.js/minified/introjs.min.css">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/zzz-notify.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/customer-theme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/intro.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/WebSuDungDIen.styles.css" asp-append-version="true" />
 </head>
 <body class="@(isStaffLayout ? "" : "corp-theme")">
@@ -36,7 +40,7 @@
             <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow mb-3 corp-navbar">
                 <div class="container-fluid">
                     <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
-                        <i class="fas fa-bolt text-warning me-1"></i> CTY ĐIỆN LỰC
+                        CTY ĐIỆN LỰC
                     </a>
                     <button class="navbar-toggler @(isStaffLayout ? "" : "corp-navbar-toggler")" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                             aria-expanded="false" aria-label="Toggle navigation">
@@ -62,24 +66,54 @@
 
                             @if (User.IsInRole("Admin"))
                             {
+                                <!-- DROPDOWN QUẢN TRỊ HỆ THỐNG ZZZ -->
+                                <li class="nav-item dropdown zzz-nav-dropdown w-100 w-lg-auto text-center text-lg-start">
+                                    <!-- Cập nhật lại cái thẻ a này -->
+                                    <a class="nav-link dropdown-toggle zzz-urban-link @(isHeThongActive || isArchiveActive ? "active" : "")"
+                                       href="#" id="navbarDropdownHeThong" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-server me-1"></i> HỆ THỐNG <i class="fas fa-chevron-down ms-1 zzz-caret"></i>
+                                    </a>
+
+                                    <ul class="dropdown-menu dropdown-menu-lg-end" aria-labelledby="navbarDropdownHeThong">
+                                        <li>
+                                            <a class="dropdown-item @(isHeThongActive ? "zzz-active-item" : "")" asp-controller="Admin" asp-action="QuanLyTaiKhoan">
+                                                <i class="fas fa-users-cog me-2"></i> TÀI KHOẢN NGƯỜI DÙNG
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item zzz-danger-item @(isArchiveActive ? "zzz-active-item-danger" : "")" asp-controller="Archive" asp-action="Index">
+                                                <i class="fas fa-archive me-2"></i> KHO LƯU TRỮ (ARCHIVE)
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
                                 <li class="nav-item w-100 w-lg-auto text-center text-lg-start">
                                     <a class="nav-link zzz-urban-link @(isNhanSuActive ? "active" : "")" asp-area="" asp-controller="NhanVien" asp-action="Index">
                                         <i class="fas fa-user-shield me-1"></i> NHÂN SỰ
-                                    </a>
-                                </li>
-                                <li class="nav-item w-100 w-lg-auto text-center text-lg-start">
-                                    <a class="nav-link zzz-urban-link @(isHeThongActive ? "active" : "")" asp-controller="Admin" asp-action="QuanLyTaiKhoan">
-                                        <i class="fas fa-server me-1"></i> HỆ THỐNG
                                     </a>
                                 </li>
                             }
 
                             @if (User.IsInRole("NhanVien") || User.IsInRole("Admin"))
                             {
-                                <li class="nav-item w-100 w-lg-auto text-center text-lg-start">
-                                    <a class="nav-link zzz-urban-link @(isKhachHangActive ? "active" : "")" asp-area="" asp-controller="KhachHang" asp-action="Index">
+                                <li class="nav-item dropdown w-100 w-lg-auto text-center text-lg-start">
+                                    <a class="nav-link dropdown-toggle zzz-urban-link @((isKhachHangActive || isHeThongActive) ? "active" : "")" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="fas fa-users me-1"></i> KHÁCH HÀNG
                                     </a>
+
+                                    <ul class="dropdown-menu rounded-0 border-dark border-2 shadow-sm">
+                                        <li>
+                                            <a class="dropdown-item @(isKhachHangActive ? "zzz-active-item" : "")" asp-area="" asp-controller="KhachHang" asp-action="Index">
+                                                <i class="fas fa-address-book me-2"></i> HỒ SƠ KHÁCH HÀNG
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item @(isHeThongActive ? "zzz-active-item" : "")" asp-controller="Admin" asp-action="QuanLyTaiKhoan">
+                                                <i class="fas fa-user-lock me-2"></i> TÀI KHOẢN TRUY CẬP
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
                                 <li class="nav-item w-100 w-lg-auto text-center text-lg-start">
                                     <a class="nav-link zzz-urban-link @(isChiSoActive ? "active" : "")" asp-area="" asp-controller="ChiSoDien" asp-action="Index">
@@ -106,28 +140,184 @@
 
     <div class="container">
         <main role="main" class="pb-3">
+
+            @if (TempData["ThongBao"] != null)
+            {
+                if (isStaff)
+                {
+                    <div id="thongBao" class="zzz-notification">
+                        <div class="zzz-content fw-bold zzz-text-mono">
+                            <span class="zzz-icon text-warning">👾</span> <span class="zzz-text">@TempData["ThongBao"]</span>
+                        </div>
+                        <div class="zzz-decor-line"></div>
+                    </div>
+                }
+                else
+                {
+                    <div id="thongBao" class="corp-notification">
+                        <div class="corp-content">
+                            <i class="bi bi-check-circle-fill corp-icon text-success" style="color: var(--corp-success, #198754);"></i>
+                            <span class="corp-text">@TempData["ThongBao"]</span>
+                        </div>
+                        <div class="corp-progress-bar"></div>
+                    </div>
+                }
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                if (isStaff)
+                {
+                    <div id="thongBao" class="zzz-notification">
+                        <div class="zzz-content fw-bold zzz-text-mono">
+                            <span class="zzz-icon">👾</span> <span class="zzz-text">@TempData["Error"]</span>
+                        </div>
+                        <div class="zzz-decor-line"></div>
+                    </div>
+                }
+                else
+                {
+                    <div id="thongBao" class="corp-notification" style="border-left-color: #dc3545;">
+                        <div class="corp-content">
+                            <i class="bi bi-exclamation-triangle-fill corp-icon" style="color: #dc3545;"></i>
+                            <span class="corp-text">@TempData["Error"]</span>
+                        </div>
+                        <div class="corp-progress-bar" style="background-color: #dc3545;"></div>
+                    </div>
+                }
+            }
+
             @RenderBody()
         </main>
     </div>
 
     @if (isStaffLayout)
     {
-        <footer class="zzz-footer">
+        <footer class="zzz-footer" id="zzzFooter">
+
+            <a href="#" class="zzz-back-to-top-embedded" title="Kích hoạt thang máy">
+                <div class="inner-content">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="7 14 12 9 17 14"></polyline>
+                    </svg>
+                    <span style="font-family: 'Impact', sans-serif; font-size: 1.4rem; letter-spacing: 0.5px;">TOP</span>
+                </div>
+            </a>
+
+            <!-- Dải băng keo nguy hiểm chớp tắt -->
             <div class="zzz-hazard-strip"></div>
-            <div class="container">
-                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-center position-relative gap-3" style="z-index: 2;">
-                    <div class="zzz-footer-brand text-center">
-                        <span class="text-white">© 2026 ĐIỆN LỰC</span>
-                        <span class="zzz-tag">CYBER</span>
-                    </div>
-                    <div class="zzz-footer-actions d-flex flex-wrap justify-content-center gap-2">
-                        <div class="zzz-status-box">
-                            <span class="zzz-blink-dot">●</span> SYSTEM: ONLINE
+
+            <!-- Lưới tọa độ ngầm -->
+            <div class="zzz-grid-bg"></div>
+
+            <div class="container position-relative py-lg-5 py-3" style="z-index: 2;">
+
+                <div class="row gy-5 d-none d-lg-flex">
+                    <div class="col-lg-4">
+                        <div class="zzz-footer-brand d-flex align-items-center gap-3 mb-4">
+                            <span class="fs-2 fw-black text-white" style="font-family: 'Orbitron', sans-serif; letter-spacing: -1px;">ĐIỆN LỰC</span>
+                            <span class="zzz-tag fs-5">CYBER</span>
                         </div>
-                        <span class="text-muted d-none d-lg-inline">|</span>
-                        <a asp-area="" asp-controller="Home" asp-action="Privacy" class="zzz-link-btn">
-                            [ BẢO MẬT ]
+                        <p class="text-muted zzz-text-mono small fw-bold mb-4" style="line-height: 1.7;">
+                            [ LOG_SYS ] Cung cấp năng lượng lõi cho toàn bộ khu vực. Chúng tôi không chịu trách nhiệm nếu phần cứng của bạn bị bốc cháy do dòng điện Ether lọt vào hệ thống. Mọi khiếu nại vui lòng gửi cho thợ máy.
+                        </p>
+                        <div class="d-flex flex-wrap gap-3">
+                            <span class="badge bg-white text-dark border border-dark border-2 py-2 px-3 fw-black zzz-text-mono rounded-0">
+                                <span style="transform: skewX(10deg); display: inline-flex; align-items: center;">
+                                    <i class="bi bi-shield-check me-2 fs-6" style="color: var(--zzz-blue, #00E5FF); text-shadow: 1px 1px 0 #000;"></i> PROTOCOL: SECURED
+                                </span>
+                            </span>
+                            <span class="badge text-dark border border-dark border-2 py-2 px-3 fw-black zzz-text-mono rounded-0" style="background-color: var(--zzz-primary, #D2FF00); letter-spacing: 1px;">
+                                <span style="transform: skewX(10deg); display: inline-flex; align-items: center;">
+                                    <i class="bi bi-hdd-network-fill me-2 fs-6"></i> NODE: FAIRY
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 pt-lg-2 zzz-nudge-right">
+                        <h5 class="text-white fw-black mb-4 text-uppercase zzz-text-mono border-bottom border-secondary pb-2 d-inline-block">>> TRUY CẬP NHANH</h5>
+                        <ul class="list-unstyled zzz-text-mono small fw-bold d-flex flex-column gap-3">
+                            <li><a href="/HoaDon" class="zzz-footer-nav-link">[01] QUẢN LÝ HÓA ĐƠN & THANH TOÁN</a></li>
+                            <li><a href="/KhachHang" class="zzz-footer-nav-link">[02] HỒ SƠ ĐỊNH DANH KHÁCH HÀNG</a></li>
+                            <li><a href="/NhanVien" class="zzz-footer-nav-link">[03] PHÂN QUYỀN TRUY CẬP ĐẶC VỤ</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col-lg-4 d-flex flex-column align-items-end text-end">
+                        <h5 class="text-white fw-black mb-4 text-uppercase zzz-text-mono border-bottom border-secondary pb-2 d-inline-block">>> KÊNH LIÊN LẠC</h5>
+                        <div class="d-flex gap-3 mb-4 mt-2">
+                            <a href="#" class="zzz-social-btn"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="zzz-social-btn"><i class="fab fa-discord"></i></a>
+                            <a href="#" class="zzz-social-btn"><i class="fab fa-github"></i></a>
+                            <a href="#" class="zzz-social-btn zzz-social-danger"><i class="fas fa-envelope"></i></a>
+                        </div>
+                        <a asp-area="Identity" asp-page="/FAQ" class="btn py-2 px-4 rounded-0 fw-bold border-2" style="transform: skewX(-10deg); background-color: #00E5FF; color: #111; border-color: #00E5FF;">
+                            <div style="transform: skewX(10deg);"><i class="fas fa-question-circle me-2"></i> HƯỚNG DẪN & FAQ</div>
                         </a>
+                    </div>
+
+                    <div class="col-12 mt-4 pt-4 border-top border-secondary d-flex justify-content-between align-items-center">
+                        <span class="text-muted zzz-text-mono small fw-bold">© 2026 HỆ THỐNG ĐIỆN LỰC. ALL RIGHTS RESERVED.</span>
+                        <div class="d-flex gap-1 opacity-50">
+                            <div style="width: 4px; height: 15px; background: var(--zzz-primary, #D2FF00);"></div>
+                            <div style="width: 2px; height: 15px; background: #666;"></div>
+                            <div style="width: 6px; height: 15px; background: #666;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column d-lg-none" style="padding-bottom: 60px;">
+
+                    <div class="d-flex align-items-center justify-content-center gap-2 mb-3 border border-dark border-3 py-2 bg-dark bg-opacity-50">
+                        <span class="fs-3 fw-black text-white" style="font-family: 'Orbitron', sans-serif; letter-spacing: -1px;">ĐIỆN LỰC</span>
+                        <span class="zzz-tag fs-6 py-1">CYBER</span>
+                    </div>
+
+                    <p class="text-muted zzz-text-mono text-center small fw-bold mb-4 px-2">
+                        [ LOG_SYS ] Cung cấp năng lượng lõi toàn khu vực. Không chịu trách nhiệm nếu phần cứng bốc cháy.
+                    </p>
+
+                    <div class="d-flex flex-column gap-3 mb-5">
+                        <div class="w-100 badge bg-white text-dark border border-dark border-2 py-3 px-3 fw-black zzz-text-mono rounded-0 d-flex align-items-center justify-content-center fs-6">
+                            <i class="bi bi-shield-check me-2 fs-5" style="color: var(--zzz-blue, #00E5FF);"></i> PROTOCOL: SECURED
+                        </div>
+                        <div class="w-100 badge text-dark border border-dark border-2 py-3 px-3 fw-black zzz-text-mono rounded-0 d-flex align-items-center justify-content-center fs-6" style="background-color: var(--zzz-primary, #D2FF00);">
+                            <i class="bi bi-hdd-network-fill me-2 fs-5"></i> NODE: FAIRY
+                        </div>
+                    </div>
+
+                    <h6 class="text-white fw-black mb-3 text-uppercase zzz-text-mono border-bottom border-secondary pb-2">>> TRUY CẬP NHANH</h6>
+
+                    <div class="d-flex flex-column gap-3 mb-5 zzz-text-mono">
+                        <a href="/HoaDon" class="btn bg-dark text-white text-start rounded-0 border border-2 border-secondary py-3 fw-bold d-block w-100 shadow-none">
+                            <i class="bi bi-chevron-right me-2 text-warning"></i> [01] QUẢN LÝ HÓA ĐƠN
+                        </a>
+                        <a href="/KhachHang" class="btn bg-dark text-white text-start rounded-0 border border-2 border-secondary py-3 fw-bold d-block w-100 shadow-none">
+                            <i class="bi bi-chevron-right me-2 text-warning"></i> [02] HỒ SƠ ĐỊNH DANH
+                        </a>
+                        <a href="/NhanVien" class="btn bg-dark text-white text-start rounded-0 border border-2 border-secondary py-3 fw-bold d-block w-100 shadow-none">
+                            <i class="bi bi-chevron-right me-2 text-warning"></i> [03] QUYỀN ĐẶC VỤ
+                        </a>
+                    </div>
+
+                    <h6 class="text-white fw-black mb-3 text-uppercase zzz-text-mono border-bottom border-secondary pb-2">>> MẠNG LƯỚI LIÊN LẠC</h6>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-3"><a href="#" class="btn btn-dark w-100 rounded-0 border-2 border-secondary py-3"><i class="fab fa-facebook-f fs-5"></i></a></div>
+                        <div class="col-3"><a href="#" class="btn btn-dark w-100 rounded-0 border-2 border-secondary py-3"><i class="fab fa-discord fs-5"></i></a></div>
+                        <div class="col-3"><a href="#" class="btn btn-dark w-100 rounded-0 border-2 border-secondary py-3"><i class="fab fa-github fs-5"></i></a></div>
+                        <div class="col-3"><a href="#" class="btn btn-danger w-100 rounded-0 border-2 border-danger py-3"><i class="fas fa-envelope fs-5"></i></a></div>
+                    </div>
+
+                    <a asp-area="Identity" asp-page="/FAQ" class="btn w-100 py-3 rounded-0 fw-bold border-2 d-flex justify-content-center align-items-center mb-4" style="background-color: #00E5FF; color: #111; border-color: #00E5FF;">
+                        <i class="fas fa-question-circle me-2 fs-5"></i> HƯỚNG DẪN & FAQ
+                    </a>
+
+                    <div class="text-center pt-3 border-top border-secondary mt-2">
+                        <span class="text-muted zzz-text-mono small fw-bold d-block">© 2026 HỆ THỐNG ĐIỆN LỰC</span>
+                        <span class="text-muted zzz-text-mono small d-block mt-1" style="font-size: 0.7rem;">ALL RIGHTS RESERVED.</span>
                     </div>
                 </div>
             </div>
@@ -135,24 +325,72 @@
     }
     else
     {
-        <footer class="corp-footer">
-            <div class="container py-4">
-                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3">
-                    <div class="text-center text-lg-start">
-                        <h6 class="text-primary fw-bold mb-1">
-                            <i class="fas fa-bolt text-warning me-1"></i> TẬP ĐOÀN PROXY POWER
-                        </h6>
-                        <small class="text-muted fw-normal">© 2026 Bản quyền thuộc Tập đoàn Điện lực Proxy. Đã đăng ký bản quyền.</small>
+        <!-- FOOTER KHÁCH HÀNG MỚI (BẢN CHUYÊN NGHIỆP - THỰC TẾ) -->
+        <footer class="corp-footer border-top bg-white pt-5 pb-3 mt-5">
+            <div class="container">
+                <div class="row gy-5 mb-4 justify-content-between">
+
+                    <div class="col-12 col-lg-5 pe-lg-5">
+                        <h5 class="text-primary fw-bold mb-3 d-flex align-items-center zzz-mobile-left">
+                            CÔNG TY ĐIỆN LỰC
+                        </h5>
+                        <p class="text-muted small lh-lg zzz-mobile-left">
+                            Hệ thống quản lý và tra cứu chỉ số điện năng trực tuyến. Chúng tôi nỗ lực mang đến trải nghiệm tiện lợi, minh bạch và an toàn nhất cho mọi khách hàng sử dụng điện.
+                        </p>
+                        <div class="d-flex gap-2 mt-4 zzz-mobile-left">
+                            <a href="#" class="corp-social-icon" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="corp-social-icon" title="Zalo"><i class="fas fa-comment-dots"></i></a>
+                            <a href="#" class="corp-social-icon" title="Youtube"><i class="fab fa-youtube"></i></a>
+                        </div>
                     </div>
-                    <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
-                        <a href="tel:1900100C" class="text-decoration-none text-secondary fw-bold small corp-footer-link">
-                            <i class="fas fa-headset me-1"></i> CSKH: 1900 100 Có
-                        </a>
-                        <span class="text-muted d-none d-sm-inline" style="opacity: 0.3;">|</span>
-                        <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-decoration-none text-secondary fw-bold small corp-footer-link">
-                            <i class="fas fa-shield-alt me-1"></i> Chính sách bảo mật
-                        </a>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <h6 class="fw-bold text-dark mb-4 text-uppercase" style="font-size: 0.9rem;">Tiện ích Dịch vụ</h6>
+                        <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+                            <li>
+                                <a asp-area="" asp-controller="Home" asp-action="Index" class="corp-footer-link small">
+                                    <i class="fas fa-chevron-right text-primary me-2" style="font-size: 0.7em;"></i>Trang chủ
+                                </a>
+                            </li>
+                            <li>
+                                <a asp-area="Identity" asp-page="/Account/Manage/Index" class="corp-footer-link small">
+                                    <i class="fas fa-chevron-right text-primary me-2" style="font-size: 0.7em;"></i>Hồ sơ cá nhân
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="corp-footer-link small">
+                                    <i class="fas fa-chevron-right text-primary me-2" style="font-size: 0.7em;"></i>Tra cứu hóa đơn
+                                </a>
+                            </li>
+                        </ul>
                     </div>
+
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <h6 class="fw-bold text-dark mb-4 text-uppercase" style="font-size: 0.9rem;">Liên hệ với chúng tôi</h6>
+                        <div class="corp-contact-card bg-light p-3 rounded-3 border border-light-subtle">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-envelope text-primary fs-5 me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block mb-1" style="font-size: 0.75rem;">Email Hỗ trợ Khách hàng</small>
+                                    <a class="text-dark fw-bold text-decoration-none small">cskh@ctydienluc.vn</a>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center pt-3 border-top">
+                                <i class="fas fa-clock text-primary fs-5 me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block mb-1" style="font-size: 0.75rem;">Giờ làm việc</small>
+                                    <span class="text-dark fw-bold small text-uppercase">Thứ 2 - Thứ 6 (8h - 17h)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr class="opacity-10 my-4">
+
+                <div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-3 text-center pb-2">
+                    <small class="text-muted fw-normal">© @DateTime.Now.Year Proxy Power. Đã đăng ký bản quyền.</small>
                 </div>
             </div>
         </footer>
@@ -160,7 +398,10 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/auto-alert.js"></script>
+    <script src="~/js/site.js"></script>
+    <script src="~/js/intro.js" asp-append-version="true"></script>
+    <script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

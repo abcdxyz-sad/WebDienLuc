@@ -4,17 +4,17 @@
     ViewData["Title"] = "Cập Nhật Hồ Sơ";
 }
 
-<div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel">
-    <h1 class="m-0 zzz-page-title">
+<div class="border-dashed p-3 mb-4 d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3 zzz-command-panel text-center text-lg-start">
+    <h1 class="m-0 zzz-page-title fs-3 fw-bold border-start border-5 ps-3 w-100 w-lg-auto" style="border-left-color: var(--zzz-primary) !important;">
         [ TỆP HỒ SƠ ] CẬP NHẬT DỮ LIỆU
     </h1>
-    <div class="d-flex align-items-center gap-3">
-        <span class="zzz-sys-status">
-            HỆ THỐNG: <span class="zzz-blink-dot zzz-text-yellow">●</span> ĐANG CHỈNH SỬA
+    <div class="d-flex justify-content-center justify-content-lg-end align-items-center gap-3 w-100 w-lg-auto">
+        <span class="badge text-dark rounded-0 border border-dark border-2 fs-6 zzz-text-mono px-3 py-2 shadow-sm d-none d-md-block"
+              style="background-color: var(--zzz-primary); box-shadow: 2px 2px 0px #000 !important;">
+            <span class="text-dark zzz-blink-dot">●</span> TRẠNG THÁI: ĐANG CHỈNH SỬA
         </span>
     </div>
 </div>
-
 <div class="row justify-content-center">
     <div class="col-lg-10">
         <div class="card position-relative zzz-card-thick">
@@ -72,29 +72,12 @@
                         </div>
                     </div>
 
-                    <div class="zzz-fieldset zzz-fieldset-highlight">
-                        <div class="zzz-fieldset-title zzz-fieldset-title-highlight">SYS.03 // PHÊ DUYỆT</div>
-
-                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-                            <div class="d-flex align-items-center gap-3">
-                                <label class="zzz-switch">
-                                    <input asp-for="TrangThai" type="checkbox" />
-                                    <span class="zzz-slider zzz-slider-clickable"></span>
-                                </label>
-                                <div>
-                                    <div class="zzz-switch-title">KÍCH HOẠT HỒ SƠ</div>
-                                    <div class="zzz-switch-desc">Bật công tắc để cấp phép hoạt động ngay lập tức.</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex gap-3 mt-4">
-                        <button type="submit" class="btn btn-primary zzz-btn-large flex-grow-1">
-                            <i>⚡</i> LƯU CẬP NHẬT
+                    <div class="d-flex flex-column flex-md-row gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary fw-bold fs-5 flex-grow-1 py-3 border-dark border-3 rounded-0 shadow-sm">
+                            <i class="fas fa-bolt me-2"></i> LƯU CẬP NHẬT
                         </button>
-                        <a asp-action="Index" class="btn btn-outline-secondary zzz-btn-large">
-                            <i>◄</i> HỦY BỎ
+                        <a asp-action="Index" class="btn zzz-btn-cancel fw-bold fs-5 px-md-5 py-3 border-dark border-3 rounded-0 d-flex align-items-center justify-content-center">
+                            <i class="fas fa-undo me-2"></i> HỦY BỎ
                         </a>
                     </div>
                 </form>

@@ -1,13 +1,21 @@
 ﻿@model WebSuDungDIen.Models.HoaDon
 
 @{
-    ViewData["Title"] = "XÓA HÓA ĐƠN";
+    ViewData["Title"] = "Xóa Hóa Đơn";
+
+    // Tà thuật tính toán Điện Tiêu Thụ từ ViewBag ngay trên View
+    int dienTieuThu = 0;
+    if (ViewBag.ChiSoMucTieu != null)
+    {
+        // Tự động lấy Số Mới trừ Số Cũ
+        dienTieuThu = ViewBag.ChiSoMucTieu.ChiSoMoi - ViewBag.ChiSoMucTieu.ChiSoCu;
+    }
 }
 
 <div class="container-fluid p-0" style="max-width: 800px; margin: 0 auto;">
 
     <div class="border border-danger border-4 bg-danger text-white p-4 mb-4 position-relative" style="box-shadow: 8px 8px 0px var(--zzz-black);">
-        <h1 class="zzz-page-title m-0 fw-bold text-uppercase d-flex align-items-center gap-2">
+        <h1 class="m-0 zzz-page-title border-start border-5 ps-3" style="border-left-color: var(--zzz-black) !important;">
             <i class="fas fa-exclamation-triangle"></i> CẢNH BÁO HỆ THỐNG
         </h1>
         <p class="m-0 zzz-text-mono mt-2 fw-bold" style="font-size: 1.1rem;">
@@ -25,23 +33,36 @@
             <div class="row g-4">
 
                 <div class="col-md-12">
-                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">Số hiệu Hóa đơn</label>
-                    <div class="zzz-text-name fs-4 border-bottom border-dark border-2 pb-1 text-danger">
-                        @Html.DisplayFor(model => model.MaHd)
+                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">Địa chỉ cung cấp điện</label>
+                    <div class="zzz-text-mono fw-bold fs-6 text-dark border-bottom border-dark border-2 pb-2">
+                        <i class="fas fa-map-marker-alt text-danger me-2"></i> @(ViewBag.KhachMucTieu?.DiaChiDayDu ?? "[CHƯA CẬP NHẬT ĐỊA CHỈ]")
                     </div>
                 </div>
 
                 <div class="col-md-6">
-                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">ID Khách Hàng</label>
-                    <div class="zzz-text-mono fw-bold fs-6 text-truncate" title="@Model.KhachHangId">
-                        @Html.DisplayFor(model => model.KhachHangId)
+                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">Mã Định Danh</label>
+                    <div class="zzz-text-mono fw-bold fs-5 text-dark border-bottom border-dark border-2 pb-1">
+                        <i class="fas fa-id-card text-muted me-2"></i> @(ViewBag.KhachMucTieu?.MaKh ?? "[VÔ DANH]")
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">Tên Khách Hàng</label>
+                    <div class="zzz-text-mono fw-bolder fs-5 text-primary border-bottom border-dark border-2 pb-1 text-truncate">
+                        <i class="fas fa-user-tag text-primary me-2"></i> @(ViewBag.KhachMucTieu?.TenKh ?? "[VÔ DANH]")
                     </div>
                 </div>
 
                 <div class="col-md-6">
-                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">ID Chỉ Số Điện</label>
-                    <div class="zzz-badge-id fs-5 fw-bold text-end text-md-start text-truncate" title="@Model.ChiSoDienId">
-                        @Html.DisplayFor(model => model.ChiSoDienId)
+                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">Tổng điện tiêu thụ</label>
+                    <div class="zzz-text-mono fw-bolder fs-4 text-warning bg-dark border border-dark p-2 text-center shadow-sm">
+                        <i class="fas fa-bolt text-warning me-2"></i> @dienTieuThu <span class="fs-6 text-light">kWh</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="zzz-text-mono text-muted small fw-bold text-uppercase">Tổng tiền cần thu</label>
+                    <div class="zzz-text-mono fw-bolder fs-4 text-white bg-danger border border-dark p-2 text-center shadow-sm">
+                        <i class="fas fa-money-bill-wave text-white me-2"></i> @Model.TongThanhToan.ToString("N0") <span class="fs-6">VNĐ</span>
                     </div>
                 </div>
 
@@ -58,11 +79,10 @@
                         }
                     </div>
                 </div>
-
                 <div class="col-md-6">
                     <label class="zzz-text-mono text-muted small fw-bold text-uppercase">Ngày thanh toán</label>
                     <div class="fw-bold fs-6 border p-2 bg-light border-dark text-primary">
-                        <i class="fas fa-calendar-check me-2"></i> @(Model.NgayThanhToan?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")
+                        <i class="fas fa-calendar-check me-2"></i> @(Model.NgayThanhToan?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa ghi nhận")
                     </div>
                 </div>
 

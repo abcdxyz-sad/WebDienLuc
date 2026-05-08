@@ -116,3 +116,25 @@
     background: repeating-linear-gradient( 45deg, var(--zzz-black), var(--zzz-black) 15px, #ffc107 15px, #ffc107 30px );
     border-bottom: 3px solid var(--zzz-black);
 }
+
+/* --- Khung hiển thị dữ liệu (Email, Trạng thái...) --- */
+.zzz-data-box {
+    /* 1. Khu vực tùy chỉnh kích thước (Custom Size) */
+    --box-padding-y: 0.1rem; /* Đệm dọc - Tương đương py-3 */
+    --box-padding-x: 1rem; /* Đệm ngang - Tương đương px-3 */
+    --box-font-size: 1.1rem; /* Cỡ chữ - Tương đương fs-5 */
+    --box-border-width: 2px; /* Độ dày viền - Tương đương border-2 */
+    /* 2. Cấu trúc cố định (Không nên sửa) */
+    padding: var(--box-padding-y) var(--box-padding-x);
+    font-size: var(--box-font-size);
+    border: var(--box-border-width) solid #000 !important;
+    display: flex;
+    align-items: center;
+    height: 100%; /* Kết hợp với align-items-stretch của Row để 2 ô cao bằng nhau */
+    box-sizing: border-box;
+}
+
+    /* Biến thể: Để nội dung nằm giữa (Dùng cho ô trạng thái) */
+    .zzz-data-box.box-center {
+        justify-content: center;
+    }

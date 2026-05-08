@@ -63,11 +63,15 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account.Manage
             /// </summary>
             [Phone]
             [Display(Name = "Phone number")]
+            [Required(ErrorMessage = "[ LỖI ] - Vui lòng nhập vào số điện thoại!")]
             public string PhoneNumber { get; set; }
+            [Required(ErrorMessage = "[ LỖI ] - Vui lòng nhập tên bạn!")]
             public string FullName { get; set; }
             public string UserCode { get; set; }
+            [Required(ErrorMessage = "[ LỖI ] - Vui lòng nhập địa chỉ của bạn!")]
             public string Address { get; set; }
             public string AccountType { get; set; }
+            [Required(ErrorMessage = "[ LỖI ] - Vui lòng nhập địa chỉ email!")]
             public string Email { get; set; }
         }
 
@@ -86,6 +90,7 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account.Manage
                 if (nhanVien != null)
                 {
                     Input.FullName = nhanVien.TenNV;
+                    Input.UserCode = nhanVien.MaNV;
                     Input.PhoneNumber = nhanVien.DienThoai;
                     Input.Address = nhanVien.DiaChi;
                     Input.AccountType = $"Nhân viên nội bộ - {nhanVien.ChucVu}";
@@ -95,6 +100,7 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account.Manage
                 {
                     Input.FullName = "LỖI: CHƯA CÓ DATA NHÂN VIÊN TRONG DB";
                     Input.AccountType = $"Identity ID: {user.Id}";
+                    Input.UserCode = "Null";
                 }
             }
             // 2. MÓC DATA KHÁCH HÀNG TỪ SQL SERVER
@@ -111,6 +117,7 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account.Manage
                     Input.PhoneNumber = khachHang.DienThoai;
                     Input.Address = !string.IsNullOrEmpty(khachHang.DiaChiDayDu) ? khachHang.DiaChiDayDu : khachHang.DiaChi;
                     Input.AccountType = "Khách hàng sử dụng điện";
+                    Input.Email = await _userManager.GetEmailAsync(user);
                 }
                 else
                 {
@@ -147,7 +154,9 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            bool isChanged = false; // Cắm cái cờ để biết có cần lưu Database không
+            // Cắm 2 cái cờ để theo dõi mọi nhất cử nhất động
+            bool isIdentityChanged = false;
+            bool isNhanVienChanged = false;
 
             // ==========================================
             // 1. CẬP NHẬT PHẦN IDENTITY (SĐT & EMAIL)
@@ -160,9 +169,10 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account.Manage
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
-                    StatusMessage = "Lỗi hệ thống: Không thể ghi đè Số điện thoại!";
+                    TempData["Error"] = "[ LỖI ] - Không thể ghi đè Số điện thoại!";
                     return RedirectToPage();
                 }
+                isIdentityChanged = true; // Phất cờ có thay đổi Identity
             }
 
             // Xử lý Email (Tà thuật đổi Email trực tiếp không cần gửi mail xác nhận)
@@ -176,6 +186,8 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account.Manage
                 // Vì sửa Email là sửa định danh, nên ép hệ thống xác nhận luôn để khỏi lằng nhằng
                 user.EmailConfirmed = true;
                 await _userManager.UpdateAsync(user);
+
+                isIdentityChanged = true; // Phất cờ có thay đổi Identity
             }
 
             // ==========================================
@@ -194,25 +206,25 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account.Manage
                     if (nhanVien.TenNV != Input.FullName)
                     {
                         nhanVien.TenNV = Input.FullName;
-                        isChanged = true;
+                        isNhanVienChanged = true;
                     }
 
                     // 💥 TÀ THUẬT VÁ LỖ HỔNG: Ép bảng NhanVien cũng phải nhận số điện thoại mới!
                     if (nhanVien.DienThoai != Input.PhoneNumber)
                     {
                         nhanVien.DienThoai = Input.PhoneNumber;
-                        isChanged = true;
+                        isNhanVienChanged = true;
                     }
 
                     // Kiểm tra xem có đổi Địa chỉ không
                     if (nhanVien.DiaChi != Input.Address)
                     {
                         nhanVien.DiaChi = Input.Address;
-                        isChanged = true;
+                        isNhanVienChanged = true;
                     }
 
                     // Có thay đổi thì bóp cò lưu xuống CSDL
-                    if (isChanged)
+                    if (isNhanVienChanged)
                     {
                         _context.NhanVien.Update(nhanVien);
                         await _context.SaveChangesAsync();
@@ -220,10 +232,25 @@ namespace WebSuDungDIen.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            // F5 lại phiên đăng nhập để thông tin mới ăn vào hệ thống ngay lập tức
-            await _signInManager.RefreshSignInAsync(user);
+            // ==========================================
+            // 3. CHỐT CHẶN CUỐI CÙNG: CÓ ĐỔI GÌ KHÔNG?
+            // ==========================================
 
-            StatusMessage = "GHI ĐÈ DỮ LIỆU THÀNH CÔNG! Bản thể đã được định hình lại.";
+            // Nếu cả 2 cờ đều nằm im (không thay đổi Identity, cũng không đổi SQL)
+            if (!isIdentityChanged && !isNhanVienChanged)
+            {
+                // Báo lỗi bằng StatusMessage thay vì TempData vì Razor Pages Identity xài cái này
+                TempData["Error"] = "Không có thông tin nào được thay đổi!";
+                return RedirectToPage();
+            }
+
+            // Nếu Identity có thay đổi thì F5 lại phiên đăng nhập để thông tin mới ăn vào hệ thống ngay lập tức
+            if (isIdentityChanged)
+            {
+                await _signInManager.RefreshSignInAsync(user);
+            }
+
+            TempData["ThongBao"] = "[ THÀNH CÔNG ] - Thay đổi đã được thực thi!";
             return RedirectToPage();
         }
     }

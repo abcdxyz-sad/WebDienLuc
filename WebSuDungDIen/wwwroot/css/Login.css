@@ -181,7 +181,7 @@
 
     .zzz-input:focus ~ .label-user,
     .zzz-input:not(:placeholder-shown) ~ .label-user {
-        transform: translate(200px, -32px); /* Tinh chỉnh số 140px này cho vừa mắt */
+        transform: translate(205px, -32px); /* Tinh chỉnh số 140px này cho vừa mắt */
     }
 
     /* 2. Ô Mật khẩu (Chữ ngắn -> Cho bay xa ra để mép phải bằng với ô trên) */
@@ -455,32 +455,32 @@
     /* TRANG LOGIN */
     .zzz-input:focus ~ .label-user,
     .zzz-input:not(:placeholder-shown) ~ .label-user {
-        transform: translate(5px, -32px) !important; /* Chỉ nhích sang trái 5px, bay thẳng lên */
+        transform: translate(90px, -32px) !important; /* Chỉ nhích sang trái 5px, bay thẳng lên */
     }
 
     .zzz-input:focus ~ .label-pass,
     .zzz-input:not(:placeholder-shown) ~ .label-pass {
-        transform: translate(5px, -32px) !important;
+        transform: translate(130px, -32px) !important;
     }
 
     /* TRANG ĐĂNG KÝ (REGISTER) */
     .zzz-input:focus ~ .label-reg,
     .zzz-input:not(:placeholder-shown) ~ .label-reg {
-        transform: translate(5px, -32px) !important;
+        transform: translate(90px, -32px) !important;
     }
 
     .zzz-input:focus ~ .label-reg-email,
     .zzz-input:not(:placeholder-shown) ~ .label-reg-email {
-        transform: translate(5px, -32px) !important;
+        transform: translate(155px, -32px) !important;
     }
 
     .zzz-input:focus ~ .label-reg-pass,
     .zzz-input:not(:placeholder-shown) ~ .label-reg-pass {
-        transform: translate(5px, -32px) !important;
+        transform: translate(130px, -32px) !important;
     }
 
     .zzz-input:focus ~ .label-reg-confirm,
     .zzz-input:not(:placeholder-shown) ~ .label-reg-confirm {
-        transform: translate(5px, -32px) !important;
+        transform: translate(55px, -32px) !important;
     }
 }

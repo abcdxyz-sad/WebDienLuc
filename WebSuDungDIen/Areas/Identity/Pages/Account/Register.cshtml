@@ -12,6 +12,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Quản lý Điện Lực</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
     <link rel="stylesheet" href="~/css/Login.css" asp-append-version="true" />
 </head>
 <body>
@@ -39,15 +42,21 @@
                 </div>
 
                 <div class="zzz-input-group mb-4">
-                    <input asp-for="Input.Password" class="zzz-input" autocomplete="new-password" required placeholder=" " />
+                    <input asp-for="Input.Password" id="Input_Password" class="zzz-input" autocomplete="new-password" required placeholder=" " type="password" />
                     <label class="zzz-label label-reg-pass" asp-for="Input.Password">Password</label>
                     <span asp-validation-for="Input.Password" class="text-danger small mt-1 d-block font-weight-bold font-monospace"></span>
                 </div>
 
                 <div class="zzz-input-group mb-4">
-                    <input asp-for="Input.ConfirmPassword" class="zzz-input" autocomplete="new-password" required placeholder=" " />
+                    <input asp-for="Input.ConfirmPassword" id="Input_ConfirmPassword" class="zzz-input" autocomplete="new-password" required placeholder=" " type="password" />
                     <label class="zzz-label label-reg-confirm" asp-for="Input.ConfirmPassword">Xác nhận password</label>
                     <span asp-validation-for="Input.ConfirmPassword" class="text-danger small mt-1 d-block font-weight-bold font-monospace"></span>
+                </div>
+
+                <div class="d-flex justify-content-end mb-4">
+                    <button type="button" class="zzz-eye-btn-bottom" id="togglePassword">
+                        <i class="fas fa-eye"></i> HIỂN THỊ
+                    </button>
                 </div>
 
                 <button id="registerSubmit" type="submit" class="w-100 btn btn-lg zzz-login-btn">
@@ -64,5 +73,40 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function (e) {
+            // Lấy cả 2 thẻ input mật khẩu
+            const passwordInput = document.getElementById('Input_Password');
+            const confirmPasswordInput = document.getElementById('Input_ConfirmPassword');
+            const icon = this.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                // Đổi cả 2 thành dạng Text
+                passwordInput.type = 'text';
+                confirmPasswordInput.type = 'text';
+
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+
+                /* Đảo màu nút để cảnh báo "Đang lộ mật khẩu" */
+                this.style.backgroundColor = 'var(--zzz-black)';
+                this.style.color = 'var(--zzz-primary)';
+                this.innerHTML = '<i class="fas fa-eye-slash"></i> ĐANG ẨN'; // Đổi chữ cho ngầu
+            } else {
+                // Đổi cả 2 về lại dạng Password
+                passwordInput.type = 'password';
+                confirmPasswordInput.type = 'password';
+
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+
+                /* Trả về bình thường */
+                this.style.backgroundColor = 'transparent';
+                this.style.color = 'var(--zzz-black)';
+                this.innerHTML = '<i class="fas fa-eye"></i> HIỂN THỊ'; // Trả lại chữ cũ
+            }
+        });
+    </script>
 </body>
 </html>

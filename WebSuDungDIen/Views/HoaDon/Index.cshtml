@@ -5,68 +5,66 @@
     var now = DateTime.Now;
 }
 
-@if (TempData["ThongBao"] != null)
-{
-    <div id="thongBao" class="zzz-notification">
-        <div class="zzz-content">
-            <span class="zzz-icon">👾</span> <span class="zzz-text">@TempData["ThongBao"]</span>
+<div class="border-dashed p-3 p-lg-4 mb-4 d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3 zzz-command-panel border-dark border-3 bg-white">
+    <div class="d-inline-block text-nowrap bg-transparent pe-5 py-2 zzz-title-wrap" data-intro="Chào mừng đến với khu vực hóa đơn!" data-step="1">
+        <h1 class="m-0 zzz-page-title fw-bold text-uppercase fs-3 fs-lg-2 text-center text-lg-start w-100 w-lg-auto border-start border-primary border-5 ps-3 text-nowrap" style="border-left-color: var(--zzz-primary) !important; letter-spacing: 1px;">
+            [ TỆP DỮ LIỆU ] HÓA ĐƠN
+        </h1>
+    </div>
+    <div class="d-flex align-items-center gap-3 w-100 w-lg-auto justify-content-center justify-content-lg-end">
+        <div class="d-inline-block shadow-sm"
+             data-intro="Bấm vào nút này để lập hóa đơn cho khách theo phường!"
+             data-step="2">
+            <a asp-action="Create"
+               class="btn btn-primary fw-bold border-dark border-2 rounded-0 px-4 py-2 zzz-text-mono text-nowrap d-inline-flex align-items-center">
+                <i class="bi bi-plus-square-fill me-2"></i> PHÁT HÀNH HÓA ĐƠN
+            </a>
         </div>
-        <div class="zzz-decor-line"></div>
     </div>
-}
-@if (TempData["Error"] != null)
-{
-    <div id="thongBao" class="zzz-notification">
-        <div class="zzz-content">
-            <span class="zzz-icon">👾</span> <span class="zzz-text">@TempData["Error"]</span>
-        </div>
-        <div class="zzz-decor-line"></div>
-    </div>
-}
-
-<div class="border-dashed p-3 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 zzz-command-panel border-dark border-3 bg-white">
-
-    <h1 class="m-0 zzz-page-title fw-bold text-uppercase text-center text-md-start w-100 w-md-auto border-start border-primary border-5 ps-3" style="border-left-color: var(--zzz-primary) !important;">
-        [ TỆP DỮ LIỆU ] HÓA ĐƠN
-    </h1>
-
-    <div class="d-flex align-items-center gap-3 w-100 w-md-auto ms-md-auto justify-content-center justify-content-md-end">
-        <a asp-action="Create" class="btn btn-primary fw-bold border-dark border-2 rounded-0 shadow-sm px-4 py-2 zzz-text-mono text-nowrap" style="max-width: max-content;">
-            <i class="bi bi-plus-square-fill me-1"></i> PHÁT HÀNH HÓA ĐƠN
-        </a>
-    </div>
-
 </div>
 
-<div class="card mb-4 border-dark border-2 rounded-0 shadow-sm">
+<div class="card mb-4 border-dark border-2 rounded-0 shadow-sm zzz-intro-fix" data-intro="Đây bạn có thể lọc các thông tin theo các tiêu chí và tìm kiếm thông tin" data-step="3">
     <div class="card-header bg-dark text-white border-dark border-bottom border-2 rounded-0 zzz-text-mono fw-bold">
         <i class="bi bi-sliders me-2 text-warning"></i>BỘ LỌC TÌM KIẾM
     </div>
     <div class="card-body p-3 p-md-4">
-        <form asp-action="Index" method="get" class="row g-3 align-items-end">
+        <form asp-action="Index" method="get" class="row g-2 align-items-end">
 
-            <div class="col-md-4">
-                <label class="form-label fw-bold" style="font-size: 0.85rem;">Khu vực (Đã có Hóa đơn)</label>
-                <select name="maPhuongApi" class="form-select fw-bold border-dark border-2 text-truncate" style="padding-right: 2.5rem;" asp-items="ViewBag.PhuongList">
-                    <option value="">-- Tất cả khu vực --</option>
-                </select>
+            <div class="col-md-5">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label fw-bold" style="font-size: 0.85rem;">Tỉnh / Thành phố</label>
+                        <select name="maTinh" id="selectTinh" class="form-select fw-bold border-dark border-2 text-truncate" onchange="this.form.submit();">
+                            <option value="">-- Tất cả Tỉnh --</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label fw-bold" style="font-size: 0.85rem;">Phường / Xã</label>
+                        <select name="maPhuongApi" id="ward" class="form-select fw-bold border-dark border-2 text-truncate" onchange="this.form.submit();">
+                            <option value="">-- Chọn Phường --</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            <div class="col-sm-6 col-md-2">
-                <label class="form-label fw-bold" style="font-size: 0.85rem;">Tháng</label>
-                <select name="thang" class="form-select fw-bold border-dark border-2" asp-items="ViewBag.ThangList">
-                    <option value="">-- ALL --</option>
-                </select>
+            <div class="col-md-3">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label fw-bold" style="font-size: 0.85rem;">Tháng</label>
+                        <select name="thang" class="form-select fw-bold border-dark border-2 px-1" asp-items="ViewBag.ThangList" onchange="this.form.submit();">
+                            <option value="">&nbsp;&nbsp;-- ALL</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label fw-bold" style="font-size: 0.85rem;">Năm</label>
+                        <select name="nam" class="form-select fw-bold border-dark border-2 px-1" asp-items="ViewBag.NamList" onchange="this.form.submit();">
+                            <option value="">&nbsp;&nbsp;-- ALL</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            <div class="col-sm-6 col-md-2">
-                <label class="form-label fw-bold" style="font-size: 0.85rem;">Năm</label>
-                <select name="nam" class="form-select fw-bold border-dark border-2" asp-items="ViewBag.NamList">
-                    <option value="">-- ALL --</option>
-                </select>
-            </div>
-
-            <div class="col-md-2">
+            <div class="col-md-2 mt-3 mt-md-0">
                 <div class="d-flex gap-2 h-100">
                     <button type="submit" class="btn btn-primary flex-fill fw-bold border-dark border-2 rounded-0 shadow-sm">
                         <i class="bi bi-search"></i> LỌC
@@ -80,14 +78,16 @@
             <div class="col-md-2 mt-3 mt-md-0">
                 <div class="border-dashed p-2 text-center bg-light border-dark border-2 h-100 d-flex flex-column justify-content-center">
                     <small class="text-muted text-uppercase fw-bold d-block" style="font-size: 0.7rem;">Tổng số lượng</small>
-                    <strong class="fs-4 text-primary">@((Model != null) ? Model.Count().ToString("00") : "00")</strong>
+                    <strong class="fs-4 text-primary" style="line-height: 1;">@((Model != null) ? Model.Count().ToString("00") : "00")</strong>
                 </div>
             </div>
+
         </form>
     </div>
 </div>
 
-<div class="zzz-data-toolbar d-flex flex-wrap justify-content-between align-items-center gap-3 p-3 bg-white border-dark border-2 mb-4" style="box-shadow: 4px 4px 0px rgba(0,0,0,0.1);">
+<div class="zzz-data-toolbar d-flex flex-wrap justify-content-between align-items-center gap-3 p-3 bg-white border-dark border-2 mb-4" style="box-shadow: 4px 4px 0px rgba(0,0,0,0.1);"
+     data-intro="Đây bạn có thể nhập hoặc xuất dữ liệu bằng excel" data-step="4">
 
     <div class="d-flex flex-wrap align-items-center gap-3 flex-grow-1 flex-lg-grow-0">
         <div class="bg-dark text-white px-3 py-2 fw-bold zzz-text-mono border-dark border-2 shadow-sm text-nowrap">
@@ -121,7 +121,7 @@
     </div>
 </div>
 
-<div class="container-fluid px-0 mt-4">
+<div class="container-fluid px-0 mt-4" data-intro="Đây hiển thị thông tin hóa đơn của các khách hàng đã lập hóa đơn" data-step="5">
     @if (Model != null && Model.Any())
     {
         <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
@@ -195,10 +195,10 @@
                             </small>
 
                             <div class="dropdown">
-                                <button class="btn btn-sm btn-dark dropdown-toggle fw-bold rounded-0" type="button" data-bs-toggle="dropdown">
+                                <button class="btn btn-sm btn-dark dropdown-toggle fw-bold rounded-0" type="button" data-bs-toggle="dropdown" data-bs-boundary="window">
                                     MENU
                                 </button>
-                                <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow">
+                                <ul class="dropdown-menu dropdown-menu-end border-dark border-2 rounded-0 shadow" data-intro="Đây chứa các chức năng cơ bản cho quản lý hóa đơn" data-step="6">
                                     <li><a class="dropdown-item fw-bold" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-info-square me-2 text-primary"></i>Chi tiết</a></li>
                                     <li>
                                         <a class="dropdown-item fw-bold zzz-text-mono text-success" asp-action="PrintInvoice" asp-route-maHd="@item.MaHd" target="_blank">
@@ -226,5 +226,59 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/auto-alert.js"></script>
+    <script>
+        // Lấy dữ liệu C# truyền sang
+        const currentTinh = '@Html.Raw(ViewBag.CurrentTinh ?? "")';
+        const currentPhuong = '@Html.Raw(ViewBag.CurrentPhuong ?? "")';
+        
+        // Mảng Tỉnh/Thành đã có hóa đơn (Móc trực tiếp từ DB)
+        const tinhCoDataRaw = @Html.Raw(Json.Serialize(ViewBag.DanhSachTinhCoData ?? new List<string>()));
+
+        const selectTinh = document.getElementById('selectTinh');
+        const selectWard = document.getElementById('ward');
+
+        function initDropdowns() {
+            // ========================================================
+            // 1. ĐỔ DỮ LIỆU TỈNH (Chỉ in ra các Tỉnh đang có trong DB)
+            // ========================================================
+            let htmlP = '<option value="">-- Tất cả Tỉnh/Thành --</option>';
+            tinhCoDataRaw.forEach(tinh => {
+                let isSelected = (tinh === currentTinh) ? "selected" : "";
+                htmlP += `<option value="${tinh}" ${isSelected}>${tinh}</option>`;
+            });
+            selectTinh.innerHTML = htmlP;
+
+            // ========================================================
+            // 2. NẾU ĐÃ CHỌN TỈNH -> GỌI API NỘI BỘ LẤY PHƯỜNG
+            // ========================================================
+            if (currentTinh) {
+                selectWard.innerHTML = '<option value="">-- Đang tải Phường... --</option>';
+                
+                // Vay mượn thẳng hàm GetPhuongByTinh bên ChiSoDienController của sếp!
+                fetch(`@Url.Action("GetPhuongByTinh", "ChiSoDien")?maTinh=${encodeURIComponent(currentTinh)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        selectWard.innerHTML = '<option value="">-- Chọn Phường --</option>';
+                        data.forEach(item => {
+                            let isSelected = (String(item.value) === String(currentPhuong)) ? "selected" : "";
+                            // Thêm option vào dropdown Phường
+                            selectWard.insertAdjacentHTML('beforeend', `<option value="${item.value}" ${isSelected}>${item.text}</option>`);
+                        });
+                    })
+                    .catch(err => {
+                        console.error("Lỗi móc dữ liệu Phường từ DB:", err);
+                        selectWard.innerHTML = '<option value="">(Lỗi tải dữ liệu)</option>';
+                    });
+            } else {
+                selectWard.innerHTML = '<option value="">-- Chọn Tỉnh trước --</option>';
+            }
+        }
+
+        // Chạy hàm khi trang vừa load xong
+        document.addEventListener("DOMContentLoaded", initDropdowns);
+
+        // LƯU Ý: Không cần addEventListener('change') để submit form
+        // Vì trong HTML thẻ <select> của sếp đã có sẵn onchange="this.form.submit();" rồi!
+    </script>
 }
+

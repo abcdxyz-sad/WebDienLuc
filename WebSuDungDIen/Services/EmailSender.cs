@@ -2,10 +2,10 @@
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Identity.UI.Services;
 namespace WebSuDungDIen.Services // Sửa lại namespace cho đúng với project của sếp
 {
-    public class EmailSender
+    public class EmailSender : IEmailSender
     {
         // 💥 GÀI ĐẠN: Sếp nhét Email và Mật khẩu ứng dụng (16 ký tự của Google) vào đây
         private readonly string _emailNguon = "kle45356@gmail.com";
@@ -17,7 +17,7 @@ namespace WebSuDungDIen.Services // Sửa lại namespace cho đúng với proje
             // Lọc bọn nhập linh tinh (không có @) cho đỡ rác server
             if (string.IsNullOrWhiteSpace(emailDich) || !emailDich.Contains("@"))
             {
-                Console.WriteLine("[BÁO ĐỘNG] LỖI ĐẠN LÉP! Email rỗng hoặc sai định dạng!");
+                Console.WriteLine("[BÁO ĐỘNG] LỖI! Email rỗng hoặc sai định dạng!");
                 return;
             }
 
@@ -115,6 +115,43 @@ namespace WebSuDungDIen.Services // Sửa lại namespace cho đúng với proje
                     Console.WriteLine("CHI TIẾT: " + ex.InnerException.Message);
                 }
                 Console.WriteLine("========================================");
+            }
+        }
+
+        public async Task SendEmailAsync(string email, string subject, string htmlMessage)
+        {
+            if (string.IsNullOrWhiteSpace(email) || !email.Contains("@")) return;
+
+            try
+            {
+                var smtpClient = new SmtpClient("smtp.gmail.com")
+                {
+                    Port = 587,
+                    Credentials = new NetworkCredential(_emailNguon, _matKhauUngDung),
+                    EnableSsl = true,
+                };
+
+                // 💥 CHỮA LỖI Ở ĐÂY: Khởi tạo truyền thống, trói cứng From và To!
+                var mailMessage = new MailMessage(
+                    from: new MailAddress(_emailNguon, "HỆ THỐNG ĐIỆN LỰC CYBER"), // Phải gán cứng bằng MailAddress
+                    to: new MailAddress(email)
+                )
+                {
+                    Subject = subject,
+                    Body = htmlMessage,
+                    IsBodyHtml = true
+                };
+
+                // Bóp cò xả đạn!
+                await smtpClient.SendMailAsync(mailMessage);
+                Console.WriteLine($"[ SUCCESS ] - Đã nã đạn Email Identity thành công tới: {email}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("========================================");
+                Console.WriteLine("💥 LỖI BẮN EMAIL IDENTITY: " + ex.Message);
+                Console.WriteLine("========================================");
+                throw; // Ném lỗi ra để trang web báo đỏ!
             }
         }
     }

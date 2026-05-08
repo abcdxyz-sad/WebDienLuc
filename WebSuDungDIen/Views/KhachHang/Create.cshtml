@@ -5,13 +5,19 @@
     var users = ViewBag.Users;
 }
 
+<div id="zzz-welcome-msg"
+     data-msg="Trang này là trang thêm vào khách mới, có thể thêm vào khách bằng 2 cách đó là thêm tài khoản khách vào trước sau đó nhập thông tin khách vào và ngược lại"
+     style="display: none;">
+</div>
+
 <div class="border-dashed p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 zzz-command-panel">
-    <h1 class="m-0 zzz-page-title">
+    <h1 class="m-0 zzz-page-title border-start border-5 ps-3" style="border-left-color: var(--zzz-primary) !important;">
         [ TỆP HỒ SƠ ] TẠO MỚI KHÁCH HÀNG
     </h1>
     <div class="d-flex align-items-center gap-3">
-        <span class="zzz-sys-status text-primary fw-bold">
-            HỆ THỐNG: <span class="zzz-blink-dot text-warning">●</span> ĐANG CHỜ NHẬP LIỆU
+        <span class="badge text-dark rounded-0 border border-dark border-2 fs-6 zzz-text-mono px-3 py-2 shadow-sm d-none d-md-block"
+              style="background-color: var(--zzz-primary); box-shadow: 2px 2px 0px #000 !important;">
+            <span class="text-dark zzz-blink-dot">●</span> TRẠNG THÁI: ĐANG CHỜ NHẬP LIỆU
         </span>
     </div>
 </div>
@@ -27,7 +33,7 @@
                     
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4 zzz-text-mono fw-bold rounded-0"></div>
 
-                    <div class="zzz-fieldset">
+                    <div class="zzz-fieldset" data-intro="Đây bạn có thể chọn tài khoản khách để thêm vào hoặc có thể bỏ qua nếu thêm khách vào trước" data-step="2">
                         <div class="zzz-fieldset-title">SYS.01 // LIÊN KẾT TÀI KHOẢN</div>
 
                         <div class="row">
@@ -66,12 +72,12 @@
                         <div class="zzz-fieldset-title text-warning border-dark">INF.02 // HỒ SƠ KHÁCH HÀNG</div>
 
                         <div class="row">
-                            <div class="col-md-12 mb-3">
+                            <div class="col-md-12 mb-3" data-intro="Tại phần này nếu như bạn đã tạo tài khoản của khách trước thì nó sẽ tự điền vào, tuy nhiên bạn có thể thay đổi cho phù hợp" data-step="3">
                                 <label asp-for="TenKh" class="form-label zzz-cmd-label">
                                     <span>TÊN KHÁCH HÀNG / CHỦ HỘ</span>
                                     <span class="zzz-text-req">* REQ</span>
                                 </label>
-                                <input asp-for="TenKh" class="form-control zzz-terminal-input fw-bold text-uppercase text-danger" id="tenKhBox" placeholder="Nhập tên người đại diện..." />
+                                <input asp-for="TenKh" class="form-control zzz-terminal-input fw-bold text-danger" id="tenKhBox" placeholder="Nhập tên khách hàng..." />
                                 <span asp-validation-for="TenKh" class="text-danger zzz-text-req d-block mt-1 fw-bold zzz-text-mono"></span>
                             </div>
 
@@ -83,12 +89,13 @@
                                 <input asp-for="DienThoai" class="form-control zzz-terminal-input fw-bold zzz-badge-id fs-5" placeholder="09xx..." />
                                 <span asp-validation-for="DienThoai" class="text-danger zzz-text-req d-block mt-1 fw-bold zzz-text-mono"></span>
                             </div>
-                            <div class="col-md-12 mb-3">
+                            <div class="col-md-12 mb-3" data-intro="Lưu ý chỗ này là bắt buộc nhập vào nên đừng quên nha !" data-step="4">
                                 <label class="form-label zzz-cmd-label text-warning bg-dark px-2">
                                     <i class="fas fa-tachometer-alt"></i> CHỈ SỐ CÔNG TƠ LÚC LẮP ĐẶT (KỲ 0)
                                 </label>
                                 <input type="number" name="chiSoBanDau" class="form-control zzz-terminal-input fw-bold border-warning border-3 fs-5" value="0" min="0" style="background-color: #fffbdd;" />
-                                <small class="text-danger zzz-text-mono d-block mt-1 fw-bold">* Nếu đồng hồ mới bóc hộp thì để số 0. Nếu xài đồng hồ cũ thì nhập số trên mặt kính vào đây!</small>
+                                <small class="text-danger zzz-text-mono d-block mt-1 fw-bold">* Vui lòng nhập chỉ số mốc mới lặp đặt cho khách hàng này!</small>
+                                <span asp-validation-for="ChiSoDien" class="text-danger fw-bold mt-1 d-block"></span>
                             </div>
                         </div>
                     </div>
@@ -98,10 +105,15 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label zzz-cmd-label">TỈNH / THÀNH PHỐ</label>
-                                <select id="province" class="form-select zzz-terminal-input fw-bold">
+                                <label class="form-label zzz-cmd-label">TỈNH / THÀNH PHỐ <span class="text-danger">*</span></label>
+
+                                <select id="province" name="MaTinh" class="form-select zzz-terminal-input fw-bold"
+                                        data-val="true"
+                                        data-val-required="Vui lòng chọn Tỉnh/Thành Phố trước!">
                                     <option value="">-- CHỌN TỈNH/THÀNH --</option>
                                 </select>
+
+                                <span class="text-danger fw-bold mt-1 d-block field-validation-valid" data-valmsg-for="MaTinh" data-valmsg-replace="true"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
@@ -109,9 +121,14 @@
                                     <i class="fas fa-map-marker-alt"></i> QUẢN LÝ CẤP PHƯỜNG
                                     <span class="zzz-text-req text-danger">* REQ</span>
                                 </label>
-                                <select id="ward" name="MaPhuongApi" class="form-select zzz-terminal-input border-dark border-3 fw-bold" style="background-color: rgba(210, 255, 0, 0.1);">
+
+                                <select id="ward" name="MaPhuongApi" class="form-select zzz-terminal-input border-dark border-3 fw-bold" style="background-color: rgba(210, 255, 0, 0.1);"
+                                        data-val="true"
+                                        data-val-required="Vui lòng chọn Phường/Xã trước!">
                                     <option value="">-- CHỌN PHƯỜNG/XÃ --</option>
                                 </select>
+
+                                <span asp-validation-for="MaPhuongApi" class="text-danger fw-bold mt-1 d-block"></span>
                             </div>
 
                             <div class="col-md-12 mb-2">
@@ -157,6 +174,33 @@
             document.getElementById("emailBox").value = email || "";
             document.getElementById("usernameBox").value = username || "";
             document.getElementById("tenKhBox").value = hoten || "";
+        });
+
+        // Code tự điền thông tin User (Dùng màu custom --zzz-primary)
+        document.getElementById("userSelect").addEventListener("change", function () {
+            var selected = this.options[this.selectedIndex];
+            var email = selected.getAttribute("data-email");
+            var username = selected.getAttribute("data-username");
+            var hoten = selected.getAttribute("data-hoten");
+
+            var tenKhBox = document.getElementById("tenKhBox");
+
+            document.getElementById("emailBox").value = email || "";
+            document.getElementById("usernameBox").value = username || "";
+            tenKhBox.value = hoten || "";
+
+            // === HIỆU ỨNG NHÁY MÀU CUSTOM CỦA SẾP ===
+            if (this.value) {
+                // Gán trực tiếp biến màu CSS của sếp vào background
+                tenKhBox.style.backgroundColor = "var(--zzz-primary)";
+                tenKhBox.style.transition = "background-color 0.1s ease"; // Thêm tí mượt mà lúc chớp màu
+                tenKhBox.classList.add("text-dark"); // Giữ chữ đen cho nổi
+
+                setTimeout(() => {
+                    tenKhBox.style.backgroundColor = ""; // Xóa màu chớp, trả về mặc định
+                    tenKhBox.classList.remove("text-dark");
+                }, 500);
+            }
         });
 
         function capNhatDiaChiFull() {
