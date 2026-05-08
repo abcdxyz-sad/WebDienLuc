@@ -38,14 +38,30 @@ builder.Services.Configure<SecurityStampValidatorOptions>(options =>
 builder.Services.AddScoped<TaoMaService>();
 builder.Services.AddTransient<EmailSender>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
-// Tiêm cái Trạm Phát Sóng này vào lõi của Microsoft Identity
+// 1. Đăng ký MongoClient bằng cách đọc từ Render Environment
 builder.Services.AddSingleton<IMongoClient>(sp =>
-    new MongoClient("mongodb+srv:/<TÊN_ĐĂNG_NHẬP>:<MẬT_KHẨU>@cluster0.9j2bsjo.mongodb.net/?appName=Cluster0"));
+{
+    // Render: MongoDB__ConnectionString => C#: Configuration["MongoDB:ConnectionString"]
+    var connectionString = builder.Configuration["MongoDB:ConnectionString"];
 
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        // Dự phòng nếu sếp quên set hoặc muốn chạy ở Local mà chưa có biến môi trường
+        throw new Exception("LỖI: Chưa tìm thấy chuỗi kết nối MongoDB trên hệ thống!");
+    }
+
+    return new MongoClient(connectionString);
+});
+
+// 2. Đăng ký Collection bằng cách đọc Database Name từ Render
 builder.Services.AddScoped(sp =>
 {
     var client = sp.GetRequiredService<IMongoClient>();
-    var database = client.GetDatabase("WebSuDungDienLogs");
+
+    // Render: MongoDB__DatabaseName => C#: Configuration["MongoDB:DatabaseName"]
+    var dbName = builder.Configuration["MongoDB:DatabaseName"] ?? "WebSuDungDienLogs";
+
+    var database = client.GetDatabase(dbName);
     return database.GetCollection<SystemLog>("SystemLogs");
 });
 

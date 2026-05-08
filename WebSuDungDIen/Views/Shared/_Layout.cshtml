@@ -15,6 +15,18 @@
     bool isKhachHangActive = (ctrl == "khachhang") && !isTienDienActive && !(act == "dangkythongtin");
     bool isChiSoActive = (ctrl == "chisodien") && !(act == "lichsucuatoi");
     bool isHoaDonActive = (ctrl == "hoadon");
+
+    // 1. Dò xem người dùng đang đứng ở Controller và Action nào
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    // 2. Cài đặt còi báo động cho từng mục
+    // (Sếp có thể thêm && currentAction == "Index" nếu muốn chặt chẽ hơn)
+    bool isMenuHoSo = currentController == "KhachHang";
+    bool isMenuTaiKhoan = currentController == "Admin" && currentAction == "QuanLyTaiKhoan";
+
+    // 3. Nếu 1 trong 2 mục con sáng, thì cái Dropdown tổng cũng phải sáng
+    bool isDropdownKhachHang = isMenuHoSo || isMenuTaiKhoan;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -92,24 +104,40 @@
                                         <i class="fas fa-user-shield me-1"></i> NHÂN SỰ
                                     </a>
                                 </li>
+                                <li class="nav-item w-100 w-lg-auto text-center text-lg-start">
+                                    <a class="nav-link zzz-urban-link @(isKhachHangActive ? "active" : "")" asp-area="" asp-controller="KhachHang" asp-action="Index">
+                                        <i class="fas fa-user-shield me-1"></i> KHÁCH HÀNG
+                                    </a>
+                                </li>
+                                <li class="nav-item w-100 w-lg-auto text-center text-lg-start">
+                                    <a class="nav-link zzz-urban-link @(isChiSoActive ? "active" : "")" asp-area="" asp-controller="ChiSoDien" asp-action="Index">
+                                        <i class="fas fa-tachometer-alt me-1"></i> CHỈ SỐ
+                                    </a>
+                                </li>
+                                <li class="nav-item w-100 w-lg-auto text-center text-lg-start">
+                                    <a class="nav-link zzz-urban-link @(isHoaDonActive ? "active" : "")" asp-area="" asp-controller="HoaDon" asp-action="Index">
+                                        <i class="fas fa-receipt me-1"></i> HÓA ĐƠN
+                                    </a>
+                                </li>
                             }
 
-                            @if (User.IsInRole("NhanVien") || User.IsInRole("Admin"))
+                            @if (User.IsInRole("NhanVien"))
                             {
-                                <li class="nav-item dropdown w-100 w-lg-auto text-center text-lg-start">
-                                    <a class="nav-link dropdown-toggle zzz-urban-link @((isKhachHangActive || isHeThongActive) ? "active" : "")" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <li class="nav-item dropdown zzz-nav-dropdown w-100 w-lg-auto text-center text-lg-start">
+                                    <a class="nav-link dropdown-toggle zzz-urban-link @(isDropdownKhachHang ? "active" : "")" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="fas fa-users me-1"></i> KHÁCH HÀNG
+                                        <i class="fas fa-chevron-down ms-1 zzz-caret"></i>
                                     </a>
 
                                     <ul class="dropdown-menu rounded-0 border-dark border-2 shadow-sm">
                                         <li>
-                                            <a class="dropdown-item @(isKhachHangActive ? "zzz-active-item" : "")" asp-area="" asp-controller="KhachHang" asp-action="Index">
+                                            <a class="dropdown-item @(isMenuHoSo ? "zzz-active-item" : "")" asp-area="" asp-controller="KhachHang" asp-action="Index">
                                                 <i class="fas fa-address-book me-2"></i> HỒ SƠ KHÁCH HÀNG
                                             </a>
                                         </li>
 
                                         <li>
-                                            <a class="dropdown-item @(isHeThongActive ? "zzz-active-item" : "")" asp-controller="Admin" asp-action="QuanLyTaiKhoan">
+                                            <a class="dropdown-item @(isMenuTaiKhoan ? "zzz-active-item" : "")" asp-controller="Admin" asp-action="QuanLyTaiKhoan">
                                                 <i class="fas fa-user-lock me-2"></i> TÀI KHOẢN TRUY CẬP
                                             </a>
                                         </li>

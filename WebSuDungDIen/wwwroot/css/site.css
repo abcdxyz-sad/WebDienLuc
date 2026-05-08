@@ -1125,17 +1125,18 @@ html, body {
     display: none !important;
 }
 
-/* 2. Dùng mũi tên xịn của FontAwesome và thêm hiệu ứng */
+/* 2. Dùng mũi tên xịn của FontAwesome và bọc thép bảo vệ */
 .zzz-nav-dropdown .zzz-caret {
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 0.85em; /* Thu nhỏ xíu cho cân đối */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.85em;
     vertical-align: middle;
+    display: inline-block !important; /* Chống bị Bootstrap đè tàng hình */
 }
 
 /* 3. Lật ngược 180 độ và phát sáng màu chanh khi bấm mở Menu */
 .zzz-nav-dropdown.show .dropdown-toggle .zzz-caret {
     transform: rotate(-180deg);
-    color: var(--zzz-primary, #D2FF00);
+    color: var(--zzz-primary, #D2FF00) !important;
 }
 
 /* Animation bung Menu */
