@@ -626,7 +626,7 @@ namespace WebSuDungDIen.Controllers
             // Không cần dùng cái tham số userId truyền vào nữa cho rắc rối sếp nhé
             ViewBag.TenKhachHang = khachHang.TenKh;
             ViewBag.MaKhachHang = khachHang.MaKh;
-            ViewBag.DiaChi = khachHang.DiaChi;
+            ViewBag.DiaChi = khachHang.DiaChiDayDu;
 
             // 4. Query lấy danh sách chỉ số điện
             var lichSuDien = await _context.ChiSoDien
